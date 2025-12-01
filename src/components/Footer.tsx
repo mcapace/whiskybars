@@ -12,7 +12,7 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-3 lg:col-span-1">
             <div className="relative h-12 w-36 mb-4">
               <Image
-                src="/images/logos/wa-white.jpg"
+                src="/images/logos/wa-white.png"
                 alt="Whisky Advocate"
                 fill
                 className="object-contain object-left"

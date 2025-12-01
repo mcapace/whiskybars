@@ -115,7 +115,7 @@ export default function Home() {
           <div className="text-center text-white px-4 max-w-4xl mx-auto">
             <div className="mb-6">
               <Image
-                src="/images/logos/wa-white.jpg"
+                src="/images/logos/wa-white.png"
                 alt="Whisky Advocate"
                 width={200}
                 height={60}

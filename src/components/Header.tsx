@@ -139,7 +139,7 @@ export default function Header() {
             <Link href="/" className="flex-shrink-0">
               <div className="relative h-10 w-32 lg:h-12 lg:w-40">
                 <Image
-                  src="/images/logos/wa-blue.jpg"
+                  src="/images/logos/wa-blue.png"
                   alt="Whisky Advocate"
                   fill
                   className="object-contain"
@@ -270,7 +270,7 @@ export default function Header() {
             <div className="p-4 border-b border-gray-100">
               <div className="relative h-10 w-32">
                 <Image
-                  src="/images/logos/wa-blue.jpg"
+                  src="/images/logos/wa-blue.png"
                   alt="Whisky Advocate"
                   fill
                   className="object-contain"

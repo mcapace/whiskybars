@@ -199,17 +199,22 @@ body {
 }
 
 .map-marker {
-  width: 28px;
-  height: 28px;
-  background: linear-gradient(135deg, #c41230 0%, #a30f28 100%);
-  border: 3px solid white;
-  border-radius: 50%;
+  width: 36px;
+  height: 42px;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: center bottom;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
+}
+
+.map-marker .glass-icon {
+  width: 32px;
+  height: 38px;
+  object-fit: contain;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .map-marker .marker-dot {
@@ -221,26 +226,32 @@ body {
 
 .map-marker:hover,
 .map-marker.hovered {
-  transform: scale(1.25);
-  box-shadow: 0 6px 20px rgba(196, 18, 48, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+  transform: scale(1.3);
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
+}
+
+.map-marker:hover .glass-icon,
+.map-marker.hovered .glass-icon {
+  filter: brightness(1.15) saturate(1.2);
 }
 
 .map-marker.selected {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, #f9bd13 0%, #d4a84b 100%);
-  border-color: white;
-  transform: scale(1.3);
-  box-shadow: 0 8px 25px rgba(249, 189, 19, 0.5), 0 3px 10px rgba(0, 0, 0, 0.2);
+  transform: scale(1.4);
+  filter: drop-shadow(0 8px 16px rgba(249, 189, 19, 0.6));
   z-index: 200;
 }
 
+.map-marker.selected .glass-icon {
+  filter: brightness(1.2) saturate(1.3) hue-rotate(-10deg);
+}
+
 .map-marker.in-crawl {
-  width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 38px;
   background: linear-gradient(135deg, #c41230 0%, #a30f28 100%);
   border: 3px solid #f9bd13;
-  box-shadow: 0 4px 16px rgba(196, 18, 48, 0.4), 0 0 0 3px rgba(249, 189, 19, 0.3);
+  border-radius: 50%;
+  filter: drop-shadow(0 4px 12px rgba(196, 18, 48, 0.5));
 }
 
 .map-marker .crawl-number {
