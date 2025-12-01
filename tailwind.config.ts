@@ -24,9 +24,9 @@ const config: Config = {
         'whisky-gold': '#f9bd13',
       },
       fontFamily: {
-        // Match Whisky Advocate typography
-        serif: ['Georgia', 'Cambria', 'Times New Roman', 'serif'],
-        sans: ['Helvetica Neue', 'Arial', 'sans-serif'],
+        // Match Whisky Advocate typography - using Next.js font variables
+        serif: ['var(--font-playfair)', 'Georgia', 'Cambria', 'Times New Roman', 'serif'],
+        sans: ['var(--font-source-sans)', 'Helvetica Neue', 'Arial', 'sans-serif'],
       },
       fontSize: {
         'hero': ['4rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],

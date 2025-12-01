@@ -20,9 +20,9 @@ interface MapProps {
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
-// Map styles
+// Map styles - using streets for more color
 const MAP_STYLES = {
-  light: 'mapbox://styles/mapbox/light-v11',
+  light: 'mapbox://styles/mapbox/streets-v12',
   dark: 'mapbox://styles/mapbox/dark-v11',
 };
 
@@ -156,7 +156,7 @@ export default function Map({
     }), 'top-right');
     newMap.addControl(new mapboxgl.FullscreenControl(), 'top-right');
     newMap.addControl(new mapboxgl.ScaleControl({ maxWidth: 100 }), 'bottom-left');
-    newMap.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
+    // Attribution control removed - Mapbox branding hidden via CSS
 
     newMap.on('load', () => {
       setMapLoaded(true);

@@ -73,8 +73,9 @@ export default function VideoHero({
         />
       ))}
 
-      {/* Overlay gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
+      {/* Overlay gradient with subtle filter */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/70" />
+      <div className="absolute inset-0 bg-[#e04720]/10 mix-blend-overlay" />
 
       {/* Content overlay */}
       <div className="absolute inset-0 flex items-center justify-center">

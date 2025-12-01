@@ -66,6 +66,18 @@ body {
   background: transparent !important;
 }
 
+/* Hide Mapbox branding/attribution */
+.mapboxgl-ctrl-logo,
+.mapboxgl-ctrl-attrib,
+.mapboxgl-ctrl-attrib-inner {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+}
+
 /* Custom marker styles */
 .marker {
   width: 32px;
