@@ -351,6 +351,8 @@ export default function Map({
     const bounds = map.current.getBounds();
     const zoom = Math.floor(map.current.getZoom());
 
+    if (!bounds) return;
+
     const clusters = superclusterRef.current.getClusters(
       [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()],
       zoom
