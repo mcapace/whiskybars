@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
+import Supercluster from 'supercluster';
 import { Bar } from '@/types';
 
 interface MapProps {
@@ -14,12 +15,16 @@ interface MapProps {
   userLocation: { lat: number; lng: number } | null;
   showHeatmap?: boolean;
   barCrawlBars?: Bar[];
+  darkMode?: boolean;
 }
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
-// Custom map style with whisky-themed colors
-const MAP_STYLE = 'mapbox://styles/mapbox/light-v11';
+// Map styles
+const MAP_STYLES = {
+  light: 'mapbox://styles/mapbox/light-v11',
+  dark: 'mapbox://styles/mapbox/dark-v11',
+};
 
 export default function Map({
   bars,
@@ -31,16 +36,38 @@ export default function Map({
   userLocation,
   showHeatmap = false,
   barCrawlBars = [],
+  darkMode = false,
 }: MapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<globalThis.Map<number, mapboxgl.Marker>>(new globalThis.Map());
+  const clusterMarkersRef = useRef<mapboxgl.Marker[]>([]);
   const userMarkerRef = useRef<mapboxgl.Marker | null>(null);
+  const superclusterRef = useRef<Supercluster | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [currentZoom, setCurrentZoom] = useState(3.5);
+
+  // Filter bars by state
+  const filteredBars = selectedState
+    ? bars.filter(bar => bar.state === selectedState)
+    : bars;
+
+  // Create GeoJSON points for clustering
+  const getGeoJSONPoints = useCallback(() => {
+    return filteredBars
+      .filter(bar => bar.coordinates.lat && bar.coordinates.lng)
+      .map(bar => ({
+        type: 'Feature' as const,
+        properties: { barId: bar.id },
+        geometry: {
+          type: 'Point' as const,
+          coordinates: [bar.coordinates.lng, bar.coordinates.lat],
+        },
+      }));
+  }, [filteredBars]);
 
   // Create custom marker element with Glencairn glass icon
-  const createMarkerElement = useCallback((bar: Bar, index: number, isSelected: boolean, isHovered: boolean, isInCrawl: boolean) => {
+  const createMarkerElement = useCallback((bar: Bar, isSelected: boolean, isHovered: boolean, isInCrawl: boolean) => {
     const el = document.createElement('div');
     el.className = 'map-marker-container';
     el.style.background = 'transparent';
@@ -55,7 +82,6 @@ export default function Map({
     marker.style.padding = '0';
     marker.style.margin = '0';
 
-    // Use Glencairn glass icon or show crawl number
     if (isInCrawl) {
       const crawlIndex = barCrawlBars.findIndex(b => b.id === bar.id) + 1;
       marker.innerHTML = `<span class="crawl-number">${crawlIndex}</span>`;
@@ -84,6 +110,26 @@ export default function Map({
     return el;
   }, [barCrawlBars]);
 
+  // Create cluster marker element
+  const createClusterMarker = useCallback((count: number, coordinates: [number, number]) => {
+    const el = document.createElement('div');
+    el.className = 'cluster-marker';
+
+    // Size based on count
+    const size = count < 10 ? 40 : count < 50 ? 50 : count < 100 ? 60 : 70;
+    el.style.width = `${size}px`;
+    el.style.height = `${size}px`;
+
+    el.innerHTML = `
+      <div class="cluster-inner">
+        <span class="cluster-count">${count}</span>
+        <span class="cluster-label">bars</span>
+      </div>
+    `;
+
+    return el;
+  }, []);
+
   // Initialize map
   useEffect(() => {
     if (!mapContainer.current || !MAPBOX_TOKEN || map.current) return;
@@ -92,11 +138,12 @@ export default function Map({
 
     const newMap = new mapboxgl.Map({
       container: mapContainer.current,
-      style: MAP_STYLE,
+      style: darkMode ? MAP_STYLES.dark : MAP_STYLES.light,
       center: [-98.5795, 39.8283],
       zoom: 3.5,
       minZoom: 2,
       maxZoom: 18,
+      pitch: 0,
       attributionControl: false,
     });
 
@@ -113,6 +160,30 @@ export default function Map({
 
     newMap.on('load', () => {
       setMapLoaded(true);
+
+      // Add 3D buildings layer
+      const layers = newMap.getStyle().layers;
+      const labelLayerId = layers?.find(
+        layer => layer.type === 'symbol' && layer.layout?.['text-field']
+      )?.id;
+
+      newMap.addLayer(
+        {
+          id: '3d-buildings',
+          source: 'composite',
+          'source-layer': 'building',
+          filter: ['==', 'extrude', 'true'],
+          type: 'fill-extrusion',
+          minzoom: 14,
+          paint: {
+            'fill-extrusion-color': darkMode ? '#1a1a2e' : '#aaa',
+            'fill-extrusion-height': ['get', 'height'],
+            'fill-extrusion-base': ['get', 'min_height'],
+            'fill-extrusion-opacity': 0.6,
+          },
+        },
+        labelLayerId
+      );
 
       // Add heatmap source
       newMap.addSource('bars-heat', {
@@ -164,10 +235,25 @@ export default function Map({
         },
         paint: {
           'line-color': '#c41230',
-          'line-width': 3,
+          'line-width': 4,
           'line-dasharray': [2, 2],
         },
       });
+    });
+
+    // Track zoom level for clustering decisions
+    newMap.on('zoom', () => {
+      setCurrentZoom(newMap.getZoom());
+    });
+
+    // Enable pitch on high zoom for 3D effect
+    newMap.on('zoomend', () => {
+      const zoom = newMap.getZoom();
+      if (zoom >= 15) {
+        newMap.easeTo({ pitch: 45, duration: 500 });
+      } else if (zoom < 14) {
+        newMap.easeTo({ pitch: 0, duration: 500 });
+      }
     });
 
     map.current = newMap;
@@ -176,13 +262,27 @@ export default function Map({
       newMap.remove();
       map.current = null;
     };
+  }, [darkMode]);
+
+  // Update map style when dark mode changes
+  useEffect(() => {
+    if (!map.current || !mapLoaded) return;
+    map.current.setStyle(darkMode ? MAP_STYLES.dark : MAP_STYLES.light);
+  }, [darkMode, mapLoaded]);
+
+  // Initialize supercluster
+  useEffect(() => {
+    superclusterRef.current = new Supercluster({
+      radius: 60,
+      maxZoom: 14,
+    });
   }, []);
 
   // Update heatmap data
   useEffect(() => {
     if (!map.current || !mapLoaded) return;
 
-    const features = bars
+    const features = filteredBars
       .filter(bar => bar.coordinates.lat && bar.coordinates.lng)
       .map(bar => ({
         type: 'Feature' as const,
@@ -198,9 +298,8 @@ export default function Map({
       source.setData({ type: 'FeatureCollection', features });
     }
 
-    // Toggle heatmap visibility
     map.current.setLayoutProperty('bars-heat', 'visibility', showHeatmap ? 'visible' : 'none');
-  }, [bars, mapLoaded, showHeatmap]);
+  }, [filteredBars, mapLoaded, showHeatmap]);
 
   // Update bar crawl route
   useEffect(() => {
@@ -236,26 +335,73 @@ export default function Map({
     }
   }, [barCrawlBars, mapLoaded]);
 
-  // Update markers
+  // Update markers with clustering
   useEffect(() => {
-    if (!map.current || !mapLoaded) return;
+    if (!map.current || !mapLoaded || !superclusterRef.current) return;
 
-    // Filter bars
-    const filteredBars = selectedState
-      ? bars.filter(bar => bar.state === selectedState)
-      : bars;
+    // Clear existing cluster markers
+    clusterMarkersRef.current.forEach(marker => marker.remove());
+    clusterMarkersRef.current = [];
 
-    // Remove markers that are no longer in the list
+    // Load points into supercluster
+    const points = getGeoJSONPoints();
+    superclusterRef.current.load(points);
+
+    // Get clusters for current viewport
+    const bounds = map.current.getBounds();
+    const zoom = Math.floor(map.current.getZoom());
+
+    const clusters = superclusterRef.current.getClusters(
+      [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()],
+      zoom
+    );
+
+    // Track which bar IDs are visible (not in clusters)
+    const visibleBarIds = new Set<number>();
+
+    // Process clusters and individual points
+    clusters.forEach((cluster) => {
+      const [lng, lat] = cluster.geometry.coordinates;
+
+      if (cluster.properties.cluster) {
+        // It's a cluster
+        const count = cluster.properties.point_count;
+        const el = createClusterMarker(count, [lng, lat]);
+
+        const marker = new mapboxgl.Marker({ element: el })
+          .setLngLat([lng, lat])
+          .addTo(map.current!);
+
+        // Click to zoom into cluster
+        el.addEventListener('click', () => {
+          const expansionZoom = superclusterRef.current!.getClusterExpansionZoom(cluster.id as number);
+          map.current!.flyTo({
+            center: [lng, lat],
+            zoom: Math.min(expansionZoom, 14),
+            duration: 1000,
+          });
+        });
+
+        clusterMarkersRef.current.push(marker);
+      } else {
+        // It's an individual point
+        const barId = cluster.properties.barId;
+        visibleBarIds.add(barId);
+      }
+    });
+
+    // Remove markers that are now in clusters
     markersRef.current.forEach((marker, id) => {
-      if (!filteredBars.find(bar => bar.id === id)) {
+      if (!visibleBarIds.has(id)) {
         marker.remove();
         markersRef.current.delete(id);
       }
     });
 
-    // Add or update markers
-    filteredBars.forEach((bar, index) => {
+    // Add or update individual markers
+    filteredBars.forEach((bar) => {
       if (!bar.coordinates.lat || !bar.coordinates.lng) return;
+      if (!visibleBarIds.has(bar.id)) return;
 
       const isSelected = selectedBar?.id === bar.id;
       const isHovered = hoveredBar?.id === bar.id;
@@ -294,7 +440,7 @@ export default function Map({
         }
       } else {
         // Create new marker
-        const el = createMarkerElement(bar, index, isSelected, isHovered, isInCrawl);
+        const el = createMarkerElement(bar, isSelected, isHovered, isInCrawl);
 
         el.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -322,6 +468,10 @@ export default function Map({
             <div class="bar-popup-actions">
               ${bar.website ? `<a href="https://${bar.website}" target="_blank" rel="noopener" class="bar-popup-link">Website</a>` : ''}
               ${bar.whiskyList ? `<a href="${bar.whiskyList}" target="_blank" rel="noopener" class="bar-popup-link">Whisky Menu</a>` : ''}
+              <a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(bar.address)}" target="_blank" rel="noopener" class="bar-popup-link bar-popup-directions">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                Directions
+              </a>
             </div>
           </div>
         `);
@@ -335,7 +485,7 @@ export default function Map({
       }
     });
 
-    // Fit bounds
+    // Fit bounds if not zoomed in on a selected bar
     if (filteredBars.length > 0 && !selectedBar) {
       const bounds = new mapboxgl.LngLatBounds();
       filteredBars.forEach(bar => {
@@ -350,7 +500,7 @@ export default function Map({
         duration: 1000,
       });
     }
-  }, [bars, selectedState, selectedBar, hoveredBar, barCrawlBars, mapLoaded, createMarkerElement, onBarSelect, onBarHover]);
+  }, [filteredBars, selectedBar, hoveredBar, barCrawlBars, mapLoaded, currentZoom, createMarkerElement, createClusterMarker, getGeoJSONPoints, onBarSelect, onBarHover]);
 
   // Fly to selected bar
   useEffect(() => {
@@ -402,6 +552,7 @@ export default function Map({
               map.current.flyTo({
                 center: [-98.5795, 39.8283],
                 zoom: 3.5,
+                pitch: 0,
                 duration: 1500,
               });
             }
@@ -412,7 +563,15 @@ export default function Map({
         </button>
       </div>
 
-      {/* Legend */}
+      {/* Cluster legend */}
+      {currentZoom < 10 && filteredBars.length > 20 && (
+        <div className="absolute bottom-12 left-4 bg-white shadow-lg rounded-lg p-3 z-10">
+          <p className="text-xs font-semibold text-gray-700 mb-2">Clusters</p>
+          <p className="text-xs text-gray-500">Click to zoom in</p>
+        </div>
+      )}
+
+      {/* Bar crawl legend */}
       {barCrawlBars.length > 0 && (
         <div className="absolute bottom-12 left-4 bg-white shadow-lg rounded-lg p-3 z-10">
           <p className="text-xs font-semibold text-gray-700 mb-2">Bar Crawl Route</p>
@@ -422,6 +581,11 @@ export default function Map({
           </div>
         </div>
       )}
+
+      {/* Zoom indicator */}
+      <div className="absolute top-4 right-16 bg-white/90 backdrop-blur-sm shadow rounded px-2 py-1 text-xs text-gray-600 z-10">
+        {currentZoom.toFixed(1)}x
+      </div>
     </div>
   );
 }
