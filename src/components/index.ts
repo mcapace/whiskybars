@@ -1,4 +1,5 @@
 export { default as Header } from './Header';
+export { default as VideoHero } from './VideoHero';
 export { default as Map } from './Map';
 export { default as BarList } from './BarList';
 export { default as StateFilter } from './StateFilter';
