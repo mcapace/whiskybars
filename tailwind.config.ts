@@ -9,6 +9,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Whisky Advocate Brand Colors
+        'wa-red': '#c41230',
+        'wa-red-dark': '#a30f28',
+        'wa-cream': '#fdf9f1',
+        'wa-brown': '#9e380d',
+        'wa-gold': '#f9bd13',
+        'wa-amber': '#d4a84b',
+        // Legacy aliases
         'whisky-red': '#c41230',
         'whisky-red-dark': '#a30f28',
         'whisky-cream': '#fdf9f1',
@@ -16,8 +24,32 @@ const config: Config = {
         'whisky-gold': '#f9bd13',
       },
       fontFamily: {
-        serif: ['Playfair Display', 'Georgia', 'serif'],
-        sans: ['Source Sans Pro', 'system-ui', 'sans-serif'],
+        // Match Whisky Advocate typography
+        serif: ['Georgia', 'Cambria', 'Times New Roman', 'serif'],
+        sans: ['Helvetica Neue', 'Arial', 'sans-serif'],
+      },
+      fontSize: {
+        'hero': ['4rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+        'hero-sm': ['2.5rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.5s ease-out',
+        'slide-up': 'slideUp 0.5s ease-out',
+        'scale-in': 'scaleIn 0.3s ease-out',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        scaleIn: {
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
       },
     },
   },
