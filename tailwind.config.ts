@@ -10,15 +10,15 @@ const config: Config = {
     extend: {
       colors: {
         // Whisky Advocate Brand Colors
-        'wa-red': '#c41230',
-        'wa-red-dark': '#a30f28',
+        'wa-red': '#e04720',
+        'wa-red-dark': '#c73d1a',
         'wa-cream': '#fdf9f1',
         'wa-brown': '#9e380d',
         'wa-gold': '#f9bd13',
         'wa-amber': '#d4a84b',
         // Legacy aliases
-        'whisky-red': '#c41230',
-        'whisky-red-dark': '#a30f28',
+        'whisky-red': '#e04720',
+        'whisky-red-dark': '#c73d1a',
         'whisky-cream': '#fdf9f1',
         'whisky-brown': '#9e380d',
         'whisky-gold': '#f9bd13',

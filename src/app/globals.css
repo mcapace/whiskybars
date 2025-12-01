@@ -6,17 +6,18 @@
 @import 'mapbox-gl/dist/mapbox-gl.css';
 
 :root {
-  --whisky-red: #c41230;
-  --whisky-red-dark: #a30f28;
+  --whisky-red: #e04720;
+  --whisky-red-dark: #c73d1a;
   --whisky-cream: #fdf9f1;
   --whisky-brown: #9e380d;
   --whisky-gold: #f9bd13;
 }
 
 body {
-  font-family: var(--font-source-sans), system-ui, sans-serif;
-  color: #333;
+  font-family: var(--font-source-sans), 'Helvetica Neue', Arial, sans-serif;
+  color: #1a1a1a;
   line-height: 1.6;
+  font-size: 16px;
 }
 
 .font-serif {
@@ -54,6 +55,17 @@ body {
   padding: 4px 8px;
 }
 
+/* Mapbox Marker - remove default styling */
+.mapboxgl-marker {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.mapboxgl-marker > div {
+  background: transparent !important;
+}
+
 /* Custom marker styles */
 .marker {
   width: 32px;
@@ -87,11 +99,11 @@ body {
 }
 
 .bar-item:hover {
-  background: rgba(196, 18, 48, 0.05);
+  background: rgba(224, 71, 32, 0.05);
 }
 
 .bar-item.active {
-  background: rgba(196, 18, 48, 0.1);
+  background: rgba(224, 71, 32, 0.1);
   border-left: 3px solid var(--whisky-red);
 }
 
@@ -156,7 +168,7 @@ body {
 .search-input:focus {
   outline: none;
   border-color: var(--whisky-red);
-  box-shadow: 0 0 0 3px rgba(196, 18, 48, 0.1);
+  box-shadow: 0 0 0 3px rgba(224, 71, 32, 0.1);
 }
 
 /* Cocktail cards */
@@ -192,6 +204,11 @@ body {
   cursor: pointer;
   transform-origin: center bottom;
   z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 32px;
+  height: 38px;
 }
 
 .map-marker-container:hover {
@@ -199,22 +216,36 @@ body {
 }
 
 .map-marker {
-  width: 36px;
-  height: 42px;
-  background: transparent;
+  width: 32px;
+  height: 38px;
+  background: transparent !important;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: center bottom;
   filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
+  position: relative;
+  padding: 0;
+  margin: 0;
+  border: none;
+  box-shadow: none;
 }
 
 .map-marker .glass-icon {
   width: 32px;
   height: 38px;
   object-fit: contain;
+  display: block;
+  pointer-events: none;
+  user-select: none;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent !important;
+  border: none;
+  padding: 0;
+  margin: 0;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
 .map-marker .marker-dot {
@@ -248,10 +279,10 @@ body {
 .map-marker.in-crawl {
   width: 38px;
   height: 38px;
-  background: linear-gradient(135deg, #c41230 0%, #a30f28 100%);
+  background: linear-gradient(135deg, #e04720 0%, #c73d1a 100%);
   border: 3px solid #f9bd13;
   border-radius: 50%;
-  filter: drop-shadow(0 4px 12px rgba(196, 18, 48, 0.5));
+  filter: drop-shadow(0 4px 12px rgba(224, 71, 32, 0.5));
 }
 
 .map-marker .crawl-number {
@@ -322,7 +353,7 @@ body {
 }
 
 .bar-popup .mapboxgl-popup-close-button:hover {
-  color: #c41230;
+  color: #e04720;
   background: transparent;
 }
 
@@ -366,13 +397,13 @@ body {
 .bar-popup-link {
   font-size: 13px;
   font-weight: 600;
-  color: #c41230;
+  color: #e04720;
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .bar-popup-link:hover {
-  color: #a30f28;
+  color: #c73d1a;
   text-decoration: underline;
 }
 
@@ -382,7 +413,7 @@ body {
 }
 
 .bar-card:hover {
-  border-color: rgba(196, 18, 48, 0.2);
+  border-color: rgba(224, 71, 32, 0.2);
 }
 
 /* Bar Crawl Panel Styles */
@@ -414,7 +445,7 @@ body {
 .filter-pill.active {
   background: var(--whisky-red);
   color: white;
-  box-shadow: 0 2px 8px rgba(196, 18, 48, 0.3);
+  box-shadow: 0 2px 8px rgba(224, 71, 32, 0.3);
 }
 
 /* Split View Resize Handle */
@@ -431,7 +462,7 @@ body {
 
 .resize-handle:hover,
 .resize-handle:active {
-  background: rgba(196, 18, 48, 0.2);
+  background: rgba(224, 71, 32, 0.2);
 }
 
 .resize-handle::after {
@@ -448,7 +479,7 @@ body {
 }
 
 .resize-handle:hover::after {
-  background: #c41230;
+  background: #e04720;
 }
 
 /* Map Heatmap Legend */
@@ -488,7 +519,7 @@ body {
 }
 
 .mapboxgl-ctrl-geolocate-active {
-  color: #c41230 !important;
+  color: #e04720 !important;
 }
 
 /* Scrollbar for bar list */
@@ -501,10 +532,10 @@ body {
 }
 
 .bar-list-scroll::-webkit-scrollbar-thumb {
-  background: #c41230;
+  background: #e04720;
   border-radius: 3px;
 }
 
 .bar-list-scroll::-webkit-scrollbar-thumb:hover {
-  background: #a30f28;
+  background: #c73d1a;
 }

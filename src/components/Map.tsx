@@ -43,9 +43,17 @@ export default function Map({
   const createMarkerElement = useCallback((bar: Bar, index: number, isSelected: boolean, isHovered: boolean, isInCrawl: boolean) => {
     const el = document.createElement('div');
     el.className = 'map-marker-container';
+    el.style.background = 'transparent';
+    el.style.border = 'none';
+    el.style.padding = '0';
+    el.style.margin = '0';
 
     const marker = document.createElement('div');
     marker.className = `map-marker ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''} ${isInCrawl ? 'in-crawl' : ''}`;
+    marker.style.background = 'transparent';
+    marker.style.border = 'none';
+    marker.style.padding = '0';
+    marker.style.margin = '0';
 
     // Use Glencairn glass icon or show crawl number
     if (isInCrawl) {
@@ -53,7 +61,21 @@ export default function Map({
       marker.innerHTML = `<span class="crawl-number">${crawlIndex}</span>`;
     } else {
       // Glencairn glass icon
-      marker.innerHTML = `<img src="/map-logos/glass.png" alt="" class="glass-icon" />`;
+      const img = document.createElement('img');
+      img.src = '/map-logos/glass.png';
+      img.alt = '';
+      img.className = 'glass-icon';
+      img.style.background = 'transparent';
+      img.style.border = 'none';
+      img.style.padding = '0';
+      img.style.margin = '0';
+      img.style.display = 'block';
+      img.onerror = () => {
+        console.error('Failed to load glass icon:', img.src);
+        // Fallback to marker dot if image fails to load
+        marker.innerHTML = `<span class="marker-dot"></span>`;
+      };
+      marker.appendChild(img);
     }
 
     el.appendChild(marker);
@@ -251,7 +273,23 @@ export default function Map({
             const crawlIndex = barCrawlBars.findIndex(b => b.id === bar.id) + 1;
             markerDiv.innerHTML = `<span class="crawl-number">${crawlIndex}</span>`;
           } else {
-            markerDiv.innerHTML = `<img src="/map-logos/glass.png" alt="" class="glass-icon" />`;
+            // Clear and add glass icon
+            markerDiv.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = '/map-logos/glass.png';
+            img.alt = '';
+            img.className = 'glass-icon';
+            img.style.background = 'transparent';
+            img.style.border = 'none';
+            img.style.padding = '0';
+            img.style.margin = '0';
+            img.style.display = 'block';
+            img.onerror = () => {
+              console.error('Failed to load glass icon:', img.src);
+              // Fallback to marker dot if image fails to load
+              markerDiv.innerHTML = `<span class="marker-dot"></span>`;
+            };
+            markerDiv.appendChild(img);
           }
         }
       } else {
