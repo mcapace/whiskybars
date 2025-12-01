@@ -56,7 +56,7 @@ export default function VideoHero({
   }, [videos.length, interval]);
 
   return (
-    <div className="video-hero relative w-full h-[85vh] min-h-[600px] max-h-[900px] overflow-hidden bg-black">
+    <div className="video-hero relative w-full h-[95vh] min-h-[700px] max-h-[1000px] overflow-hidden bg-black">
       {/* Video layers */}
       {videos.map((src, index) => (
         <video
@@ -73,9 +73,10 @@ export default function VideoHero({
         />
       ))}
 
-      {/* Overlay gradient with subtle filter */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/70" />
-      <div className="absolute inset-0 bg-[#e04720]/10 mix-blend-overlay" />
+      {/* Overlay gradient with stronger filter */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
+      <div className="absolute inset-0 bg-[#e04720]/20 mix-blend-overlay" />
+      <div className="absolute inset-0 bg-black/30" />
 
       {/* Content overlay */}
       <div className="absolute inset-0 flex items-center justify-center">
