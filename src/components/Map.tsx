@@ -435,7 +435,9 @@ export default function Map({
     if (!map.current || !mapLoaded || !superclusterRef.current) return;
 
     const updateMarkers = () => {
-      if (!superclusterRef.current) return;
+      if (!superclusterRef.current || !map.current) return;
+      
+      const supercluster = superclusterRef.current;
       
       // Clear existing cluster markers
       clusterMarkersRef.current.forEach(marker => marker.remove());
@@ -443,18 +445,18 @@ export default function Map({
 
       // Load points into supercluster
       const points = getGeoJSONPoints();
-      superclusterRef.current.load(points);
+      supercluster.load(points);
 
       // Get clusters for current viewport
-      const bounds = map.current!.getBounds();
-      const zoom = Math.floor(map.current!.getZoom());
+      const bounds = map.current.getBounds();
+      const zoom = Math.floor(map.current.getZoom());
 
       if (!bounds) return;
 
-    const clusters = superclusterRef.current.getClusters(
-      [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()],
-      zoom
-    );
+      const clusters = supercluster.getClusters(
+        [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()],
+        zoom
+      );
 
     // Track which bar IDs are visible (not in clusters)
     const visibleBarIds = new Set<number>();
@@ -474,8 +476,9 @@ export default function Map({
 
         // Click to zoom into cluster
         el.addEventListener('click', () => {
-          const expansionZoom = superclusterRef.current!.getClusterExpansionZoom(cluster.id as number);
-          map.current!.flyTo({
+          if (!superclusterRef.current || !map.current) return;
+          const expansionZoom = superclusterRef.current.getClusterExpansionZoom(cluster.id as number);
+          map.current.flyTo({
             center: [lng, lat],
             zoom: Math.min(expansionZoom, 14),
             duration: 600,
