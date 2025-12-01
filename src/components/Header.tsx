@@ -85,16 +85,16 @@ export default function Header() {
         {/* Top bar */}
         <div className="hidden lg:block border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-end items-center h-10 gap-6 text-xs">
+            <div className="flex justify-end items-center h-10 gap-3">
               <a
                 href="https://whiskyadvocate.com/subscribe"
-                className="text-gray-600 hover:text-wa-red transition-colors font-medium"
+                className="bg-wa-red text-white px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-wa-red-dark transition-colors"
               >
                 Subscribe
               </a>
               <a
                 href="https://store.whiskyadvocate.com"
-                className="text-gray-600 hover:text-wa-red transition-colors font-medium"
+                className="bg-wa-red text-white px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-wa-red-dark transition-colors"
               >
                 Visit Store
               </a>
@@ -154,7 +154,7 @@ export default function Header() {
                 <div key={item.label} className="relative group">
                   <a
                     href={item.href}
-                    className="px-3 py-2 text-base font-medium text-gray-800 hover:text-wa-red transition-colors"
+                    className="px-3 py-2 text-base font-bold text-gray-800 hover:text-wa-red transition-colors"
                   >
                     {item.label}
                     {item.submenu && (
@@ -198,7 +198,7 @@ export default function Header() {
               </Link>
             </nav>
 
-            {/* Search & Actions */}
+            {/* Search */}
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
@@ -219,12 +219,6 @@ export default function Header() {
                   />
                 </svg>
               </button>
-              <a
-                href="https://store.whiskyadvocate.com"
-                className="hidden sm:inline-flex bg-wa-red text-white px-4 py-2 text-sm font-bold uppercase tracking-wider hover:bg-wa-red-dark transition-colors"
-              >
-                Shop
-              </a>
             </div>
           </div>
         </div>
