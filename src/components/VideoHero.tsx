@@ -56,7 +56,7 @@ export default function VideoHero({
   }, [videos.length, interval]);
 
   return (
-    <div className="video-hero relative w-full h-[70vh] min-h-[500px] max-h-[800px] overflow-hidden bg-black">
+    <div className="video-hero relative w-full h-[85vh] min-h-[600px] max-h-[900px] overflow-hidden bg-black">
       {/* Video layers */}
       {videos.map((src, index) => (
         <video
