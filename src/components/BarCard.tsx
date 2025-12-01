@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Bar } from '@/types';
 
 interface BarCardProps {
@@ -31,7 +32,7 @@ export default function BarCard({
     <div
       className={`bar-card group relative bg-white rounded-xl transition-all duration-300 cursor-pointer overflow-hidden ${
         isSelected
-          ? 'ring-2 ring-wa-red shadow-lg scale-[1.02]'
+          ? 'ring-2 ring-wa-red shadow-xl scale-[1.02]'
           : isHovered
           ? 'shadow-lg scale-[1.01] ring-1 ring-wa-red/30'
           : 'shadow-sm hover:shadow-md'
@@ -40,45 +41,64 @@ export default function BarCard({
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
     >
+      {/* Selected/Hovered accent bar */}
+      <div
+        className={`absolute left-0 top-0 bottom-0 w-1 transition-all duration-300 ${
+          isSelected ? 'bg-wa-red' : isHovered ? 'bg-wa-gold' : 'bg-transparent'
+        }`}
+      />
+
       {/* Crawl indicator */}
       {isInCrawl && (
-        <div className="absolute top-3 left-3 z-10 w-7 h-7 bg-wa-red text-white rounded-full flex items-center justify-center text-sm font-bold shadow-md">
+        <div className="absolute top-3 right-3 z-10 w-7 h-7 bg-wa-red text-white rounded-full flex items-center justify-center text-sm font-bold shadow-md">
           {crawlIndex}
         </div>
       )}
 
       {/* Card Content */}
-      <div className="p-4">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-3 mb-2">
-          <div className="flex-1 min-w-0">
-            <h3 className="font-serif text-lg font-semibold text-gray-900 truncate group-hover:text-wa-red transition-colors">
-              {bar.name}
-            </h3>
-            <p className="text-sm text-gray-500 truncate">{bar.address}</p>
+      <div className="p-4 pl-5">
+        {/* Header with glass icon */}
+        <div className="flex items-start gap-3 mb-2">
+          {/* Glencairn glass icon */}
+          <div className={`flex-shrink-0 w-10 h-12 relative transition-transform duration-300 ${isHovered || isSelected ? 'scale-110' : ''}`}>
+            <Image
+              src="/map-logos/glass.png"
+              alt=""
+              fill
+              className="object-contain"
+            />
           </div>
-          {distance !== null && distance !== undefined && (
-            <span className="flex-shrink-0 text-xs font-medium text-wa-red bg-wa-red/10 px-2 py-1 rounded-full">
-              {distance < 1 ? `${(distance * 5280).toFixed(0)} ft` : `${distance.toFixed(1)} mi`}
-            </span>
-          )}
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="font-serif text-lg font-semibold text-gray-900 group-hover:text-wa-red transition-colors leading-tight">
+                {bar.name}
+              </h3>
+              {distance !== null && distance !== undefined && (
+                <span className="flex-shrink-0 text-xs font-medium text-wa-red bg-wa-red/10 px-2 py-1 rounded-full whitespace-nowrap">
+                  {distance < 1 ? `${(distance * 5280).toFixed(0)} ft` : `${distance.toFixed(1)} mi`}
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-gray-500 mt-0.5">{bar.address}</p>
+          </div>
         </div>
 
         {/* Description */}
-        <p className="text-sm text-gray-600 line-clamp-2 mb-3">
+        <p className="text-sm text-gray-600 line-clamp-2 mb-3 ml-[52px]">
           {bar.description}
         </p>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          <span className="text-xs px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full">
+        <div className="flex flex-wrap gap-1.5 mb-3 ml-[52px]">
+          <span className="text-xs px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full font-medium">
             {bar.state}
           </span>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between pt-3 border-t border-gray-100 ml-[52px]">
+          <div className="flex items-center gap-3">
             {bar.website && (
               <a
                 href={`https://${bar.website}`}

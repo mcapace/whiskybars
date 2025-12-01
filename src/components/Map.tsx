@@ -39,7 +39,7 @@ export default function Map({
   const [mapLoaded, setMapLoaded] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Create custom marker element
+  // Create custom marker element with Glencairn glass icon
   const createMarkerElement = useCallback((bar: Bar, index: number, isSelected: boolean, isHovered: boolean, isInCrawl: boolean) => {
     const el = document.createElement('div');
     el.className = 'map-marker-container';
@@ -47,12 +47,13 @@ export default function Map({
     const marker = document.createElement('div');
     marker.className = `map-marker ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''} ${isInCrawl ? 'in-crawl' : ''}`;
 
-    // Inner content
+    // Use Glencairn glass icon or show crawl number
     if (isInCrawl) {
       const crawlIndex = barCrawlBars.findIndex(b => b.id === bar.id) + 1;
       marker.innerHTML = `<span class="crawl-number">${crawlIndex}</span>`;
     } else {
-      marker.innerHTML = `<span class="marker-dot"></span>`;
+      // Glencairn glass icon
+      marker.innerHTML = `<img src="/map-logos/glass.png" alt="" class="glass-icon" />`;
     }
 
     el.appendChild(marker);
@@ -250,7 +251,7 @@ export default function Map({
             const crawlIndex = barCrawlBars.findIndex(b => b.id === bar.id) + 1;
             markerDiv.innerHTML = `<span class="crawl-number">${crawlIndex}</span>`;
           } else {
-            markerDiv.innerHTML = `<span class="marker-dot"></span>`;
+            markerDiv.innerHTML = `<img src="/map-logos/glass.png" alt="" class="glass-icon" />`;
           }
         }
       } else {
@@ -287,7 +288,7 @@ export default function Map({
           </div>
         `);
 
-        const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
+        const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
           .setLngLat([bar.coordinates.lng, bar.coordinates.lat])
           .setPopup(popup)
           .addTo(map.current!);
