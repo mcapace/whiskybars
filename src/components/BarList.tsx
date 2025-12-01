@@ -152,43 +152,50 @@ export default function BarList({
           </div>
         ) : (
           <div className="space-y-6">
-            {groupedBars.map(([state, stateBars]) => (
-              <div key={state}>
-                {sortBy === 'state' && (
-                  <h3 className="text-sm uppercase tracking-widest text-wa-red font-bold mb-3 sticky top-14 bg-gray-50/95 backdrop-blur-sm py-2 z-[5]">
-                    {state} ({stateBars.length})
-                  </h3>
-                )}
-                <div className="grid gap-3">
-                  {stateBars.map((bar, index) => {
-                    const isInCrawl = barCrawlBars.some(b => b.id === bar.id);
-                    const crawlIndex = isInCrawl
-                      ? barCrawlBars.findIndex(b => b.id === bar.id) + 1
-                      : undefined;
+            {groupedBars.map(([state, stateBars], groupIndex) => {
+              // Calculate starting index for this group
+              const startIndex = groupedBars.slice(0, groupIndex).reduce((sum, [, bars]) => sum + bars.length, 0);
+              
+              return (
+                <div key={state}>
+                  {sortBy === 'state' && (
+                    <h3 className="text-sm uppercase tracking-widest text-wa-red font-bold mb-3 sticky top-14 bg-gray-50/95 backdrop-blur-sm py-2 z-[5]">
+                      {state} ({stateBars.length})
+                    </h3>
+                  )}
+                  <div className="grid gap-3">
+                    {stateBars.map((bar, localIndex) => {
+                      const isInCrawl = barCrawlBars.some(b => b.id === bar.id);
+                      const crawlIndex = isInCrawl
+                        ? barCrawlBars.findIndex(b => b.id === bar.id) + 1
+                        : undefined;
+                      // Calculate overall position in the list
+                      const overallIndex = startIndex + localIndex;
 
-                    return (
-                      <div
-                        key={bar.id}
-                        ref={selectedBar?.id === bar.id ? selectedRef : undefined}
-                      >
-                        <BarCard
-                          bar={bar}
-                          index={index}
-                          isSelected={selectedBar?.id === bar.id}
-                          isHovered={hoveredBar?.id === bar.id}
-                          distance={bar.distance}
-                          isInCrawl={isInCrawl}
-                          crawlIndex={crawlIndex}
-                          onSelect={() => onBarSelect(bar)}
-                          onHover={(hovered) => onBarHover(hovered ? bar : null)}
-                          onToggleCrawl={() => onToggleBarCrawl(bar)}
-                        />
-                      </div>
-                    );
-                  })}
+                      return (
+                        <div
+                          key={bar.id}
+                          ref={selectedBar?.id === bar.id ? selectedRef : undefined}
+                        >
+                          <BarCard
+                            bar={bar}
+                            index={overallIndex}
+                            isSelected={selectedBar?.id === bar.id}
+                            isHovered={hoveredBar?.id === bar.id}
+                            distance={bar.distance}
+                            isInCrawl={isInCrawl}
+                            crawlIndex={crawlIndex}
+                            onSelect={() => onBarSelect(bar)}
+                            onHover={(hovered) => onBarHover(hovered ? bar : null)}
+                            onToggleCrawl={() => onToggleBarCrawl(bar)}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
