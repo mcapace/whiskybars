@@ -79,28 +79,11 @@ export default function Header() {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled ? 'bg-white shadow-md' : 'bg-white/95 backdrop-blur-sm'
+          isScrolled ? 'bg-wa-cream shadow-md' : 'bg-wa-cream'
         }`}
       >
-        {/* Top bar */}
-        <div className="hidden lg:block border-b border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-end items-center h-10 gap-3">
-              <a
-                href="https://whiskyadvocate.com/subscribe"
-                className="bg-wa-red text-white px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-wa-red-dark transition-colors"
-              >
-                Subscribe
-              </a>
-              <a
-                href="https://store.whiskyadvocate.com"
-                className="bg-wa-red text-white px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-wa-red-dark transition-colors"
-              >
-                Visit Store
-              </a>
-            </div>
-          </div>
-        </div>
+        {/* Top border - light brown */}
+        <div className="hidden lg:block h-1 bg-wa-brown"></div>
 
         {/* Main header */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -149,12 +132,15 @@ export default function Header() {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-1">
-              {navItems.map((item) => (
-                <div key={item.label} className="relative group">
+            <nav className="hidden lg:flex items-center">
+              {navItems.map((item, index) => (
+                <div key={item.label} className="relative group flex items-center">
+                  {index > 0 && (
+                    <span className="text-wa-red mx-2 font-serif" style={{ fontSize: '0.5rem' }}>◆</span>
+                  )}
                   <a
                     href={item.href}
-                    className="px-3 py-2 text-base font-bold text-gray-800 hover:text-wa-red transition-colors"
+                    className="px-3 py-2 text-base font-serif font-bold text-gray-900 hover:text-wa-red transition-colors"
                   >
                     {item.label}
                     {item.submenu && (
@@ -190,16 +176,52 @@ export default function Header() {
                   )}
                 </div>
               ))}
+              <span className="text-wa-red mx-2 font-serif" style={{ fontSize: '0.5rem' }}>◆</span>
               <Link
                 href="/"
-                className="px-3 py-2 text-base font-bold text-wa-red"
+                className="px-3 py-2 text-base font-serif font-bold text-gray-900 hover:text-wa-red transition-colors"
               >
                 Top Whisky Bars
               </Link>
             </nav>
 
-            {/* Search */}
-            <div className="flex items-center gap-2">
+            {/* Buttons and Search */}
+            <div className="hidden lg:flex items-center gap-0">
+              <a
+                href="https://whiskyadvocate.com/subscribe"
+                className="bg-wa-cream border border-wa-red text-wa-red px-4 py-2 text-sm font-serif font-bold uppercase tracking-wider hover:bg-wa-cream/80 transition-colors"
+              >
+                Subscribe
+              </a>
+              <a
+                href="https://store.whiskyadvocate.com"
+                className="bg-wa-red text-wa-cream px-4 py-2 text-sm font-serif font-bold uppercase tracking-wider hover:bg-wa-red-dark transition-colors"
+              >
+                Visit Store
+              </a>
+              <button
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                className="p-2 text-gray-700 hover:text-wa-red transition-colors ml-2"
+                aria-label="Search"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </button>
+            </div>
+            
+            {/* Mobile search button */}
+            <div className="lg:hidden flex items-center">
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
                 className="p-2 text-gray-700 hover:text-wa-red transition-colors"
@@ -321,7 +343,7 @@ export default function Header() {
       )}
 
       {/* Spacer for fixed header */}
-      <div className="h-16 lg:h-[104px]" />
+      <div className="h-16 lg:h-[81px]" />
     </>
   );
 }
