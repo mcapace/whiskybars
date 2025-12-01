@@ -67,7 +67,7 @@ export function useBars() {
             setBars(parsedBars);
             setLoading(false);
           },
-          error: (err: Papa.ParseError) => {
+          error: (err: Error) => {
             setError(`Failed to parse CSV: ${err.message}`);
             setLoading(false);
           },
