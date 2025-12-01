@@ -57,16 +57,20 @@ export default function BarCard({
 
       {/* Card Content */}
       <div className="p-4 pl-5">
-        {/* Header with glass icon */}
+        {/* Header with glass image and number */}
         <div className="flex items-start gap-3 mb-2">
-          {/* Glencairn glass icon */}
-          <div className={`flex-shrink-0 w-10 h-12 relative transition-transform duration-300 ${isHovered || isSelected ? 'scale-110' : ''}`}>
+          {/* Glass image with number overlay */}
+          <div className={`flex-shrink-0 w-16 h-20 relative transition-transform duration-300 ${isHovered || isSelected ? 'scale-110' : ''}`}>
             <Image
-              src="/map-logos/glass.png"
+              src="/map-logos/AdobeStock_271951404.png"
               alt=""
               fill
               className="object-contain"
             />
+            {/* Number badge */}
+            <div className="absolute -top-2 -right-2 w-8 h-8 bg-wa-red text-white rounded-full flex items-center justify-center text-base font-bold shadow-lg border-2 border-white">
+              {index + 1}
+            </div>
           </div>
 
           <div className="flex-1 min-w-0">
@@ -85,19 +89,19 @@ export default function BarCard({
         </div>
 
         {/* Description */}
-        <p className="text-base text-gray-600 line-clamp-2 mb-3 ml-[52px]">
+        <p className="text-base text-gray-600 line-clamp-2 mb-3 ml-[76px]">
           {bar.description}
         </p>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-3 ml-[52px]">
+        <div className="flex flex-wrap gap-1.5 mb-3 ml-[76px]">
           <span className="text-sm px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full font-medium">
             {bar.state}
           </span>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-100 ml-[52px]">
+        <div className="flex items-center justify-between pt-3 border-t border-gray-100 ml-[76px]">
           <div className="flex items-center gap-3">
             {bar.website && (
               <a
