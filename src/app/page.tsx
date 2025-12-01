@@ -288,6 +288,40 @@ export default function Home() {
     if (barCrawlBars.length > 0) setShowShareModal(true);
   }, [barCrawlBars]);
 
+  // Random bar discovery - "Surprise Me"
+  const handleRandomBar = useCallback(() => {
+    const availableBars = selectedState
+      ? bars.filter(bar => bar.state === selectedState)
+      : bars;
+    if (availableBars.length > 0) {
+      const randomIndex = Math.floor(Math.random() * availableBars.length);
+      setSelectedBar(availableBars[randomIndex]);
+      setToast(`Discovered: ${availableBars[randomIndex].name}!`);
+    }
+  }, [bars, selectedState]);
+
+  // Calculate bar crawl total distance
+  const barCrawlDistance = useMemo(() => {
+    if (barCrawlBars.length < 2) return 0;
+    let total = 0;
+    for (let i = 0; i < barCrawlBars.length - 1; i++) {
+      const bar1 = barCrawlBars[i];
+      const bar2 = barCrawlBars[i + 1];
+      if (bar1.coordinates.lat && bar1.coordinates.lng && bar2.coordinates.lat && bar2.coordinates.lng) {
+        const R = 3959;
+        const dLat = (bar2.coordinates.lat - bar1.coordinates.lat) * (Math.PI / 180);
+        const dLng = (bar2.coordinates.lng - bar1.coordinates.lng) * (Math.PI / 180);
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(bar1.coordinates.lat * (Math.PI / 180)) *
+          Math.cos(bar2.coordinates.lat * (Math.PI / 180)) *
+          Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        total += R * c;
+      }
+    }
+    return total;
+  }, [barCrawlBars]);
+
   // Get share URL
   const getShareUrl = useCallback(() => {
     const params = new URLSearchParams();
@@ -398,6 +432,12 @@ export default function Home() {
                 {darkMode ? 'Light' : 'Dark'}
               </button>
 
+              {/* Surprise Me - Random Bar Discovery */}
+              <button onClick={handleRandomBar} className={`filter-pill flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-all bg-gradient-to-r from-wa-gold to-amber-500 text-white border-wa-gold hover:shadow-lg hover:scale-105`}>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                Surprise Me!
+              </button>
+
               <div className="relative">
                 <select value={sortBy} onChange={(e) => setSortBy(e.target.value as SortOption)} className={`appearance-none border rounded-full px-4 py-2 pr-8 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-wa-red cursor-pointer ${darkMode ? 'bg-gray-700 border-gray-600 text-gray-300' : 'bg-white border-gray-300 text-gray-700'}`}>
                   <option value="alphabetical">A-Z</option>
@@ -410,12 +450,7 @@ export default function Home() {
 
             {/* State Filter */}
             <div className="mb-8">
-              <p className={`text-sm font-semibold mb-3 text-center ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Filter by State:</p>
-              <div className="max-h-24 overflow-y-auto flex justify-center">
-                <div className="inline-block">
-                  <StateFilter bars={bars} selectedState={selectedState} onStateSelect={setSelectedState} />
-                </div>
-              </div>
+              <StateFilter bars={bars} selectedState={selectedState} onStateSelect={setSelectedState} />
             </div>
 
             {/* Mobile View Toggle */}
@@ -457,14 +492,28 @@ export default function Home() {
             {/* Bar Crawl Panel */}
             {showBarCrawlPanel && barCrawlBars.length > 0 && (
               <div className={`bar-crawl-panel fixed bottom-4 right-4 lg:absolute lg:bottom-4 lg:right-4 w-80 max-h-96 rounded-xl shadow-2xl border overflow-hidden z-50 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-                <div className="bg-wa-red text-white px-4 py-3 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
-                    <span className="font-semibold">My Bar Crawl</span>
+                <div className="bg-wa-red text-white px-4 py-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+                      <span className="font-semibold">My Bar Crawl</span>
+                    </div>
+                    <button onClick={() => setShowBarCrawlPanel(false)} className="p-1 hover:bg-white/20 rounded transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
                   </div>
-                  <button onClick={() => setShowBarCrawlPanel(false)} className="p-1 hover:bg-white/20 rounded transition-colors">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                  </button>
+                  {barCrawlBars.length >= 2 && barCrawlDistance > 0 && (
+                    <div className="mt-2 flex items-center gap-4 text-white/90 text-xs">
+                      <span className="flex items-center gap-1">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /></svg>
+                        {barCrawlBars.length} stops
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                        {barCrawlDistance.toFixed(1)} mi total
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className={`p-4 max-h-64 overflow-y-auto ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
                   {barCrawlBars.map((bar, index) => (

@@ -241,11 +241,101 @@ export default function Map({
     };
   }, [darkMode]);
 
-  // Update map style when dark mode changes
+  // Update map style when dark mode changes - need to re-add layers after style change
   useEffect(() => {
     if (!map.current || !mapLoaded) return;
+
+    const addLayers = () => {
+      // Add 3D buildings layer
+      const layers = map.current!.getStyle().layers;
+      const labelLayerId = layers?.find(
+        layer => layer.type === 'symbol' && layer.layout?.['text-field']
+      )?.id;
+
+      if (!map.current!.getLayer('3d-buildings')) {
+        map.current!.addLayer(
+          {
+            id: '3d-buildings',
+            source: 'composite',
+            'source-layer': 'building',
+            filter: ['==', 'extrude', 'true'],
+            type: 'fill-extrusion',
+            minzoom: 14,
+            paint: {
+              'fill-extrusion-color': darkMode ? '#1a1a2e' : '#aaa',
+              'fill-extrusion-height': ['get', 'height'],
+              'fill-extrusion-base': ['get', 'min_height'],
+              'fill-extrusion-opacity': 0.6,
+            },
+          },
+          labelLayerId
+        );
+      }
+
+      // Add heatmap source and layer
+      if (!map.current!.getSource('bars-heat')) {
+        map.current!.addSource('bars-heat', {
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] },
+        });
+
+        map.current!.addLayer({
+          id: 'bars-heat',
+          type: 'heatmap',
+          source: 'bars-heat',
+          maxzoom: 12,
+          paint: {
+            'heatmap-weight': 1,
+            'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 3],
+            'heatmap-color': [
+              'interpolate',
+              ['linear'],
+              ['heatmap-density'],
+              0, 'rgba(0,0,0,0)',
+              0.2, 'rgba(254,229,217,0.5)',
+              0.4, 'rgba(252,174,145,0.6)',
+              0.6, 'rgba(251,106,74,0.7)',
+              0.8, 'rgba(222,45,38,0.8)',
+              1, 'rgba(165,15,21,0.9)',
+            ],
+            'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 12, 20],
+            'heatmap-opacity': 0.6,
+          },
+          layout: {
+            visibility: showHeatmap ? 'visible' : 'none',
+          },
+        });
+      }
+
+      // Add bar crawl route source and layer
+      if (!map.current!.getSource('bar-crawl-route')) {
+        map.current!.addSource('bar-crawl-route', {
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] },
+        });
+
+        map.current!.addLayer({
+          id: 'bar-crawl-route',
+          type: 'line',
+          source: 'bar-crawl-route',
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round',
+          },
+          paint: {
+            'line-color': '#c41230',
+            'line-width': 4,
+            'line-dasharray': [2, 2],
+          },
+        });
+      }
+    };
+
     map.current.setStyle(darkMode ? MAP_STYLES.dark : MAP_STYLES.light);
-  }, [darkMode, mapLoaded]);
+
+    // Re-add layers once the new style loads
+    map.current.once('style.load', addLayers);
+  }, [darkMode, mapLoaded, showHeatmap]);
 
   // Initialize supercluster
   useEffect(() => {
