@@ -53,6 +53,7 @@ export default function BarList({
 }: BarListProps) {
   const listRef = useRef<HTMLDivElement>(null);
   const selectedRef = useRef<HTMLDivElement>(null);
+  const firstStateBarRef = useRef<HTMLDivElement>(null);
 
   // Calculate distances and filter/sort bars
   const processedBars = useMemo(() => {
@@ -125,6 +126,18 @@ export default function BarList({
     }
   }, [selectedBar]);
 
+  // Scroll to first bar when state is selected
+  useEffect(() => {
+    if (selectedState && firstStateBarRef.current && listRef.current) {
+      setTimeout(() => {
+        firstStateBarRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }, 100);
+    }
+  }, [selectedState]);
+
   return (
     <div ref={listRef} className="h-full overflow-y-auto bg-gray-50">
       {/* Header */}
@@ -171,11 +184,18 @@ export default function BarList({
                         : undefined;
                       // Calculate overall position in the list
                       const overallIndex = startIndex + localIndex;
+                      const isFirstBar = localIndex === 0 && selectedState;
 
                       return (
                         <div
                           key={bar.id}
-                          ref={selectedBar?.id === bar.id ? selectedRef : undefined}
+                          ref={
+                            selectedBar?.id === bar.id
+                              ? selectedRef
+                              : isFirstBar
+                              ? firstStateBarRef
+                              : undefined
+                          }
                         >
                           <BarCard
                             bar={bar}

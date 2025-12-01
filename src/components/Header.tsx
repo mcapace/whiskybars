@@ -189,13 +189,13 @@ export default function Header() {
             <div className="hidden lg:flex items-center flex-shrink-0 gap-0">
               <a
                 href="https://whiskyadvocate.com/subscribe"
-                className="bg-wa-cream border border-wa-red text-wa-red px-4 py-2 text-xs font-serif font-bold uppercase tracking-wider hover:bg-wa-cream/80 transition-colors whitespace-nowrap w-28 text-center"
+                className="bg-wa-cream border border-wa-red text-wa-red px-4 py-2 text-xs font-serif font-bold uppercase tracking-wider hover:bg-wa-cream/80 transition-colors whitespace-nowrap w-28 h-9 flex items-center justify-center"
               >
                 Subscribe
               </a>
               <a
                 href="https://store.whiskyadvocate.com"
-                className="bg-wa-red text-wa-cream px-4 py-2 text-xs font-serif font-bold uppercase tracking-wider hover:bg-wa-red-dark transition-colors whitespace-nowrap w-28 text-center"
+                className="bg-wa-red text-wa-cream px-4 py-2 text-xs font-serif font-bold uppercase tracking-wider hover:bg-wa-red-dark transition-colors whitespace-nowrap w-28 h-9 flex items-center justify-center"
               >
                 Visit Store
               </a>

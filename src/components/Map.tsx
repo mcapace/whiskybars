@@ -16,6 +16,7 @@ interface MapProps {
   showHeatmap?: boolean;
   barCrawlBars?: Bar[];
   darkMode?: boolean;
+  onMapClick?: (lng: number, lat: number) => void;
 }
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
@@ -37,6 +38,7 @@ export default function Map({
   showHeatmap = false,
   barCrawlBars = [],
   darkMode = false,
+  onMapClick,
 }: MapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -145,6 +147,9 @@ export default function Map({
       maxZoom: 18,
       pitch: 0,
       attributionControl: false,
+      renderWorldCopies: true,
+      antialias: true,
+      preserveDrawingBuffer: false,
     });
 
     // Add controls
@@ -250,9 +255,9 @@ export default function Map({
     newMap.on('zoomend', () => {
       const zoom = newMap.getZoom();
       if (zoom >= 15) {
-        newMap.easeTo({ pitch: 45, duration: 500 });
+        newMap.easeTo({ pitch: 45, duration: 300 });
       } else if (zoom < 14) {
-        newMap.easeTo({ pitch: 0, duration: 500 });
+        newMap.easeTo({ pitch: 0, duration: 300 });
       }
     });
 
@@ -425,23 +430,24 @@ export default function Map({
     }
   }, [barCrawlBars, mapLoaded]);
 
-  // Update markers with clustering
+  // Update markers with clustering - only on viewport changes
   useEffect(() => {
     if (!map.current || !mapLoaded || !superclusterRef.current) return;
 
-    // Clear existing cluster markers
-    clusterMarkersRef.current.forEach(marker => marker.remove());
-    clusterMarkersRef.current = [];
+    const updateMarkers = () => {
+      // Clear existing cluster markers
+      clusterMarkersRef.current.forEach(marker => marker.remove());
+      clusterMarkersRef.current = [];
 
-    // Load points into supercluster
-    const points = getGeoJSONPoints();
-    superclusterRef.current.load(points);
+      // Load points into supercluster
+      const points = getGeoJSONPoints();
+      superclusterRef.current.load(points);
 
-    // Get clusters for current viewport
-    const bounds = map.current.getBounds();
-    const zoom = Math.floor(map.current.getZoom());
+      // Get clusters for current viewport
+      const bounds = map.current!.getBounds();
+      const zoom = Math.floor(map.current!.getZoom());
 
-    if (!bounds) return;
+      if (!bounds) return;
 
     const clusters = superclusterRef.current.getClusters(
       [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()],
@@ -470,7 +476,7 @@ export default function Map({
           map.current!.flyTo({
             center: [lng, lat],
             zoom: Math.min(expansionZoom, 14),
-            duration: 1000,
+            duration: 600,
           });
         });
 
@@ -577,22 +583,61 @@ export default function Map({
       }
     });
 
-    // Fit bounds if not zoomed in on a selected bar
-    if (filteredBars.length > 0 && !selectedBar) {
-      const bounds = new mapboxgl.LngLatBounds();
-      filteredBars.forEach(bar => {
-        if (bar.coordinates.lat && bar.coordinates.lng) {
-          bounds.extend([bar.coordinates.lng, bar.coordinates.lat]);
-        }
-      });
+    // Don't auto-fit bounds - let user control the map
+    };
 
-      map.current.fitBounds(bounds, {
-        padding: { top: 80, bottom: 80, left: 80, right: 80 },
-        maxZoom: 12,
-        duration: 1000,
-      });
-    }
-  }, [filteredBars, selectedBar, hoveredBar, barCrawlBars, mapLoaded, currentZoom, createMarkerElement, createClusterMarker, getGeoJSONPoints, onBarSelect, onBarHover]);
+    // Initial update
+    updateMarkers();
+
+    // Update markers on map move/zoom
+    const handleMoveEnd = () => updateMarkers();
+    map.current.on('moveend', handleMoveEnd);
+    map.current.on('zoomend', handleMoveEnd);
+
+    return () => {
+      if (map.current) {
+        map.current.off('moveend', handleMoveEnd);
+        map.current.off('zoomend', handleMoveEnd);
+      }
+    };
+  }, [filteredBars, mapLoaded, createMarkerElement, createClusterMarker, getGeoJSONPoints]);
+
+  // Update marker states (selected/hovered) without recreating markers
+  useEffect(() => {
+    if (!map.current || !mapLoaded) return;
+
+    markersRef.current.forEach((marker, barId) => {
+      const bar = filteredBars.find(b => b.id === barId);
+      if (!bar) return;
+
+      const isSelected = selectedBar?.id === bar.id;
+      const isHovered = hoveredBar?.id === bar.id;
+      const isInCrawl = barCrawlBars.some(b => b.id === bar.id);
+
+      const el = marker.getElement();
+      const markerDiv = el.querySelector('.map-marker');
+      if (markerDiv) {
+        markerDiv.className = `map-marker ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''} ${isInCrawl ? 'in-crawl' : ''}`;
+        if (isInCrawl) {
+          const crawlIndex = barCrawlBars.findIndex(b => b.id === bar.id) + 1;
+          markerDiv.innerHTML = `<span class="crawl-number">${crawlIndex}</span>`;
+        } else if (!markerDiv.querySelector('.glass-icon')) {
+          // Only add glass icon if it doesn't exist
+          markerDiv.innerHTML = '';
+          const img = document.createElement('img');
+          img.src = '/map-logos/glass1.png';
+          img.alt = '';
+          img.className = 'glass-icon';
+          img.style.background = 'transparent';
+          img.style.border = 'none';
+          img.style.padding = '0';
+          img.style.margin = '0';
+          img.style.display = 'block';
+          markerDiv.appendChild(img);
+        }
+      }
+    });
+  }, [selectedBar, hoveredBar, barCrawlBars, filteredBars, mapLoaded]);
 
   // Fly to selected bar
   useEffect(() => {
@@ -601,7 +646,7 @@ export default function Map({
     map.current.flyTo({
       center: [selectedBar.coordinates.lng, selectedBar.coordinates.lat],
       zoom: 15,
-      duration: 1500,
+      duration: 800,
       essential: true,
     });
 
@@ -611,6 +656,29 @@ export default function Map({
       marker.togglePopup();
     }
   }, [selectedBar, mapLoaded]);
+
+  // Zoom to selected state
+  useEffect(() => {
+    if (!map.current || !mapLoaded || !selectedState) return;
+
+    const stateBars = bars.filter(bar => bar.state === selectedState);
+    if (stateBars.length === 0) return;
+
+    const bounds = new mapboxgl.LngLatBounds();
+    stateBars.forEach(bar => {
+      if (bar.coordinates.lat && bar.coordinates.lng) {
+        bounds.extend([bar.coordinates.lng, bar.coordinates.lat]);
+      }
+    });
+
+    if (!bounds.isEmpty()) {
+      map.current.fitBounds(bounds, {
+        padding: { top: 100, bottom: 100, left: 100, right: 100 },
+        maxZoom: 10,
+        duration: 600,
+      });
+    }
+  }, [selectedState, bars, mapLoaded]);
 
   // Add user location marker
   useEffect(() => {
@@ -645,7 +713,7 @@ export default function Map({
                 center: [-98.5795, 39.8283],
                 zoom: 3.5,
                 pitch: 0,
-                duration: 1500,
+                duration: 800,
               });
             }
           }}
