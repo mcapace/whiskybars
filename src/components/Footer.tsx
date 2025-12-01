@@ -18,7 +18,7 @@ export default function Footer() {
                 className="object-contain object-left"
               />
             </div>
-            <p className="text-gray-400 text-sm leading-relaxed">
+            <p className="text-gray-400 text-base leading-relaxed">
               The leading authority on whisky since 1988. Your trusted source for ratings, reviews, and whisky culture.
             </p>
             {/* Social Links */}
@@ -72,8 +72,8 @@ export default function Footer() {
 
           {/* Explore */}
           <div>
-            <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider">Explore</h4>
-            <ul className="space-y-3 text-sm text-gray-400">
+            <h4 className="font-semibold mb-4 text-base uppercase tracking-wider">Explore</h4>
+            <ul className="space-y-3 text-base text-gray-400">
               <li>
                 <a href="https://whiskyadvocate.com/ratings-reviews" className="hover:text-white transition-colors">
                   Ratings & Reviews
@@ -99,8 +99,8 @@ export default function Footer() {
 
           {/* Learn */}
           <div>
-            <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider">Learn</h4>
-            <ul className="space-y-3 text-sm text-gray-400">
+            <h4 className="font-semibold mb-4 text-base uppercase tracking-wider">Learn</h4>
+            <ul className="space-y-3 text-base text-gray-400">
               <li>
                 <a href="https://whiskyadvocate.com/whisky-101" className="hover:text-white transition-colors">
                   Whisky 101
@@ -126,8 +126,8 @@ export default function Footer() {
 
           {/* Subscribe */}
           <div>
-            <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider">Subscribe</h4>
-            <ul className="space-y-3 text-sm text-gray-400">
+            <h4 className="font-semibold mb-4 text-base uppercase tracking-wider">Subscribe</h4>
+            <ul className="space-y-3 text-base text-gray-400">
               <li>
                 <a href="https://whiskyadvocate.com/subscribe" className="hover:text-white transition-colors">
                   Print Magazine
@@ -148,8 +148,8 @@ export default function Footer() {
 
           {/* Company */}
           <div>
-            <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider">Company</h4>
-            <ul className="space-y-3 text-sm text-gray-400">
+            <h4 className="font-semibold mb-4 text-base uppercase tracking-wider">Company</h4>
+            <ul className="space-y-3 text-base text-gray-400">
               <li>
                 <a href="https://whiskyadvocate.com/about" className="hover:text-white transition-colors">
                   About Us
@@ -176,8 +176,8 @@ export default function Footer() {
 
         {/* Related Publications */}
         <div className="border-t border-gray-800 pt-8 mb-8">
-          <p className="text-xs text-gray-500 uppercase tracking-wider mb-4">Related Publications</p>
-          <div className="flex flex-wrap gap-6 text-sm text-gray-400">
+          <p className="text-sm text-gray-500 uppercase tracking-wider mb-4">Related Publications</p>
+          <div className="flex flex-wrap gap-6 text-base text-gray-400">
             <a href="https://www.cigaraficionado.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
               Cigar Aficionado
             </a>
@@ -198,10 +198,10 @@ export default function Footer() {
       <div className="border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-gray-500">
+            <p className="text-base text-gray-500">
               &copy; {new Date().getFullYear()} M. Shanken Communications, Inc. All rights reserved.
             </p>
-            <p className="text-xs text-gray-600">
+            <p className="text-sm text-gray-600">
               A member of the M. Shanken Communications family
             </p>
           </div>

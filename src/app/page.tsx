@@ -27,7 +27,7 @@ const Map = dynamic(() => import('@/components/Map'), {
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
         </svg>
-        <span className="text-sm">Loading map...</span>
+        <span className="text-base">Loading map...</span>
       </div>
     </div>
   ),
@@ -78,7 +78,7 @@ function ShareModal({ url, onClose }: { url: string; onClose: () => void }) {
             </svg>
           </button>
         </div>
-        <p className="text-sm text-gray-600 mb-4">Share this link with friends to show them your bar crawl route:</p>
+        <p className="text-base text-gray-600 mb-4">Share this link with friends to show them your bar crawl route:</p>
         <div className="flex gap-2">
           <input
             ref={inputRef}
@@ -322,7 +322,7 @@ export default function Home() {
               Celebrating {bars.length || '250+'} remarkable venues setting the standard for whisky culture nationwide
             </p>
             <div className="mt-8">
-              <a href="#explore" className="inline-flex items-center gap-2 bg-wa-red hover:bg-wa-red-dark text-white px-8 py-4 text-sm font-bold uppercase tracking-wider transition-colors">
+              <a href="#explore" className="inline-flex items-center gap-2 bg-wa-red hover:bg-wa-red-dark text-white px-8 py-4 text-base font-bold uppercase tracking-wider transition-colors">
                 Explore the List
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
@@ -410,7 +410,7 @@ export default function Home() {
 
             {/* State Filter */}
             <div className="mb-8">
-              <p className={`text-sm font-semibold mb-3 text-center ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Filter by State:</p>
+              <p className={`text-base font-semibold mb-3 text-center ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Filter by State:</p>
               <div className="max-h-24 overflow-y-auto flex justify-center">
                 <div className="inline-block">
                   <StateFilter bars={bars} selectedState={selectedState} onStateSelect={setSelectedState} />
@@ -420,8 +420,8 @@ export default function Home() {
 
             {/* Mobile View Toggle */}
             <div className="lg:hidden flex gap-2 mb-6 max-w-md mx-auto">
-              <button onClick={() => setViewMode('map')} className={`flex-1 py-3 px-4 text-sm font-semibold rounded-lg border transition-all ${viewMode === 'map' ? 'bg-wa-red text-white border-wa-red' : darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-white text-gray-700 border-gray-300'}`}>Map View</button>
-              <button onClick={() => setViewMode('list')} className={`flex-1 py-3 px-4 text-sm font-semibold rounded-lg border transition-all ${viewMode === 'list' ? 'bg-wa-red text-white border-wa-red' : darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-white text-gray-700 border-gray-300'}`}>List View</button>
+              <button onClick={() => setViewMode('map')} className={`flex-1 py-3 px-4 text-base font-semibold rounded-lg border transition-all ${viewMode === 'map' ? 'bg-wa-red text-white border-wa-red' : darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-white text-gray-700 border-gray-300'}`}>Map View</button>
+              <button onClick={() => setViewMode('list')} className={`flex-1 py-3 px-4 text-base font-semibold rounded-lg border transition-all ${viewMode === 'list' ? 'bg-wa-red text-white border-wa-red' : darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-white text-gray-700 border-gray-300'}`}>List View</button>
             </div>
           </div>
 
@@ -471,8 +471,8 @@ export default function Home() {
                     <div key={bar.id} className={`flex items-start gap-3 py-2 border-b last:border-0 ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
                       <span className="flex-shrink-0 w-6 h-6 bg-wa-red text-white rounded-full flex items-center justify-center text-xs font-bold">{index + 1}</span>
                       <div className="flex-1 min-w-0">
-                        <p className={`text-sm font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{bar.name}</p>
-                        <p className={`text-xs truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{bar.address}</p>
+                        <p className={`text-base font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{bar.name}</p>
+                        <p className={`text-sm truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{bar.address}</p>
                       </div>
                       <button onClick={() => handleToggleBarCrawl(bar)} className={`flex-shrink-0 p-1 transition-colors ${darkMode ? 'text-gray-500 hover:text-wa-red' : 'text-gray-400 hover:text-wa-red'}`}>
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -482,8 +482,8 @@ export default function Home() {
                 </div>
                 <div className={`p-4 border-t ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
                   <div className="flex gap-2">
-                    <button onClick={handleClearBarCrawl} className={`flex-1 py-2 px-3 text-sm font-medium border rounded-lg transition-colors ${darkMode ? 'text-gray-300 bg-gray-800 border-gray-600 hover:bg-gray-700' : 'text-gray-600 bg-white border-gray-300 hover:bg-gray-50'}`}>Clear All</button>
-                    <button onClick={handleShareBarCrawl} className="flex-1 py-2 px-3 text-sm font-medium text-white bg-wa-red rounded-lg hover:bg-wa-red-dark transition-colors flex items-center justify-center gap-1">
+                    <button onClick={handleClearBarCrawl} className={`flex-1 py-2 px-3 text-base font-medium border rounded-lg transition-colors ${darkMode ? 'text-gray-300 bg-gray-800 border-gray-600 hover:bg-gray-700' : 'text-gray-600 bg-white border-gray-300 hover:bg-gray-50'}`}>Clear All</button>
+                    <button onClick={handleShareBarCrawl} className="flex-1 py-2 px-3 text-base font-medium text-white bg-wa-red rounded-lg hover:bg-wa-red-dark transition-colors flex items-center justify-center gap-1">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                       Share
                     </button>

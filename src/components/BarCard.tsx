@@ -71,27 +71,27 @@ export default function BarCard({
 
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
-              <h3 className="font-serif text-lg font-semibold text-gray-900 group-hover:text-wa-red transition-colors leading-tight">
+              <h3 className="font-serif text-xl font-semibold text-gray-900 group-hover:text-wa-red transition-colors leading-tight">
                 {bar.name}
               </h3>
               {distance !== null && distance !== undefined && (
-                <span className="flex-shrink-0 text-xs font-medium text-wa-red bg-wa-red/10 px-2 py-1 rounded-full whitespace-nowrap">
+                <span className="flex-shrink-0 text-sm font-medium text-wa-red bg-wa-red/10 px-2 py-1 rounded-full whitespace-nowrap">
                   {distance < 1 ? `${(distance * 5280).toFixed(0)} ft` : `${distance.toFixed(1)} mi`}
                 </span>
               )}
             </div>
-            <p className="text-sm text-gray-500 mt-0.5">{bar.address}</p>
+            <p className="text-base text-gray-500 mt-0.5">{bar.address}</p>
           </div>
         </div>
 
         {/* Description */}
-        <p className="text-sm text-gray-600 line-clamp-2 mb-3 ml-[52px]">
+        <p className="text-base text-gray-600 line-clamp-2 mb-3 ml-[52px]">
           {bar.description}
         </p>
 
         {/* Tags */}
         <div className="flex flex-wrap gap-1.5 mb-3 ml-[52px]">
-          <span className="text-xs px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full font-medium">
+          <span className="text-sm px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full font-medium">
             {bar.state}
           </span>
         </div>
@@ -105,7 +105,7 @@ export default function BarCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-xs font-medium text-gray-600 hover:text-wa-red transition-colors flex items-center gap-1"
+                className="text-sm font-medium text-gray-600 hover:text-wa-red transition-colors flex items-center gap-1"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -119,7 +119,7 @@ export default function BarCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-xs font-medium text-gray-600 hover:text-wa-red transition-colors flex items-center gap-1"
+                className="text-sm font-medium text-gray-600 hover:text-wa-red transition-colors flex items-center gap-1"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -135,7 +135,7 @@ export default function BarCard({
               e.stopPropagation();
               onToggleCrawl();
             }}
-            className={`flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-lg transition-all ${
+            className={`flex items-center gap-1 text-sm font-medium px-2.5 py-1.5 rounded-lg transition-all ${
               isInCrawl
                 ? 'bg-wa-red text-white hover:bg-wa-red-dark'
                 : 'bg-gray-100 text-gray-600 hover:bg-wa-red hover:text-white'

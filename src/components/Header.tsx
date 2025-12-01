@@ -154,7 +154,7 @@ export default function Header() {
                 <div key={item.label} className="relative group">
                   <a
                     href={item.href}
-                    className="px-3 py-2 text-sm font-medium text-gray-800 hover:text-wa-red transition-colors"
+                    className="px-3 py-2 text-base font-medium text-gray-800 hover:text-wa-red transition-colors"
                   >
                     {item.label}
                     {item.submenu && (
@@ -180,7 +180,7 @@ export default function Header() {
                           <a
                             key={subitem.label}
                             href={subitem.href}
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-wa-red"
+                            className="block px-4 py-2 text-base text-gray-700 hover:bg-gray-50 hover:text-wa-red"
                           >
                             {subitem.label}
                           </a>
@@ -192,7 +192,7 @@ export default function Header() {
               ))}
               <Link
                 href="/"
-                className="px-3 py-2 text-sm font-bold text-wa-red"
+                className="px-3 py-2 text-base font-bold text-wa-red"
               >
                 Top Whisky Bars
               </Link>
@@ -221,7 +221,7 @@ export default function Header() {
               </button>
               <a
                 href="https://store.whiskyadvocate.com"
-                className="hidden sm:inline-flex bg-wa-red text-white px-4 py-2 text-xs font-bold uppercase tracking-wider hover:bg-wa-red-dark transition-colors"
+                className="hidden sm:inline-flex bg-wa-red text-white px-4 py-2 text-sm font-bold uppercase tracking-wider hover:bg-wa-red-dark transition-colors"
               >
                 Shop
               </a>

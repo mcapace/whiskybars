@@ -135,7 +135,7 @@ export default function BarList({
             {selectedState && <span className="text-gray-500 font-normal"> in {selectedState}</span>}
           </p>
           {userLocation && sortBy === 'distance' && (
-            <span className="text-xs text-wa-red font-medium">Sorted by distance</span>
+            <span className="text-sm text-wa-red font-medium">Sorted by distance</span>
           )}
         </div>
       </div>
@@ -148,14 +148,14 @@ export default function BarList({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <p className="text-gray-500 font-medium">No bars found</p>
-            <p className="text-gray-400 text-sm mt-1">Try adjusting your search or filters</p>
+            <p className="text-gray-400 text-base mt-1">Try adjusting your search or filters</p>
           </div>
         ) : (
           <div className="space-y-6">
             {groupedBars.map(([state, stateBars]) => (
               <div key={state}>
                 {sortBy === 'state' && (
-                  <h3 className="text-xs uppercase tracking-widest text-wa-red font-bold mb-3 sticky top-14 bg-gray-50/95 backdrop-blur-sm py-2 z-[5]">
+                  <h3 className="text-sm uppercase tracking-widest text-wa-red font-bold mb-3 sticky top-14 bg-gray-50/95 backdrop-blur-sm py-2 z-[5]">
                     {state} ({stateBars.length})
                   </h3>
                 )}
