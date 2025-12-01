@@ -87,11 +87,11 @@ export default function Header() {
 
         {/* Main header */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16 lg:h-20">
+          <div className="flex justify-between items-center h-16 lg:h-20 gap-4">
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 -ml-2 text-gray-700"
+              className="lg:hidden p-2 -ml-2 text-gray-700 flex-shrink-0"
               aria-label="Toggle menu"
             >
               <svg
@@ -132,20 +132,20 @@ export default function Header() {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center">
+            <nav className="hidden lg:flex items-center flex-1 justify-center mx-4">
               {navItems.map((item, index) => (
                 <div key={item.label} className="relative group flex items-center">
                   {index > 0 && (
-                    <span className="text-wa-red mx-2 font-serif" style={{ fontSize: '0.5rem' }}>◆</span>
+                    <span className="text-wa-red mx-1.5 text-[8px] leading-none">◆</span>
                   )}
                   <a
                     href={item.href}
-                    className="px-3 py-2 text-base font-serif font-bold text-gray-900 hover:text-wa-red transition-colors"
+                    className="px-2 py-2 text-sm font-serif font-bold text-gray-900 hover:text-wa-red transition-colors whitespace-nowrap"
                   >
                     {item.label}
                     {item.submenu && (
                       <svg
-                        className="inline-block w-3 h-3 ml-1"
+                        className="inline-block w-2.5 h-2.5 ml-0.5"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -160,13 +160,13 @@ export default function Header() {
                     )}
                   </a>
                   {item.submenu && (
-                    <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                    <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                       <div className="bg-white shadow-lg rounded-md border border-gray-100 py-2 min-w-[180px]">
                         {item.submenu.map((subitem) => (
                           <a
                             key={subitem.label}
                             href={subitem.href}
-                            className="block px-4 py-2 text-base text-gray-700 hover:bg-gray-50 hover:text-wa-red"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-wa-red"
                           >
                             {subitem.label}
                           </a>
@@ -176,32 +176,32 @@ export default function Header() {
                   )}
                 </div>
               ))}
-              <span className="text-wa-red mx-2 font-serif" style={{ fontSize: '0.5rem' }}>◆</span>
+              <span className="text-wa-red mx-1.5 text-[8px] leading-none">◆</span>
               <Link
                 href="/"
-                className="px-3 py-2 text-base font-serif font-bold text-gray-900 hover:text-wa-red transition-colors"
+                className="px-2 py-2 text-sm font-serif font-bold text-gray-900 hover:text-wa-red transition-colors whitespace-nowrap"
               >
                 Top Whisky Bars
               </Link>
             </nav>
 
             {/* Buttons and Search */}
-            <div className="hidden lg:flex items-center gap-0">
+            <div className="hidden lg:flex items-center flex-shrink-0 gap-0">
               <a
                 href="https://whiskyadvocate.com/subscribe"
-                className="bg-wa-cream border border-wa-red text-wa-red px-4 py-2 text-sm font-serif font-bold uppercase tracking-wider hover:bg-wa-cream/80 transition-colors"
+                className="bg-wa-cream border border-wa-red text-wa-red px-3 py-1.5 text-xs font-serif font-bold uppercase tracking-wider hover:bg-wa-cream/80 transition-colors whitespace-nowrap"
               >
                 Subscribe
               </a>
               <a
                 href="https://store.whiskyadvocate.com"
-                className="bg-wa-red text-wa-cream px-4 py-2 text-sm font-serif font-bold uppercase tracking-wider hover:bg-wa-red-dark transition-colors"
+                className="bg-wa-red text-wa-cream px-3 py-1.5 text-xs font-serif font-bold uppercase tracking-wider hover:bg-wa-red-dark transition-colors whitespace-nowrap"
               >
                 Visit Store
               </a>
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2 text-gray-700 hover:text-wa-red transition-colors ml-2"
+                className="p-2 text-gray-700 hover:text-wa-red transition-colors ml-2 flex-shrink-0"
                 aria-label="Search"
               >
                 <svg
@@ -221,7 +221,7 @@ export default function Header() {
             </div>
             
             {/* Mobile search button */}
-            <div className="lg:hidden flex items-center">
+            <div className="lg:hidden flex items-center flex-shrink-0">
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
                 className="p-2 text-gray-700 hover:text-wa-red transition-colors"
@@ -247,13 +247,13 @@ export default function Header() {
 
         {/* Search bar */}
         {isSearchOpen && (
-          <div className="border-t border-gray-100 bg-white">
+          <div className="border-t border-gray-200 bg-wa-cream">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
               <div className="relative">
                 <input
                   type="text"
                   placeholder="Search whiskyadvocate.com..."
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wa-red focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wa-red focus:border-transparent bg-white"
                   autoFocus
                 />
                 <svg
