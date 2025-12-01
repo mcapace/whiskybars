@@ -435,6 +435,8 @@ export default function Map({
     if (!map.current || !mapLoaded || !superclusterRef.current) return;
 
     const updateMarkers = () => {
+      if (!superclusterRef.current) return;
+      
       // Clear existing cluster markers
       clusterMarkersRef.current.forEach(marker => marker.remove());
       clusterMarkersRef.current = [];
