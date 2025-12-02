@@ -281,15 +281,15 @@ export default function BarList({
                           ref={(el) => {
                             if (el) {
                               barRefs.current.set(bar.id, el);
+                              // Also set refs for selected/first bar
+                              if (selectedBar?.id === bar.id) {
+                                (selectedRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+                              }
+                              if (isFirstBar) {
+                                (firstStateBarRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+                              }
                             } else {
                               barRefs.current.delete(bar.id);
-                            }
-                            // Also set refs for selected/first bar
-                            if (selectedBar?.id === bar.id) {
-                              selectedRef.current = el;
-                            }
-                            if (isFirstBar) {
-                              firstStateBarRef.current = el;
                             }
                           }}
                         >
