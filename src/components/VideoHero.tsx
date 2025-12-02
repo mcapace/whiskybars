@@ -2,6 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+// Get video URL from environment variable or use default
+const DEFAULT_VIDEO_URL = process.env.NEXT_PUBLIC_HERO_VIDEO_URL || '/videos/odevideo.mp4';
+
 interface VideoHeroProps {
   videoSrc?: string;
   loopEndTime?: number; // Time in seconds to loop back (default 67 = 1:07)
@@ -9,7 +12,7 @@ interface VideoHeroProps {
 }
 
 export default function VideoHero({
-  videoSrc = '/videos/odevideo.mp4',
+  videoSrc = DEFAULT_VIDEO_URL,
   loopEndTime = 67, // Loop at 1:07
   children
 }: VideoHeroProps) {
@@ -68,7 +71,7 @@ export default function VideoHero({
     const handleError = (e: Event) => {
       const errorElement = e.target as HTMLVideoElement;
       const mediaError = errorElement.error;
-      
+
       console.error('=== VIDEO ERROR ===');
       console.error('Error code:', mediaError?.code);
       console.error('Error message:', mediaError?.message);
@@ -78,9 +81,9 @@ export default function VideoHero({
       console.error('Video currentSrc:', errorElement.currentSrc);
       console.error('Expected src:', videoSrc);
       console.error('==================');
-      
+
       setHasError(true);
-      
+
       // Log specific error codes
       if (mediaError) {
         switch (mediaError.code) {
@@ -96,6 +99,8 @@ export default function VideoHero({
             break;
           case 4: // MEDIA_ERR_SRC_NOT_SUPPORTED
             console.error('MEDIA_ERR_SRC_NOT_SUPPORTED: Video source not supported');
+            console.error('This often happens with Git LFS files on Vercel.');
+            console.error('Solution: Host video externally and set NEXT_PUBLIC_HERO_VIDEO_URL environment variable.');
             break;
         }
       }
@@ -152,26 +157,38 @@ export default function VideoHero({
         }`}
         style={{
           background: `
+            radial-gradient(ellipse at 30% 20%, rgba(196, 18, 48, 0.15) 0%, transparent 50%),
+            radial-gradient(ellipse at 70% 80%, rgba(249, 189, 19, 0.1) 0%, transparent 50%),
             linear-gradient(135deg,
-              #1a0a00 0%,
-              #2d1810 25%,
-              #4a2c1a 50%,
-              #2d1810 75%,
-              #1a0a00 100%
+              #0d0705 0%,
+              #1a0a00 20%,
+              #2d1810 40%,
+              #4a2c1a 60%,
+              #2d1810 80%,
+              #0d0705 100%
             )
           `,
-          backgroundSize: '400% 400%',
-          animation: 'heroGradient 15s ease infinite',
+          backgroundSize: '200% 200%',
+          animation: 'heroGradient 20s ease infinite',
         }}
       >
-        {/* Whisky glass pattern overlay */}
-        <div 
-          className="absolute inset-0 opacity-10" 
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 L25 25 L20 55 L40 55 L35 25 L30 5' fill='none' stroke='%23f9bd13' stroke-width='1'/%3E%3C/svg%3E")`,
-            backgroundSize: '60px 60px',
-          }} 
-        />
+        {/* Whisky glass pattern overlay with glow */}
+        <div className="absolute inset-0 opacity-[0.07]" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 8 L33 35 L26 72 L54 72 L47 35 L40 8' fill='none' stroke='%23f9bd13' stroke-width='1.5'/%3E%3Cellipse cx='40' cy='72' rx='14' ry='4' fill='none' stroke='%23f9bd13' stroke-width='1'/%3E%3C/svg%3E")`,
+          backgroundSize: '80px 80px',
+        }} />
+
+        {/* Floating particles effect */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="particle particle-1" />
+          <div className="particle particle-2" />
+          <div className="particle particle-3" />
+          <div className="particle particle-4" />
+          <div className="particle particle-5" />
+        </div>
+
+        {/* Ambient light glow */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-amber-500/5 blur-[100px] animate-pulse" />
       </div>
 
       {/* Overlay gradients */}
