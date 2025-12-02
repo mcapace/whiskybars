@@ -83,6 +83,7 @@ export default function BarList({
   const isScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const manualSelectRef = useRef(false); // Track manual selections to prevent intersection observer interference
+  const isInitialMountRef = useRef(true); // Track initial mount to prevent auto-scroll on page load
 
   // Calculate distances and filter/sort bars
   const processedBars = useMemo(() => {
@@ -142,8 +143,17 @@ export default function BarList({
 
   const totalCount = processedBars.length;
 
-  // Scroll to selected bar
+  // Clear initial mount flag after a short delay
   useEffect(() => {
+    const timer = setTimeout(() => {
+      isInitialMountRef.current = false;
+    }, 1000); // Wait 1 second after mount before enabling auto-scroll
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Scroll to selected bar (skip on initial mount)
+  useEffect(() => {
+    if (isInitialMountRef.current) return; // Don't scroll on initial page load
     if (selectedBar && selectedRef.current && listRef.current) {
       selectedRef.current.scrollIntoView({
         behavior: 'smooth',
@@ -152,8 +162,9 @@ export default function BarList({
     }
   }, [selectedBar]);
 
-  // Scroll to first bar when state is selected
+  // Scroll to first bar when state is selected (skip on initial mount)
   useEffect(() => {
+    if (isInitialMountRef.current) return; // Don't scroll on initial page load
     if (selectedState && firstStateBarRef.current && listRef.current) {
       setTimeout(() => {
         firstStateBarRef.current?.scrollIntoView({
