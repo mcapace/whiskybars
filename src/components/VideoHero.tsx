@@ -83,10 +83,10 @@ export default function VideoHero({
       {/* Vignette effect */}
       <div className="absolute inset-0 vignette pointer-events-none z-10" />
 
-      {/* Overlay gradient with stronger filter */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80 z-0" />
-      <div className="absolute inset-0 bg-[#e04720]/20 mix-blend-overlay z-0" />
-      <div className="absolute inset-0 bg-black/30 z-0" />
+      {/* Overlay gradient with lighter filter */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/25 to-black/50 z-0" />
+      <div className="absolute inset-0 bg-[#e04720]/10 mix-blend-overlay z-0" />
+      <div className="absolute inset-0 bg-black/15 z-0" />
 
       {/* Content overlay */}
       <div className="absolute inset-0 flex items-center justify-center">
