@@ -202,17 +202,19 @@ export default function BarList({
 
       visibleBars.forEach((ratio, barId) => {
         if (ratio > maxRatio) {
-          const foundBar = processedBars.find(b => b.id === barId) as Bar | undefined;
+          const foundBar = processedBars.find(b => b.id === barId);
           if (foundBar) {
-            mostVisibleBar = foundBar;
+            // TypeScript-safe assignment: processedBars items are Bar-compatible
+            mostVisibleBar = foundBar as Bar;
             maxRatio = ratio;
           }
         }
       });
 
       // Update selected bar if we found a visible one and it's different
-      if (mostVisibleBar !== null) {
-        const barToSelect = mostVisibleBar;
+      // Use explicit type guard to help TypeScript
+      const barToSelect: Bar | null = mostVisibleBar;
+      if (barToSelect !== null) {
         if (barToSelect.id !== selectedBar?.id) {
           lastUpdateTime = now;
           onBarSelect(barToSelect);
