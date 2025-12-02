@@ -97,8 +97,7 @@ export default function CocktailModal({ cocktail, imageUrl, onClose }: CocktailM
               <div className="relative">
                 <div className="absolute -top-1 -left-1 w-12 h-12 bg-wa-red/10 rounded-lg"></div>
                 <div className="relative bg-gray-50 p-6 rounded-lg border border-gray-200 h-full">
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-wa-red mb-4 flex items-center gap-2">
-                    <span className="w-1 h-1 bg-wa-red rounded-full"></span>
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-wa-red mb-4">
                     The O.G.
                   </h3>
                   <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed break-words">
@@ -109,8 +108,7 @@ export default function CocktailModal({ cocktail, imageUrl, onClose }: CocktailM
               <div className="relative">
                 <div className="absolute -top-1 -left-1 w-12 h-12 bg-wa-gold/10 rounded-lg"></div>
                 <div className="relative bg-gray-50 p-6 rounded-lg border border-gray-200 h-full">
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-wa-red mb-4 flex items-center gap-2">
-                    <span className="w-1 h-1 bg-wa-gold rounded-full"></span>
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-wa-red mb-4">
                     The Fresh Take
                   </h3>
                   <p className="text-sm text-gray-700 leading-relaxed break-words">
