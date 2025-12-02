@@ -22,6 +22,11 @@ export default function VideoHero({
     const video = videoRef.current;
     if (!video) return;
 
+    // Ensure video source is set
+    if (video.src !== videoSrc && !videoError) {
+      video.src = videoSrc;
+    }
+
     const startPlayback = () => {
       setIsLoaded(true);
       video.play().catch((err) => {
@@ -50,8 +55,15 @@ export default function VideoHero({
       }
     };
 
-    const handleError = () => {
+    const handleError = (e: Event) => {
+      const error = e.target as HTMLVideoElement;
       console.error('Video failed to load:', videoSrc);
+      console.error('Video error details:', {
+        error: error.error,
+        networkState: error.networkState,
+        readyState: error.readyState,
+        src: error.src,
+      });
       setVideoError(true);
     };
 
@@ -125,7 +137,10 @@ export default function VideoHero({
           autoPlay
           playsInline
           preload="auto"
-        />
+        >
+          <source src={videoSrc} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       )}
 
       {/* Overlay gradients */}
