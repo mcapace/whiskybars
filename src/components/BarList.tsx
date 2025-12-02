@@ -159,8 +159,11 @@ export default function BarList({
         if (entry.isIntersecting) {
           const barId = parseInt(entry.target.getAttribute('data-bar-id') || '0');
           const bar = processedBars.find(b => b.id === barId);
-          if (bar && entry.intersectionRatio > (mostVisible?.ratio || 0)) {
-            mostVisible = { bar, ratio: entry.intersectionRatio };
+          if (bar) {
+            const currentRatio = mostVisible?.ratio || 0;
+            if (entry.intersectionRatio > currentRatio) {
+              mostVisible = { bar, ratio: entry.intersectionRatio };
+            }
           }
         }
       });
