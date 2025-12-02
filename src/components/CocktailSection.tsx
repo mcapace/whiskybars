@@ -9,14 +9,14 @@ interface CocktailSectionProps {
   cocktails: Cocktail[];
 }
 
-// Placeholder images for cocktails (using Unsplash)
+// Cocktail images from local directory
 const cocktailImages: Record<string, string> = {
-  manhattan: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400&h=400&fit=crop',
-  highball: 'https://images.unsplash.com/photo-1587223962930-cb7f31384c19?w=400&h=400&fit=crop',
-  robroy: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=400&fit=crop',
-  oldfashioned: 'https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=400&h=400&fit=crop',
-  boulevardier: 'https://images.unsplash.com/photo-1536935338788-846bb9981813?w=400&h=400&fit=crop',
-  goldrush: 'https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=400&h=400&fit=crop',
+  manhattan: '/images/cocktails/TheManhattan.jpg',
+  highball: '/images/cocktails/TheHighball.jpg',
+  robroy: '/images/cocktails/TheRobRoy.jpg',
+  oldfashioned: '/images/cocktails/TheOldFashioned.jpg',
+  boulevardier: '/images/cocktails/TheBoulevardier.jpg',
+  goldrush: '/images/cocktails/TheGoldRush.jpg',
 };
 
 export default function CocktailSection({ cocktails }: CocktailSectionProps) {
