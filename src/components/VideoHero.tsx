@@ -9,7 +9,7 @@ interface VideoHeroProps {
 }
 
 export default function VideoHero({
-  videoSrc = '/videos/hero/NLXDcpbG-31875404.mp4',
+  videoSrc = '/videos/odevideo.mp4',
   loopEndTime = 67, // Loop at 1:07
   children
 }: VideoHeroProps) {
