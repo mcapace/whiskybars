@@ -387,9 +387,6 @@ export default function Home() {
               <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
                 Browse {bars.length || '250+'} of America's finest whisky establishments
               </p>
-              <p className={`text-xs mt-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                <kbd className="px-1.5 py-0.5 bg-gray-200 text-gray-700 rounded text-xs font-mono">↑</kbd> <kbd className="px-1.5 py-0.5 bg-gray-200 text-gray-700 rounded text-xs font-mono">↓</kbd> navigate · <kbd className="px-1.5 py-0.5 bg-gray-200 text-gray-700 rounded text-xs font-mono">Enter</kbd> select · <kbd className="px-1.5 py-0.5 bg-gray-200 text-gray-700 rounded text-xs font-mono">/</kbd> search
-              </p>
             </div>
 
             {/* Search */}
