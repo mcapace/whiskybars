@@ -344,7 +344,12 @@ export default function Home() {
       <main className="flex-1">
         {/* Video Hero Section */}
         <VideoHero
-          videos={['/videos/hero/hero-1.mp4', '/videos/hero/hero-2.mp4', '/videos/hero/hero-3.mp4']}
+          videos={[
+            '/videos/hero/AdobeStock_1151971598.mp4',
+            '/videos/hero/AdobeStock_558647133.mp4',
+            '/videos/hero/AdobeStock_590824849.mp4',
+            '/videos/hero/AdobeStock_85459021.mp4'
+          ]}
           interval={15000}
         >
           <div className="text-center text-white px-4 max-w-4xl mx-auto">
