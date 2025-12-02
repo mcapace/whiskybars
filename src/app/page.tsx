@@ -425,14 +425,9 @@ export default function Home() {
 
           {/* Map and List Grid */}
           <div className="max-w-7xl mx-auto relative">
-            <div className="grid lg:grid-cols-2 min-h-[600px]">
-              {/* Map (mobile) */}
-              <div className={`lg:hidden ${viewMode === 'map' ? 'block' : 'hidden'} h-[450px]`}>
-                {!loading && !error && <Map bars={bars} selectedBar={selectedBar} hoveredBar={hoveredBar} onBarSelect={setSelectedBar} onBarHover={setHoveredBar} selectedState={selectedState} userLocation={userLocation} showHeatmap={showHeatmap} barCrawlBars={barCrawlBars} darkMode={darkMode} />}
-              </div>
-
-              {/* Bar List */}
-              <div className={`lg:block ${viewMode === 'list' ? 'block' : 'hidden lg:block'} h-[700px] overflow-hidden`}>
+            <div className="grid lg:grid-cols-3 min-h-[600px]">
+              {/* Bar List - 1/3 width */}
+              <div className={`lg:col-span-1 lg:block ${viewMode === 'list' ? 'block' : 'hidden lg:block'} h-[700px] overflow-hidden`}>
                 {loading ? (
                   <div className="p-6 space-y-4">{[...Array(5)].map((_, i) => <div key={i} className={`animate-pulse h-32 rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />)}</div>
                 ) : (
@@ -440,8 +435,8 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Map (desktop) */}
-              <div className="hidden lg:block h-[700px] sticky top-[104px]">
+              {/* Map (desktop) - 2/3 width */}
+              <div className="lg:col-span-2 hidden lg:block h-[700px] sticky top-[104px]">
                 {loading ? (
                   <div className={`w-full h-full animate-pulse flex items-center justify-center ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}><p className={darkMode ? 'text-gray-400' : 'text-gray-500'}>Loading map...</p></div>
                 ) : error ? (
@@ -449,6 +444,11 @@ export default function Home() {
                 ) : (
                   <Map bars={bars} selectedBar={selectedBar} hoveredBar={hoveredBar} onBarSelect={setSelectedBar} onBarHover={setHoveredBar} selectedState={selectedState} userLocation={userLocation} showHeatmap={showHeatmap} barCrawlBars={barCrawlBars} darkMode={darkMode} />
                 )}
+              </div>
+
+              {/* Map (mobile) */}
+              <div className={`lg:hidden ${viewMode === 'map' ? 'block' : 'hidden'} h-[450px]`}>
+                {!loading && !error && <Map bars={bars} selectedBar={selectedBar} hoveredBar={hoveredBar} onBarSelect={setSelectedBar} onBarHover={setHoveredBar} selectedState={selectedState} userLocation={userLocation} showHeatmap={showHeatmap} barCrawlBars={barCrawlBars} darkMode={darkMode} />}
               </div>
             </div>
 

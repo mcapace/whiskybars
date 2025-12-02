@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Bar } from '@/types';
 import { shareContent, getBarShareUrl } from '@/utils/share';
+import BarDetailModal from './BarDetailModal';
 
 interface BarCardProps {
   bar: Bar;
@@ -32,6 +33,7 @@ export default function BarCard({
 }: BarCardProps) {
   const [isSharing, setIsSharing] = useState(false);
   const [shareSuccess, setShareSuccess] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -53,7 +55,17 @@ export default function BarCard({
     setIsSharing(false);
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // If clicking on a link or button, don't open modal
+    const target = e.target as HTMLElement;
+    if (target.closest('a') || target.closest('button')) {
+      return;
+    }
+    setShowDetailModal(true);
+  };
+
   return (
+    <>
     <div
       className={`bar-card premium-card card-lift group relative bg-white rounded-xl transition-all duration-300 cursor-pointer overflow-hidden ${
         isSelected
@@ -62,7 +74,7 @@ export default function BarCard({
           ? 'shadow-lg scale-[1.01] ring-1 ring-wa-red/30'
           : 'shadow-sm hover:shadow-md'
       }`}
-      onClick={onSelect}
+      onClick={handleCardClick}
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
     >
@@ -114,9 +126,22 @@ export default function BarCard({
         </div>
 
         {/* Description */}
-        <p className="text-base text-gray-600 line-clamp-2 mb-3 ml-[76px]">
-          {bar.description}
-        </p>
+        <div className="mb-3 ml-[76px]">
+          <p className="text-base text-gray-600 line-clamp-2">
+            {bar.description}
+          </p>
+          {bar.description.length > 100 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowDetailModal(true);
+              }}
+              className="text-sm font-medium text-wa-red hover:text-wa-red-dark mt-1"
+            >
+              Read more...
+            </button>
+          )}
+        </div>
 
         {/* Tags */}
         <div className="flex flex-wrap gap-1.5 mb-3 ml-[76px]">
@@ -211,5 +236,15 @@ export default function BarCard({
         </div>
       </div>
     </div>
+
+    {showDetailModal && (
+      <BarDetailModal
+        bar={bar}
+        index={index}
+        distance={distance}
+        onClose={() => setShowDetailModal(false)}
+      />
+    )}
+    </>
   );
 }

@@ -152,15 +152,24 @@ export default function Map({
       preserveDrawingBuffer: false,
     });
 
-    // Add controls
-    newMap.addControl(new mapboxgl.NavigationControl({ showCompass: true }), 'top-right');
+    // Disable pitch/tilt interaction
+    newMap.dragRotate.disable();
+    newMap.touchZoomRotate.disableRotation();
+
+    // Add controls (without compass to avoid tilt controls)
+    newMap.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
     newMap.addControl(new mapboxgl.GeolocateControl({
       positionOptions: { enableHighAccuracy: true },
       trackUserLocation: true,
       showUserHeading: true,
     }), 'top-right');
     newMap.addControl(new mapboxgl.FullscreenControl(), 'top-right');
-    newMap.addControl(new mapboxgl.ScaleControl({ maxWidth: 100 }), 'bottom-left');
+    // Add scale control with imperial units (miles)
+    const scaleControl = new mapboxgl.ScaleControl({ 
+      maxWidth: 100,
+      unit: 'imperial' // This will show miles instead of kilometers
+    });
+    newMap.addControl(scaleControl, 'bottom-left');
     // Attribution control removed - Mapbox branding hidden via CSS
 
     newMap.on('load', () => {
