@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Bar } from '@/types';
 import { shareContent, getBarShareUrl } from '@/utils/share';
-import BarDetailModal from './BarDetailModal';
 
 interface BarCardProps {
   bar: Bar;
@@ -33,7 +32,6 @@ export default function BarCard({
 }: BarCardProps) {
   const [isSharing, setIsSharing] = useState(false);
   const [shareSuccess, setShareSuccess] = useState(false);
-  const [showDetailModal, setShowDetailModal] = useState(false);
 
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -56,12 +54,13 @@ export default function BarCard({
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
-    // If clicking on a link or button, don't open modal
+    // If clicking on a link or button, don't select
     const target = e.target as HTMLElement;
     if (target.closest('a') || target.closest('button')) {
       return;
     }
-    setShowDetailModal(true);
+    // Select the bar (this will trigger map navigation)
+    onSelect();
   };
 
   return (
@@ -127,20 +126,9 @@ export default function BarCard({
 
         {/* Description */}
         <div className="mb-3 ml-[76px]">
-          <p className="text-base text-gray-600 line-clamp-2">
+          <p className="text-base text-gray-600 whitespace-pre-line">
             {bar.description}
           </p>
-          {bar.description.length > 100 && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowDetailModal(true);
-              }}
-              className="text-sm font-medium text-wa-red hover:text-wa-red-dark mt-1"
-            >
-              Read more...
-            </button>
-          )}
         </div>
 
         {/* Tags */}
@@ -236,15 +224,6 @@ export default function BarCard({
         </div>
       </div>
     </div>
-
-    {showDetailModal && (
-      <BarDetailModal
-        bar={bar}
-        index={index}
-        distance={distance}
-        onClose={() => setShowDetailModal(false)}
-      />
-    )}
     </>
   );
 }

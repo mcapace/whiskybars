@@ -38,6 +38,31 @@ function calculateDistance(
   return R * c;
 }
 
+// Get state abbreviation from full state name
+function getStateAbbreviation(stateName: string): string {
+  const STATE_TO_ABBR: Record<string, string> = {
+    'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR', 'California': 'CA',
+    'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE', 'Florida': 'FL', 'Georgia': 'GA',
+    'Hawaii': 'HI', 'Idaho': 'ID', 'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA',
+    'Kansas': 'KS', 'Kentucky': 'KY', 'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD',
+    'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS', 'Missouri': 'MO',
+    'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV', 'New Hampshire': 'NH', 'New Jersey': 'NJ',
+    'New Mexico': 'NM', 'New York': 'NY', 'North Carolina': 'NC', 'North Dakota': 'ND', 'Ohio': 'OH',
+    'Oklahoma': 'OK', 'Oregon': 'OR', 'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
+    'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT', 'Vermont': 'VT',
+    'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV', 'Wisconsin': 'WI', 'Wyoming': 'WY',
+    'Washington D.C.': 'DC', 'District of Columbia': 'DC',
+    'Puerto Rico': 'PR',
+  };
+  
+  // If already an abbreviation (2 letters), return as is
+  if (stateName.length === 2 && stateName === stateName.toUpperCase()) {
+    return stateName;
+  }
+  
+  return STATE_TO_ABBR[stateName] || stateName.substring(0, 2).toUpperCase();
+}
+
 export default function BarList({
   bars,
   selectedBar,
@@ -57,6 +82,7 @@ export default function BarList({
   const barRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const isScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const manualSelectRef = useRef(false); // Track manual selections to prevent intersection observer interference
 
   // Calculate distances and filter/sort bars
   const processedBars = useMemo(() => {
@@ -140,53 +166,83 @@ export default function BarList({
 
   // Intersection Observer to detect which bar is in view and update map
   useEffect(() => {
-    if (!listRef.current) return;
+    if (!listRef.current || processedBars.length === 0) return;
 
     const observerOptions = {
       root: listRef.current,
       rootMargin: '-20% 0px -60% 0px', // Trigger when bar is in upper 40% of viewport
-      threshold: 0.5,
+      threshold: [0.1, 0.3, 0.5, 0.7, 0.9], // Multiple thresholds for better detection
     };
 
+    let lastUpdateTime = 0;
+    const UPDATE_THROTTLE = 300; // Throttle updates to every 300ms
+    const visibleBars = new Map<number, number>(); // Track barId -> intersectionRatio
+
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
-      // Don't update if user is actively scrolling (to avoid janky map movements)
-      if (isScrollingRef.current) return;
+      // Update visibility map
+      entries.forEach(entry => {
+        const barId = parseInt(entry.target.getAttribute('data-bar-id') || '0');
+        if (entry.isIntersecting) {
+          visibleBars.set(barId, entry.intersectionRatio);
+        } else {
+          visibleBars.delete(barId);
+        }
+      });
+
+      // Don't update if user just manually selected a bar
+      if (manualSelectRef.current) return;
+
+      const now = Date.now();
+      // Throttle updates
+      if (now - lastUpdateTime < UPDATE_THROTTLE) return;
 
       // Find the bar that's most visible
       let mostVisibleBar: Bar | null = null;
       let maxRatio = 0;
 
-      entries.forEach(entry => {
-        if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
-          const barId = parseInt(entry.target.getAttribute('data-bar-id') || '0');
+      visibleBars.forEach((ratio, barId) => {
+        if (ratio > maxRatio) {
           const foundBar = processedBars.find(b => b.id === barId) as Bar | undefined;
           if (foundBar) {
             mostVisibleBar = foundBar;
-            maxRatio = entry.intersectionRatio;
+            maxRatio = ratio;
           }
         }
       });
 
       // Update selected bar if we found a visible one and it's different
-      if (mostVisibleBar !== null) {
-        const barToSelect: Bar = mostVisibleBar;
-        if (barToSelect.id !== selectedBar?.id) {
-          onBarSelect(barToSelect);
-        }
+      if (mostVisibleBar !== null && mostVisibleBar.id !== selectedBar?.id) {
+        lastUpdateTime = now;
+        onBarSelect(mostVisibleBar);
       }
     };
 
     const observer = new IntersectionObserver(handleIntersection, observerOptions);
 
-    // Observe all bar cards
-    barRefs.current.forEach((element) => {
-      if (element) observer.observe(element);
-    });
+    // Use setTimeout to ensure DOM is fully rendered before observing
+    const timeoutId = setTimeout(() => {
+      // Observe all bar cards
+      barRefs.current.forEach((element) => {
+        if (element) observer.observe(element);
+      });
+    }, 100);
 
     return () => {
+      clearTimeout(timeoutId);
       observer.disconnect();
+      visibleBars.clear();
     };
   }, [processedBars, selectedBar, onBarSelect]);
+
+  // Reset manual select flag after a delay when it's set
+  useEffect(() => {
+    if (manualSelectRef.current) {
+      const timeoutId = setTimeout(() => {
+        manualSelectRef.current = false;
+      }, 1000); // Reset after 1 second
+      return () => clearTimeout(timeoutId);
+    }
+  }, [selectedBar]);
 
   // Track scrolling state
   useEffect(() => {
@@ -201,7 +257,7 @@ export default function BarList({
 
       scrollTimeoutRef.current = setTimeout(() => {
         isScrollingRef.current = false;
-      }, 150); // Wait 150ms after scroll stops before allowing updates
+      }, 100); // Reduced from 150ms to 100ms for faster response
     };
 
     const listElement = listRef.current;
@@ -261,8 +317,11 @@ export default function BarList({
               
               return (
                 <div key={state}>
-                  <h3 className="text-sm uppercase tracking-widest text-wa-red font-bold mb-3 sticky top-14 bg-gray-50/95 backdrop-blur-sm py-2 z-[5]">
-                    {state} ({stateBars.length})
+                  <h3 className="text-sm uppercase tracking-widest text-wa-red font-bold mb-3 sticky top-14 bg-gray-50/95 backdrop-blur-sm py-2 z-[5] flex items-center gap-2">
+                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-wa-red/10 text-wa-red font-bold text-xs border border-wa-red/20">
+                      {getStateAbbreviation(state)}
+                    </span>
+                    <span>{state} ({stateBars.length})</span>
                   </h3>
                   <div className="grid gap-3">
                     {stateBars.map((bar, localIndex) => {
@@ -301,7 +360,10 @@ export default function BarList({
                             distance={bar.distance}
                             isInCrawl={isInCrawl}
                             crawlIndex={crawlIndex}
-                            onSelect={() => onBarSelect(bar)}
+                            onSelect={() => {
+                              manualSelectRef.current = true; // Mark as manual selection
+                              onBarSelect(bar);
+                            }}
                             onHover={(hovered) => onBarHover(hovered ? bar : null)}
                             onToggleCrawl={() => onToggleBarCrawl(bar)}
                           />
