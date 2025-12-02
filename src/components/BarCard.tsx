@@ -1,7 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { Bar } from '@/types';
+import { shareContent, getBarShareUrl } from '@/utils/share';
 
 interface BarCardProps {
   bar: Bar;
@@ -28,6 +30,29 @@ export default function BarCard({
   onHover,
   onToggleCrawl,
 }: BarCardProps) {
+  const [isSharing, setIsSharing] = useState(false);
+  const [shareSuccess, setShareSuccess] = useState(false);
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsSharing(true);
+    
+    const shareUrl = getBarShareUrl(bar.id);
+    const success = await shareContent({
+      title: `${bar.name} - Whisky Advocate`,
+      text: `Check out ${bar.name} in ${bar.state} - ${bar.description.substring(0, 100)}...`,
+      url: shareUrl,
+    });
+
+    if (success) {
+      setShareSuccess(true);
+      setTimeout(() => {
+        setShareSuccess(false);
+      }, 2000);
+    }
+    setIsSharing(false);
+  };
+
   return (
     <div
       className={`bar-card premium-card card-lift group relative bg-white rounded-xl transition-all duration-300 cursor-pointer overflow-hidden ${
@@ -131,6 +156,28 @@ export default function BarCard({
                 Menu
               </a>
             )}
+            <button
+              onClick={handleShare}
+              disabled={isSharing}
+              className="text-sm font-medium text-gray-600 hover:text-wa-red transition-colors flex items-center gap-1 disabled:opacity-50"
+              title="Share this bar"
+            >
+              {shareSuccess ? (
+                <>
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  </svg>
+                  Share
+                </>
+              )}
+            </button>
           </div>
 
           {/* Add to crawl button */}

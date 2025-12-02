@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Cocktail } from '@/types';
+import { shareContent, getCocktailShareUrl } from '@/utils/share';
 
 interface CocktailModalProps {
   cocktail: Cocktail;
@@ -11,6 +12,9 @@ interface CocktailModalProps {
 }
 
 export default function CocktailModal({ cocktail, imageUrl, onClose }: CocktailModalProps) {
+  const [isSharing, setIsSharing] = useState(false);
+  const [shareSuccess, setShareSuccess] = useState(false);
+
   // Close on escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -27,6 +31,25 @@ export default function CocktailModal({ cocktail, imageUrl, onClose }: CocktailM
       document.body.style.overflow = '';
     };
   }, [onClose]);
+
+  const handleShare = async () => {
+    setIsSharing(true);
+    
+    const shareUrl = getCocktailShareUrl(cocktail.id);
+    const success = await shareContent({
+      title: `${cocktail.name} Recipe - Whisky Advocate`,
+      text: `Check out the recipe for ${cocktail.name} - a classic cocktail with a fresh take!`,
+      url: shareUrl,
+    });
+
+    if (success) {
+      setShareSuccess(true);
+      setTimeout(() => {
+        setShareSuccess(false);
+      }, 2000);
+    }
+    setIsSharing(false);
+  };
 
   return (
     <div
@@ -105,17 +128,45 @@ export default function CocktailModal({ cocktail, imageUrl, onClose }: CocktailM
               </div>
             </div>
 
-            <a
-              href={cocktail.shopUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex items-center gap-3 bg-wa-red text-white px-8 py-4 text-sm font-semibold uppercase tracking-wider hover:bg-wa-red-dark transition-all duration-300 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-            >
-              <span>Shop Now</span>
-              <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </a>
+            <div className="flex items-center gap-4">
+              <a
+                href={cocktail.shopUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-3 bg-wa-red text-white px-8 py-4 text-sm font-semibold uppercase tracking-wider hover:bg-wa-red-dark transition-all duration-300 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                <span>Shop Now</span>
+                <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </a>
+              
+              <button
+                onClick={handleShare}
+                disabled={isSharing}
+                className={`group inline-flex items-center gap-2 px-6 py-4 text-sm font-semibold uppercase tracking-wider transition-all duration-300 rounded-lg border-2 ${
+                  shareSuccess
+                    ? 'border-green-500 bg-green-50 text-green-700'
+                    : 'border-wa-red text-wa-red hover:bg-wa-red hover:text-white'
+                } disabled:opacity-50`}
+              >
+                {shareSuccess ? (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Shared!</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                    </svg>
+                    <span>Share Recipe</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
