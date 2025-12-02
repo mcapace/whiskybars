@@ -54,6 +54,9 @@ export default function BarList({
   const listRef = useRef<HTMLDivElement>(null);
   const selectedRef = useRef<HTMLDivElement>(null);
   const firstStateBarRef = useRef<HTMLDivElement>(null);
+  const barRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+  const isScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Calculate distances and filter/sort bars
   const processedBars = useMemo(() => {
@@ -135,6 +138,78 @@ export default function BarList({
     }
   }, [selectedState]);
 
+  // Intersection Observer to detect which bar is in view and update map
+  useEffect(() => {
+    if (!listRef.current) return;
+
+    const observerOptions = {
+      root: listRef.current,
+      rootMargin: '-20% 0px -60% 0px', // Trigger when bar is in upper 40% of viewport
+      threshold: 0.5,
+    };
+
+    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
+      // Don't update if user is actively scrolling (to avoid janky map movements)
+      if (isScrollingRef.current) return;
+
+      // Find the bar that's most visible
+      let mostVisible: { bar: Bar; ratio: number } | null = null;
+
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const barId = parseInt(entry.target.getAttribute('data-bar-id') || '0');
+          const bar = processedBars.find(b => b.id === barId);
+          if (bar && entry.intersectionRatio > (mostVisible?.ratio || 0)) {
+            mostVisible = { bar, ratio: entry.intersectionRatio };
+          }
+        }
+      });
+
+      // Update selected bar if we found a visible one and it's different
+      if (mostVisible && mostVisible.bar.id !== selectedBar?.id) {
+        onBarSelect(mostVisible.bar);
+      }
+    };
+
+    const observer = new IntersectionObserver(handleIntersection, observerOptions);
+
+    // Observe all bar cards
+    barRefs.current.forEach((element) => {
+      if (element) observer.observe(element);
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [processedBars, selectedBar, onBarSelect]);
+
+  // Track scrolling state
+  useEffect(() => {
+    if (!listRef.current) return;
+
+    const handleScroll = () => {
+      isScrollingRef.current = true;
+      
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
+      scrollTimeoutRef.current = setTimeout(() => {
+        isScrollingRef.current = false;
+      }, 150); // Wait 150ms after scroll stops before allowing updates
+    };
+
+    const listElement = listRef.current;
+    listElement.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      listElement.removeEventListener('scroll', handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <div ref={listRef} className="h-full overflow-y-auto bg-gray-50">
       {/* Header */}
@@ -197,13 +272,21 @@ export default function BarList({
                       return (
                         <div
                           key={bar.id}
-                          ref={
-                            selectedBar?.id === bar.id
-                              ? selectedRef
-                              : isFirstBar
-                              ? firstStateBarRef
-                              : undefined
-                          }
+                          data-bar-id={bar.id}
+                          ref={(el) => {
+                            if (el) {
+                              barRefs.current.set(bar.id, el);
+                            } else {
+                              barRefs.current.delete(bar.id);
+                            }
+                            // Also set refs for selected/first bar
+                            if (selectedBar?.id === bar.id) {
+                              selectedRef.current = el;
+                            }
+                            if (isFirstBar) {
+                              firstStateBarRef.current = el;
+                            }
+                          }}
                         >
                           <BarCard
                             bar={bar}
