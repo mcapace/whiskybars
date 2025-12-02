@@ -12,7 +12,6 @@ import {
   SponsorsSection,
   Footer,
   ScrollProgress,
-  StatsDashboard,
 } from '@/components';
 import { useBars } from '@/hooks/useBars';
 import { cocktails } from '@/data/cocktails';
@@ -369,10 +368,6 @@ export default function Home() {
 
         {/* Intro Section */}
         <section className={`py-16 lg:py-24 ${darkMode ? 'bg-gray-900' : 'bg-white'}`} id="explore">
-          {/* Statistics Dashboard */}
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-            <StatsDashboard bars={bars} selectedState={selectedState} />
-          </div>
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className={`font-serif text-3xl md:text-4xl mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               Where Exceptional Whisky Meets True Hospitality
@@ -415,52 +410,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Advanced Filters */}
-            <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
-              <button onClick={handleGetLocation} className={`filter-pill flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-all ${userLocation ? 'bg-wa-red text-white border-wa-red' : darkMode ? 'bg-gray-700 text-gray-300 border-gray-600 hover:border-wa-red' : 'bg-white text-gray-700 border-gray-300 hover:border-wa-red'}`}>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                {userLocation ? 'Near Me' : 'Find Near Me'}
-              </button>
-
-              <button onClick={() => setShowHeatmap(!showHeatmap)} className={`filter-pill flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-all ${showHeatmap ? 'bg-wa-red text-white border-wa-red' : darkMode ? 'bg-gray-700 text-gray-300 border-gray-600 hover:border-wa-red' : 'bg-white text-gray-700 border-gray-300 hover:border-wa-red'}`}>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" /></svg>
-                Density View
-              </button>
-
-              <button 
-                onClick={() => {
-                  if (barCrawlBars.length > 0) {
-                    setShowBarCrawlPanel(!showBarCrawlPanel);
-                  } else {
-                    setToast('Add bars to your list to create a bar crawl!');
-                  }
-                }} 
-                className={`filter-pill flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-all ${barCrawlBars.length > 0 ? 'bg-wa-red text-white border-wa-red' : darkMode ? 'bg-gray-700 text-gray-300 border-gray-600 hover:border-wa-red' : 'bg-white text-gray-700 border-gray-300 hover:border-wa-red'}`}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
-                Bar Crawl {barCrawlBars.length > 0 && `(${barCrawlBars.length})`}
-              </button>
-
-              <button onClick={() => setDarkMode(!darkMode)} className={`filter-pill flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-all ${darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-white text-gray-700 border-gray-300'}`}>
-                {darkMode ? <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg> : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>}
-                {darkMode ? 'Light' : 'Dark'}
-              </button>
-
-              {/* Surprise Me - Random Bar Discovery */}
-              <button onClick={handleRandomBar} className={`filter-pill flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-all bg-gradient-to-r from-wa-gold to-amber-500 text-white border-wa-gold hover:shadow-lg hover:scale-105`}>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                Surprise Me!
-              </button>
-
-              <div className="relative">
-                <select value={sortBy} onChange={(e) => setSortBy(e.target.value as SortOption)} className={`appearance-none border rounded-full px-4 py-2 pr-8 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-wa-red cursor-pointer ${darkMode ? 'bg-gray-700 border-gray-600 text-gray-300' : 'bg-white border-gray-300 text-gray-700'}`}>
-                  <option value="alphabetical">A-Z</option>
-                  <option value="distance" disabled={!userLocation}>By Distance</option>
-                  <option value="state">By State</option>
-                </select>
-                <svg className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-              </div>
-            </div>
 
             {/* State Filter */}
             <div className="mb-8">
