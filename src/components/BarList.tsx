@@ -153,27 +153,23 @@ export default function BarList({
       if (isScrollingRef.current) return;
 
       // Find the bar that's most visible
-      let mostVisible: { bar: Bar; ratio: number } | null = null;
+      let mostVisibleBar: Bar | null = null;
+      let maxRatio = 0;
 
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
           const barId = parseInt(entry.target.getAttribute('data-bar-id') || '0');
-          const bar = processedBars.find(b => b.id === barId);
-          if (bar) {
-            const currentRatio = mostVisible ? mostVisible.ratio : 0;
-            if (entry.intersectionRatio > currentRatio) {
-              mostVisible = { bar, ratio: entry.intersectionRatio };
-            }
+          const foundBar = processedBars.find(b => b.id === barId);
+          if (foundBar) {
+            mostVisibleBar = foundBar;
+            maxRatio = entry.intersectionRatio;
           }
         }
       });
 
       // Update selected bar if we found a visible one and it's different
-      if (mostVisible) {
-        const visibleBar = mostVisible.bar;
-        if (visibleBar.id !== selectedBar?.id) {
-          onBarSelect(visibleBar);
-        }
+      if (mostVisibleBar && mostVisibleBar.id !== selectedBar?.id) {
+        onBarSelect(mostVisibleBar);
       }
     };
 
