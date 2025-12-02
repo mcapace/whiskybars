@@ -211,9 +211,12 @@ export default function BarList({
       });
 
       // Update selected bar if we found a visible one and it's different
-      if (mostVisibleBar !== null && mostVisibleBar.id !== selectedBar?.id) {
-        lastUpdateTime = now;
-        onBarSelect(mostVisibleBar);
+      if (mostVisibleBar !== null) {
+        const barToSelect = mostVisibleBar;
+        if (barToSelect.id !== selectedBar?.id) {
+          lastUpdateTime = now;
+          onBarSelect(barToSelect);
+        }
       }
     };
 
