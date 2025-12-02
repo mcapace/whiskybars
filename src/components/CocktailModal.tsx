@@ -61,23 +61,21 @@ export default function CocktailModal({ cocktail, imageUrl, onClose }: CocktailM
       }}
     >
       <div className="modal-content-premium bg-white max-w-5xl w-full max-h-[90vh] overflow-hidden rounded-2xl shadow-2xl border border-gray-100">
-        <div className="grid md:grid-cols-2 h-full max-h-[90vh]">
+        <div className="grid md:grid-cols-2 h-full max-h-[90vh] min-h-[600px]">
           {/* Image */}
-          <div className="bg-gradient-to-br from-gray-900 to-gray-700 relative overflow-hidden">
+          <div className="bg-gray-100 relative overflow-hidden">
             <div className="absolute inset-0">
               <Image
                 src={imageUrl}
                 alt={cocktail.name}
                 fill
-                className="object-cover opacity-90"
+                className="object-contain"
               />
             </div>
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
           </div>
 
           {/* Content */}
-          <div className="p-8 sm:p-10 relative overflow-y-auto">
+          <div className="p-8 sm:p-10 relative overflow-y-auto flex flex-col">
             <button
               onClick={onClose}
               className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-all duration-200 z-10"
@@ -95,27 +93,27 @@ export default function CocktailModal({ cocktail, imageUrl, onClose }: CocktailM
               {cocktail.name}
             </h2>
 
-            <div className="grid sm:grid-cols-2 gap-8 mb-10">
+            <div className="grid sm:grid-cols-2 gap-8 mb-10 flex-1 min-h-0">
               <div className="relative">
                 <div className="absolute -top-1 -left-1 w-12 h-12 bg-wa-red/10 rounded-lg"></div>
-                <div className="relative bg-gray-50 p-6 rounded-lg border border-gray-200">
+                <div className="relative bg-gray-50 p-6 rounded-lg border border-gray-200 h-full">
                   <h3 className="text-xs font-bold uppercase tracking-widest text-wa-red mb-4 flex items-center gap-2">
                     <span className="w-1 h-1 bg-wa-red rounded-full"></span>
                     The O.G.
                   </h3>
-                  <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
+                  <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed break-words">
                     {cocktail.ogRecipe}
                   </p>
                 </div>
               </div>
               <div className="relative">
                 <div className="absolute -top-1 -left-1 w-12 h-12 bg-wa-gold/10 rounded-lg"></div>
-                <div className="relative bg-gray-50 p-6 rounded-lg border border-gray-200">
+                <div className="relative bg-gray-50 p-6 rounded-lg border border-gray-200 h-full">
                   <h3 className="text-xs font-bold uppercase tracking-widest text-wa-red mb-4 flex items-center gap-2">
                     <span className="w-1 h-1 bg-wa-gold rounded-full"></span>
                     The Fresh Take
                   </h3>
-                  <p className="text-sm text-gray-700 leading-relaxed">
+                  <p className="text-sm text-gray-700 leading-relaxed break-words">
                     {cocktail.freshTake}
                   </p>
                 </div>
