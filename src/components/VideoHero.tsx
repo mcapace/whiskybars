@@ -16,6 +16,8 @@ export default function VideoHero({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const isSingleVideo = videos.length === 1;
+  const loopTime = 67; // 1:07 in seconds
 
   useEffect(() => {
     // Preload all videos
@@ -27,9 +29,44 @@ export default function VideoHero({
         }
       }
     });
-  }, []);
+  }, [videos]);
 
+  // Handle single video loop at 1:07
   useEffect(() => {
+    if (!isSingleVideo) return;
+
+    const video = videoRefs.current[0];
+    if (!video) {
+      // Wait for video to be ready
+      const checkVideo = setInterval(() => {
+        const v = videoRefs.current[0];
+        if (v) {
+          clearInterval(checkVideo);
+          v.play().catch(() => {});
+        }
+      }, 100);
+      return () => clearInterval(checkVideo);
+    }
+
+    const handleTimeUpdate = () => {
+      if (video.currentTime >= loopTime) {
+        video.currentTime = 0;
+        video.play().catch(() => {});
+      }
+    };
+
+    video.addEventListener('timeupdate', handleTimeUpdate);
+    video.play().catch(() => {});
+
+    return () => {
+      video.removeEventListener('timeupdate', handleTimeUpdate);
+    };
+  }, [isSingleVideo, videos]);
+
+  // Handle multiple videos rotation
+  useEffect(() => {
+    if (isSingleVideo) return;
+
     const timer = setInterval(() => {
       setIsTransitioning(true);
 
@@ -53,7 +90,7 @@ export default function VideoHero({
     }, interval);
 
     return () => clearInterval(timer);
-  }, [videos.length, interval]);
+  }, [videos.length, interval, isSingleVideo]);
 
   return (
     <div className="video-hero relative w-full h-[95vh] min-h-[700px] max-h-[1000px] overflow-hidden bg-black">
@@ -61,14 +98,19 @@ export default function VideoHero({
       {videos.map((src, index) => (
         <video
           key={src}
-          ref={(el) => { videoRefs.current[index] = el; }}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+          ref={(el) => { 
+            if (el) {
+              videoRefs.current[index] = el;
+            }
+          }}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 z-0 ${
             index === currentIndex ? 'opacity-100' : 'opacity-0'
           }`}
           src={src}
           muted
+          autoPlay
           playsInline
-          loop={false}
+          loop={false} // Custom loop handled by JS for single video
           preload="auto"
         />
       ))}
@@ -83,30 +125,32 @@ export default function VideoHero({
         {children}
       </div>
 
-      {/* Video indicator dots */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-        {videos.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => {
-              if (videoRefs.current[currentIndex]) {
-                videoRefs.current[currentIndex]!.pause();
-              }
-              setCurrentIndex(index);
-              if (videoRefs.current[index]) {
-                videoRefs.current[index]!.currentTime = 0;
-                videoRefs.current[index]!.play().catch(() => {});
-              }
-            }}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              index === currentIndex
-                ? 'bg-white w-8'
-                : 'bg-white/50 hover:bg-white/75'
-            }`}
-            aria-label={`Go to video ${index + 1}`}
-          />
-        ))}
-      </div>
+      {/* Video indicator dots - only show for multiple videos */}
+      {!isSingleVideo && (
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+          {videos.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                if (videoRefs.current[currentIndex]) {
+                  videoRefs.current[currentIndex]!.pause();
+                }
+                setCurrentIndex(index);
+                if (videoRefs.current[index]) {
+                  videoRefs.current[index]!.currentTime = 0;
+                  videoRefs.current[index]!.play().catch(() => {});
+                }
+              }}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                index === currentIndex
+                  ? 'bg-white w-8'
+                  : 'bg-white/50 hover:bg-white/75'
+              }`}
+              aria-label={`Go to video ${index + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
