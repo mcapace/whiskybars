@@ -219,8 +219,8 @@ body {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  width: 44px;
-  height: 52px;
+  width: 96px;
+  height: 112px;
 }
 
 .map-marker-container:hover {
@@ -228,15 +228,15 @@ body {
 }
 
 .map-marker {
-  width: 44px;
-  height: 52px;
+  width: 96px;
+  height: 112px;
   background: transparent !important;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: center bottom;
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
   position: relative;
   padding: 0;
   margin: 0;
@@ -245,8 +245,8 @@ body {
 }
 
 .map-marker .glass-icon {
-  width: 44px;
-  height: 52px;
+  width: 96px;
+  height: 112px;
   object-fit: contain;
   display: block;
   pointer-events: none;
@@ -555,6 +555,9 @@ body {
 /* ===== Cluster Marker Styles ===== */
 
 .cluster-marker {
+  background: var(--whisky-red) !important;
+  border: 3px solid white !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -576,21 +579,26 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: white !important;
   line-height: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .cluster-count {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 900;
+  color: white !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
 }
 
 .cluster-label {
-  font-size: 8px;
-  font-weight: 500;
-  opacity: 0.9;
+  font-size: 9px;
+  font-weight: 600;
+  color: white !important;
+  opacity: 1;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
 }
 
 /* ===== Search Highlighting ===== */
