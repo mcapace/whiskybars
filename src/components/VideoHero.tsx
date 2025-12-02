@@ -22,14 +22,24 @@ export default function VideoHero({
     const video = videoRef.current;
     if (!video) return;
 
-    const handleCanPlay = () => {
+    const startPlayback = () => {
       setIsLoaded(true);
       video.play().catch((err) => {
         console.error('Video autoplay failed:', err);
-        // Try playing muted (some browsers require this)
-        video.muted = true;
-        video.play().catch(() => setVideoError(true));
+        // Video is already muted, so this should work
+        setVideoError(true);
       });
+    };
+
+    const handleCanPlay = () => {
+      startPlayback();
+    };
+
+    const handleLoadedData = () => {
+      // Video has loaded enough data to start playing
+      if (!isLoaded) {
+        startPlayback();
+      }
     };
 
     const handleTimeUpdate = () => {
@@ -51,7 +61,14 @@ export default function VideoHero({
       video.play().catch(() => {});
     };
 
+    // Check if video is already ready
+    if (video.readyState >= 2 && !isLoaded) {
+      // Video has loaded enough data
+      startPlayback();
+    }
+
     video.addEventListener('canplay', handleCanPlay);
+    video.addEventListener('loadeddata', handleLoadedData);
     video.addEventListener('timeupdate', handleTimeUpdate);
     video.addEventListener('error', handleError);
     video.addEventListener('ended', handleEnded);
@@ -61,6 +78,7 @@ export default function VideoHero({
 
     return () => {
       video.removeEventListener('canplay', handleCanPlay);
+      video.removeEventListener('loadeddata', handleLoadedData);
       video.removeEventListener('timeupdate', handleTimeUpdate);
       video.removeEventListener('error', handleError);
       video.removeEventListener('ended', handleEnded);
@@ -99,11 +117,12 @@ export default function VideoHero({
       {!videoError && (
         <video
           ref={videoRef}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 z-0 ${
             isLoaded ? 'opacity-100' : 'opacity-0'
           }`}
           src={videoSrc}
           muted
+          autoPlay
           playsInline
           preload="auto"
         />
