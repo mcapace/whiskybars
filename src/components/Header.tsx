@@ -79,7 +79,7 @@ export default function Header() {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled ? 'bg-wa-cream shadow-md' : 'bg-wa-cream'
+          isScrolled ? 'bg-white shadow-md' : 'bg-transparent'
         }`}
       >
         {/* Top border - light brown */}
@@ -122,7 +122,7 @@ export default function Header() {
             <Link href="/" className="flex-shrink-0">
               <div className="relative h-10 w-32 lg:h-12 lg:w-40">
                 <Image
-                  src="/images/logos/wa-blue.png"
+                  src={isScrolled ? "/images/logos/wa-blue.png" : "/images/logos/wa-white.png"}
                   alt="Whisky Advocate"
                   fill
                   className="object-contain"
@@ -286,7 +286,7 @@ export default function Header() {
             <div className="p-4 border-b border-gray-100">
               <div className="relative h-10 w-32">
                 <Image
-                  src="/images/logos/wa-blue.png"
+                  src={isScrolled ? "/images/logos/wa-blue.png" : "/images/logos/wa-white.png"}
                   alt="Whisky Advocate"
                   fill
                   className="object-contain"

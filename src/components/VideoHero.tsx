@@ -57,26 +57,36 @@ export default function VideoHero({
 
   return (
     <div className="video-hero relative w-full h-[95vh] min-h-[700px] max-h-[1000px] overflow-hidden bg-black">
-      {/* Video layers */}
+      {/* Video layers with Ken Burns effect */}
       {videos.map((src, index) => (
-        <video
+        <div
           key={src}
-          ref={(el) => { videoRefs.current[index] = el; }}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+          className={`absolute inset-0 transition-opacity duration-1000 ${
             index === currentIndex ? 'opacity-100' : 'opacity-0'
           }`}
-          src={src}
-          muted
-          playsInline
-          loop={false}
-          preload="auto"
-        />
+        >
+          <video
+            ref={(el) => { videoRefs.current[index] = el; }}
+            className="absolute inset-0 w-full h-full object-cover ken-burns-zoom"
+            src={src}
+            muted
+            playsInline
+            loop={false}
+            preload="auto"
+          />
+        </div>
       ))}
 
+      {/* Film grain overlay */}
+      <div className="absolute inset-0 film-grain opacity-30 pointer-events-none z-10" />
+
+      {/* Vignette effect */}
+      <div className="absolute inset-0 vignette pointer-events-none z-10" />
+
       {/* Overlay gradient with stronger filter */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
-      <div className="absolute inset-0 bg-[#e04720]/20 mix-blend-overlay" />
-      <div className="absolute inset-0 bg-black/30" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80 z-0" />
+      <div className="absolute inset-0 bg-[#e04720]/20 mix-blend-overlay z-0" />
+      <div className="absolute inset-0 bg-black/30 z-0" />
 
       {/* Content overlay */}
       <div className="absolute inset-0 flex items-center justify-center">

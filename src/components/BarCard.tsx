@@ -30,9 +30,9 @@ export default function BarCard({
 }: BarCardProps) {
   return (
     <div
-      className={`bar-card group relative bg-white rounded-xl transition-all duration-300 cursor-pointer overflow-hidden ${
+      className={`bar-card premium-card card-lift group relative bg-white rounded-xl transition-all duration-300 cursor-pointer overflow-hidden ${
         isSelected
-          ? 'ring-2 ring-wa-red shadow-xl scale-[1.02]'
+          ? 'ring-2 ring-wa-red shadow-premium scale-[1.02]'
           : isHovered
           ? 'shadow-lg scale-[1.01] ring-1 ring-wa-red/30'
           : 'shadow-sm hover:shadow-md'
@@ -41,10 +41,10 @@ export default function BarCard({
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
     >
-      {/* Selected/Hovered accent bar */}
+      {/* Selected/Hovered accent bar with gradient */}
       <div
-        className={`absolute left-0 top-0 bottom-0 w-1 transition-all duration-300 ${
-          isSelected ? 'bg-wa-red' : isHovered ? 'bg-wa-gold' : 'bg-transparent'
+        className={`gradient-accent absolute left-0 top-0 bottom-0 w-1 transition-all duration-300 ${
+          isSelected ? 'opacity-100' : isHovered ? 'opacity-70' : 'opacity-0'
         }`}
       />
 
@@ -59,8 +59,8 @@ export default function BarCard({
       <div className="p-4 pl-5">
         {/* Header with glass image and number */}
         <div className="flex items-start gap-3 mb-2">
-          {/* Glass image with number overlay */}
-          <div className={`flex-shrink-0 w-16 h-20 relative transition-transform duration-300 ${isHovered || isSelected ? 'scale-110' : ''}`}>
+          {/* Glass image with number overlay and glow */}
+          <div className={`glass-glow flex-shrink-0 w-16 h-20 relative transition-transform duration-300 ${isHovered || isSelected ? 'scale-110' : ''}`}>
             <Image
               src="/map-logos/AdobeStock_271951404.png"
               alt=""
