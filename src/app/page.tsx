@@ -9,7 +9,6 @@ import {
   BarList,
   StateFilter,
   CocktailSection,
-  OdeSection,
   SponsorsSection,
   Footer,
   ScrollProgress,
@@ -344,13 +343,7 @@ export default function Home() {
       <main className="flex-1">
         {/* Video Hero Section */}
         <VideoHero
-          videos={[
-            '/videos/hero/AdobeStock_1151971598.mp4',
-            '/videos/hero/AdobeStock_558647133.mp4',
-            '/videos/hero/AdobeStock_590824849.mp4',
-            '/videos/hero/AdobeStock_85459021.mp4'
-          ]}
-          interval={15000}
+          video="/videos/hero/NLXDcpbG-31875404.mp4"
         >
           <div className="text-center text-white px-4 max-w-4xl mx-auto">
             <div className="mb-6">
@@ -564,7 +557,6 @@ export default function Home() {
           </div>
         </section>
 
-        <OdeSection />
         <CocktailSection cocktails={cocktails} />
         <SponsorsSection />
       </main>
