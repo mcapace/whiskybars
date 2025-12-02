@@ -197,25 +197,20 @@ export default function BarList({
       if (now - lastUpdateTime < UPDATE_THROTTLE) return;
 
       // Find the bar that's most visible
-      let mostVisibleBar: Bar | null = null;
+      let mostVisibleBarId: number | null = null;
       let maxRatio = 0;
 
       visibleBars.forEach((ratio, barId) => {
         if (ratio > maxRatio) {
-          const foundBar = processedBars.find(b => b.id === barId);
-          if (foundBar) {
-            // TypeScript-safe assignment: processedBars items are Bar-compatible
-            mostVisibleBar = foundBar as Bar;
-            maxRatio = ratio;
-          }
+          mostVisibleBarId = barId;
+          maxRatio = ratio;
         }
       });
 
-      // Update selected bar if we found a visible one and it's different
-      // Use explicit type guard to help TypeScript
-      const barToSelect: Bar | null = mostVisibleBar;
-      if (barToSelect !== null) {
-        if (barToSelect.id !== selectedBar?.id) {
+      // Look up the bar after finding the most visible ID
+      if (mostVisibleBarId !== null) {
+        const barToSelect = processedBars.find(b => b.id === mostVisibleBarId);
+        if (barToSelect && barToSelect.id !== selectedBar?.id) {
           lastUpdateTime = now;
           onBarSelect(barToSelect);
         }
