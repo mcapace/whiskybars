@@ -207,6 +207,24 @@ export default function Footer() {
           </div>
         </div>
       </div>
+
+      {/* Logo Section */}
+      <div className="bg-gray-950 border-t border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex justify-center">
+            <div className="relative w-full max-w-4xl h-auto">
+              <Image
+                src="/logos /Logos Bars Page.png"
+                alt="Whisky Advocate Partners"
+                width={1200}
+                height={400}
+                className="w-full h-auto object-contain"
+                priority
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </footer>
   );
 }
