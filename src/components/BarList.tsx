@@ -169,8 +169,11 @@ export default function BarList({
       });
 
       // Update selected bar if we found a visible one and it's different
-      if (mostVisible !== null && mostVisible.bar.id !== selectedBar?.id) {
-        onBarSelect(mostVisible.bar);
+      if (mostVisible) {
+        const visibleBar = mostVisible.bar;
+        if (visibleBar.id !== selectedBar?.id) {
+          onBarSelect(visibleBar);
+        }
       }
     };
 
