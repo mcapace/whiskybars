@@ -501,6 +501,25 @@ export default function Map({
       }
     });
 
+    // Hide markers when heatmap is shown
+    if (showHeatmap) {
+      markersRef.current.forEach((marker) => {
+        marker.getElement().style.display = 'none';
+      });
+      clusterMarkersRef.current.forEach((marker) => {
+        marker.getElement().style.display = 'none';
+      });
+      return;
+    } else {
+      // Show markers when heatmap is off
+      markersRef.current.forEach((marker) => {
+        marker.getElement().style.display = 'block';
+      });
+      clusterMarkersRef.current.forEach((marker) => {
+        marker.getElement().style.display = 'block';
+      });
+    }
+
     // Add or update individual markers
     filteredBars.forEach((bar) => {
       if (!bar.coordinates.lat || !bar.coordinates.lng) return;
@@ -605,7 +624,7 @@ export default function Map({
         map.current.off('zoomend', handleMoveEnd);
       }
     };
-  }, [filteredBars, mapLoaded, createMarkerElement, createClusterMarker, getGeoJSONPoints]);
+  }, [filteredBars, mapLoaded, showHeatmap, createMarkerElement, createClusterMarker, getGeoJSONPoints]);
 
   // Update marker states (selected/hovered) without recreating markers
   useEffect(() => {

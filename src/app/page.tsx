@@ -429,7 +429,16 @@ export default function Home() {
                 Density View
               </button>
 
-              <button onClick={() => setShowBarCrawlPanel(!showBarCrawlPanel)} className={`filter-pill flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-all ${barCrawlBars.length > 0 ? 'bg-wa-red text-white border-wa-red' : darkMode ? 'bg-gray-700 text-gray-300 border-gray-600 hover:border-wa-red' : 'bg-white text-gray-700 border-gray-300 hover:border-wa-red'}`}>
+              <button 
+                onClick={() => {
+                  if (barCrawlBars.length > 0) {
+                    setShowBarCrawlPanel(!showBarCrawlPanel);
+                  } else {
+                    setToast('Add bars to your list to create a bar crawl!');
+                  }
+                }} 
+                className={`filter-pill flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-all ${barCrawlBars.length > 0 ? 'bg-wa-red text-white border-wa-red' : darkMode ? 'bg-gray-700 text-gray-300 border-gray-600 hover:border-wa-red' : 'bg-white text-gray-700 border-gray-300 hover:border-wa-red'}`}
+              >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
                 Bar Crawl {barCrawlBars.length > 0 && `(${barCrawlBars.length})`}
               </button>
@@ -476,7 +485,7 @@ export default function Home() {
               </div>
 
               {/* Bar List */}
-              <div className={`lg:block ${viewMode === 'list' ? 'block' : 'hidden lg:block'} h-[600px] lg:h-[700px] overflow-hidden`}>
+              <div className={`lg:block ${viewMode === 'list' ? 'block' : 'hidden lg:block'} h-[700px] overflow-hidden`}>
                 {loading ? (
                   <div className="p-6 space-y-4">{[...Array(5)].map((_, i) => <div key={i} className={`animate-pulse h-32 rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />)}</div>
                 ) : (
@@ -497,7 +506,7 @@ export default function Home() {
             </div>
 
             {/* Bar Crawl Panel */}
-            {showBarCrawlPanel && barCrawlBars.length > 0 && (
+            {(showBarCrawlPanel || barCrawlBars.length > 0) && barCrawlBars.length > 0 && (
               <div className={`bar-crawl-panel fixed bottom-4 right-4 lg:absolute lg:bottom-4 lg:right-4 w-80 max-h-96 rounded-xl shadow-2xl border overflow-hidden z-50 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
                 <div className="bg-wa-red text-white px-4 py-3">
                   <div className="flex items-center justify-between">

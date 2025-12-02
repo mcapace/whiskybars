@@ -141,14 +141,27 @@ export default function BarList({
   return (
     <div ref={listRef} className="h-full overflow-y-auto bg-gray-50">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-gray-50/95 backdrop-blur-sm px-4 py-3 border-b border-gray-200">
+      <div className="sticky top-0 z-10 bg-gradient-to-r from-wa-cream via-white to-wa-cream backdrop-blur-sm px-6 py-4 border-b-2 border-wa-red/20 shadow-sm">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-semibold text-gray-900">
-            {totalCount} {totalCount === 1 ? 'Bar' : 'Bars'}
-            {selectedState && <span className="text-gray-500 font-normal"> in {selectedState}</span>}
-          </p>
+          <div className="flex items-baseline gap-3">
+            <div className="flex items-baseline gap-2">
+              <span className="text-4xl font-serif font-bold text-wa-red">
+                {totalCount}
+              </span>
+              <span className="text-lg font-semibold text-gray-700 uppercase tracking-wider">
+                {totalCount === 1 ? 'Bar' : 'Bars'}
+              </span>
+            </div>
+            {selectedState && (
+              <span className="text-base text-gray-600 font-medium px-3 py-1 bg-white/80 rounded-full border border-wa-red/20">
+                in {selectedState}
+              </span>
+            )}
+          </div>
           {userLocation && sortBy === 'distance' && (
-            <span className="text-sm text-wa-red font-medium">Sorted by distance</span>
+            <span className="text-sm text-wa-red font-semibold bg-wa-red/10 px-3 py-1.5 rounded-full">
+              Sorted by distance
+            </span>
           )}
         </div>
       </div>
