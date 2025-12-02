@@ -672,25 +672,72 @@ export default function Map({
     });
   }, [selectedBar, hoveredBar, barCrawlBars, filteredBars, mapLoaded]);
 
-  // Fly to selected bar
+  // Fly to selected bar with smooth animation
   useEffect(() => {
     if (!map.current || !selectedBar || !mapLoaded) return;
 
-    map.current.flyTo({
-      center: [selectedBar.coordinates.lng, selectedBar.coordinates.lat],
-      zoom: 15,
-      duration: 800,
-      essential: true,
-    });
+    const currentCenter = map.current.getCenter();
+    const targetLng = selectedBar.coordinates.lng;
+    const targetLat = selectedBar.coordinates.lat;
 
-    // Open popup
-    const marker = markersRef.current.get(selectedBar.id);
-    if (marker) {
-      marker.togglePopup();
+    // Calculate distance to determine animation style
+    const distance = Math.sqrt(
+      Math.pow(currentCenter.lng - targetLng, 2) +
+      Math.pow(currentCenter.lat - targetLat, 2)
+    );
+
+    // Dynamic duration based on distance (longer for farther destinations)
+    const baseDuration = 1200;
+    const maxDuration = 2500;
+    const duration = Math.min(baseDuration + distance * 100, maxDuration);
+
+    // Dynamic zoom based on current zoom and distance
+    const currentZoom = map.current.getZoom();
+    const targetZoom = 15;
+
+    // For long distances, zoom out first then zoom in (creates dramatic fly effect)
+    if (distance > 5 && currentZoom > 8) {
+      // Two-stage animation: zoom out, then fly to destination
+      map.current.flyTo({
+        center: [targetLng, targetLat],
+        zoom: targetZoom,
+        duration: duration,
+        essential: true,
+        curve: 1.42, // Smooth curve (default is 1.42, higher = more dramatic)
+        speed: 1.2, // Animation speed multiplier
+        easing: (t) => {
+          // Custom easing: ease-out-cubic for smooth deceleration
+          return 1 - Math.pow(1 - t, 3);
+        },
+        padding: { top: 100, bottom: 100, left: 50, right: 50 },
+      });
+    } else {
+      // Short distance: simple smooth fly
+      map.current.flyTo({
+        center: [targetLng, targetLat],
+        zoom: targetZoom,
+        duration: Math.max(800, duration * 0.6),
+        essential: true,
+        easing: (t) => {
+          // Ease-in-out for smooth acceleration and deceleration
+          return t < 0.5
+            ? 4 * t * t * t
+            : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        },
+        padding: { top: 80, bottom: 80, left: 40, right: 40 },
+      });
     }
+
+    // Open popup after animation completes
+    setTimeout(() => {
+      const marker = markersRef.current.get(selectedBar.id);
+      if (marker) {
+        marker.togglePopup();
+      }
+    }, duration * 0.8);
   }, [selectedBar, mapLoaded]);
 
-  // Zoom to selected state
+  // Zoom to selected state with smooth animation
   useEffect(() => {
     if (!map.current || !mapLoaded || !selectedState) return;
 
@@ -706,9 +753,13 @@ export default function Map({
 
     if (!bounds.isEmpty()) {
       map.current.fitBounds(bounds, {
-        padding: { top: 100, bottom: 100, left: 100, right: 100 },
-        maxZoom: 10,
-        duration: 600,
+        padding: { top: 120, bottom: 120, left: 120, right: 120 },
+        maxZoom: 11,
+        duration: 1500,
+        easing: (t) => {
+          // Smooth ease-out-quart for elegant state zoom
+          return 1 - Math.pow(1 - t, 4);
+        },
       });
     }
   }, [selectedState, bars, mapLoaded]);

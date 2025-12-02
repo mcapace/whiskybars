@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Bar } from '@/types';
 import { shareContent, getBarShareUrl } from '@/utils/share';
+import MiniMapPreview from './MiniMapPreview';
 
 interface BarCardProps {
   bar: Bar;
@@ -32,6 +33,7 @@ export default function BarCard({
 }: BarCardProps) {
   const [isSharing, setIsSharing] = useState(false);
   const [shareSuccess, setShareSuccess] = useState(false);
+  const [showMapPreview, setShowMapPreview] = useState(false);
 
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -74,8 +76,14 @@ export default function BarCard({
           : 'shadow-sm hover:shadow-md'
       }`}
       onClick={handleCardClick}
-      onMouseEnter={() => onHover(true)}
-      onMouseLeave={() => onHover(false)}
+      onMouseEnter={() => {
+        onHover(true);
+        setShowMapPreview(true);
+      }}
+      onMouseLeave={() => {
+        onHover(false);
+        setShowMapPreview(false);
+      }}
     >
       {/* Selected/Hovered accent bar with gradient */}
       <div
@@ -95,16 +103,32 @@ export default function BarCard({
       <div className="p-4 pl-5">
         {/* Header with glass image and number */}
         <div className="flex items-start gap-3 mb-2">
-          {/* Glass image with number overlay and glow */}
-          <div className={`glass-glow flex-shrink-0 w-16 h-20 relative transition-transform duration-300 ${isHovered || isSelected ? 'scale-110' : ''}`}>
-            <Image
-              src="/map-logos/glass2.png"
-              alt=""
-              fill
-              className="object-contain"
-            />
+          {/* Glass image with number overlay and glow - transforms to mini-map on hover */}
+          <div className={`glass-glow flex-shrink-0 w-16 h-20 relative transition-all duration-300 ${isHovered || isSelected ? 'scale-110' : ''}`}>
+            {/* Glass icon - fades out on hover */}
+            <div className={`absolute inset-0 transition-opacity duration-300 ${showMapPreview ? 'opacity-0' : 'opacity-100'}`}>
+              <Image
+                src="/map-logos/glass2.png"
+                alt=""
+                fill
+                className="object-contain"
+              />
+            </div>
+
+            {/* Mini-map preview - fades in on hover */}
+            <div className={`absolute inset-0 transition-opacity duration-300 ${showMapPreview ? 'opacity-100' : 'opacity-0'}`}>
+              {showMapPreview && bar.coordinates.lat && bar.coordinates.lng && (
+                <MiniMapPreview
+                  lat={bar.coordinates.lat}
+                  lng={bar.coordinates.lng}
+                  name={bar.name}
+                  className="w-full h-full"
+                />
+              )}
+            </div>
+
             {/* Number badge */}
-            <div className="absolute -top-2 -right-2 w-8 h-8 bg-wa-red text-white rounded-full flex items-center justify-center text-base font-bold shadow-lg border-2 border-white">
+            <div className="absolute -top-2 -right-2 w-8 h-8 bg-wa-red text-white rounded-full flex items-center justify-center text-base font-bold shadow-lg border-2 border-white z-10">
               {index + 1}
             </div>
           </div>
