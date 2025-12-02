@@ -336,8 +336,8 @@ body {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  width: 96px;
-  height: 112px;
+  width: 60px;
+  height: 70px;
 }
 
 .map-marker-container:hover {
@@ -345,8 +345,8 @@ body {
 }
 
 .map-marker {
-  width: 96px;
-  height: 112px;
+  width: 60px;
+  height: 70px;
   background: transparent !important;
   display: flex;
   align-items: center;
@@ -362,8 +362,8 @@ body {
 }
 
 .map-marker .glass-icon {
-  width: 96px;
-  height: 112px;
+  width: 60px;
+  height: 70px;
   object-fit: contain;
   display: block;
   pointer-events: none;
