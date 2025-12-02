@@ -6,15 +6,18 @@ interface VideoHeroProps {
   videos: string[];
   interval?: number; // Time per video in ms (default 15000 = 15 seconds)
   children?: React.ReactNode;
+  fallbackImage?: string;
 }
 
 export default function VideoHero({
   videos = ['/videos/hero/hero-1.mp4', '/videos/hero/hero-2.mp4', '/videos/hero/hero-3.mp4'],
   interval = 15000,
-  children
+  children,
+  fallbackImage = '/images/hero-fallback.jpg'
 }: VideoHeroProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [videoError, setVideoError] = useState(false);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const isSingleVideo = videos.length === 1;
   const loopTime = 67; // 1:07 in seconds
@@ -94,8 +97,34 @@ export default function VideoHero({
 
   return (
     <div className="video-hero relative w-full h-[95vh] min-h-[700px] max-h-[1000px] overflow-hidden bg-black">
+      {/* Fallback animated gradient background (shows if video fails) */}
+      <div
+        className={`absolute inset-0 transition-opacity duration-1000 ${
+          videoError ? 'opacity-100' : 'opacity-0'
+        }`}
+        style={{
+          background: `
+            linear-gradient(135deg,
+              #1a0a00 0%,
+              #2d1810 25%,
+              #4a2c1a 50%,
+              #2d1810 75%,
+              #1a0a00 100%
+            )
+          `,
+          backgroundSize: '400% 400%',
+          animation: 'heroGradient 15s ease infinite',
+        }}
+      >
+        {/* Whisky glass pattern overlay */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 L25 25 L20 55 L40 55 L35 25 L30 5' fill='none' stroke='%23f9bd13' stroke-width='1'/%3E%3C/svg%3E")`,
+          backgroundSize: '60px 60px',
+        }} />
+      </div>
+
       {/* Video layers */}
-      {videos.map((src, index) => (
+      {!videoError && videos.map((src, index) => (
         <video
           key={src}
           ref={(el) => { 
@@ -112,6 +141,10 @@ export default function VideoHero({
           playsInline
           loop={false} // Custom loop handled by JS for single video
           preload="auto"
+          onError={() => {
+            console.error('Video failed to load:', src);
+            setVideoError(true);
+          }}
         />
       ))}
 

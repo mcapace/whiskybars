@@ -5,9 +5,29 @@ import Papa from 'papaparse';
 import { Bar } from '@/types';
 
 const SHEETS_URL = process.env.NEXT_PUBLIC_SHEETS_URL;
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
 interface CSVRow {
   [key: string]: string;
+}
+
+// Validate if coordinates are within valid US bounds (including territories)
+function isValidUSCoordinate(lat: number, lng: number): boolean {
+  // Check if coordinates are not zero
+  if (lat === 0 && lng === 0) return false;
+
+  // Continental US: lat 24-50, lng -125 to -66
+  // Alaska: lat 51-72, lng -180 to -130
+  // Hawaii: lat 18-23, lng -161 to -154
+  // Puerto Rico: lat 17-19, lng -68 to -65
+  // Guam: lat 13-14, lng 144-145
+
+  const isContinentalUS = lat >= 24 && lat <= 50 && lng >= -125 && lng <= -66;
+  const isAlaska = lat >= 51 && lat <= 72 && lng >= -180 && lng <= -130;
+  const isHawaii = lat >= 18 && lat <= 23 && lng >= -161 && lng <= -154;
+  const isPuertoRico = lat >= 17 && lat <= 19 && lng >= -68 && lng <= -65;
+
+  return isContinentalUS || isAlaska || isHawaii || isPuertoRico;
 }
 
 function parseCoordinates(coordString: string): { lat: number; lng: number } {
@@ -19,10 +39,40 @@ function parseCoordinates(coordString: string): { lat: number; lng: number } {
   const lat = parseFloat(parts[0]);
   const lng = parseFloat(parts[1]);
 
-  return {
-    lat: isNaN(lat) ? 0 : lat,
-    lng: isNaN(lng) ? 0 : lng,
-  };
+  // Return 0,0 if parsing failed
+  if (isNaN(lat) || isNaN(lng)) return { lat: 0, lng: 0 };
+
+  // Check for common issues like swapped lat/lng
+  // Valid US latitudes are roughly 18-72, valid longitudes are roughly -180 to -65
+  // If lat looks like a longitude (negative, large absolute value), they might be swapped
+  if (lat < 0 && lng > 0 && lng < 90) {
+    // Likely swapped - lat is negative (should be lng), lng is positive small (should be lat)
+    return { lat: lng, lng: lat };
+  }
+
+  return { lat, lng };
+}
+
+// Geocode an address using Mapbox Geocoding API
+async function geocodeAddress(address: string): Promise<{ lat: number; lng: number } | null> {
+  if (!MAPBOX_TOKEN || !address) return null;
+
+  try {
+    const encodedAddress = encodeURIComponent(address);
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${MAPBOX_TOKEN}&country=us,pr&limit=1`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.features && data.features.length > 0) {
+      const [lng, lat] = data.features[0].center;
+      return { lat, lng };
+    }
+  } catch (error) {
+    console.error('Geocoding error for address:', address, error);
+  }
+
+  return null;
 }
 
 // Coordinate corrections for specific locations
@@ -86,7 +136,7 @@ export function useBars() {
         Papa.parse<CSVRow>(csvText, {
           header: true,
           skipEmptyLines: true,
-          complete: (results) => {
+          complete: async (results) => {
             const parsedBars: Bar[] = results.data
               .map((row, index) => {
                 // Get column values (handle both header names and indices)
@@ -109,6 +159,28 @@ export function useBars() {
                 return bar;
               })
               .filter(bar => bar.name && bar.state); // Filter out invalid entries
+
+            // Geocode bars with invalid coordinates
+            const barsNeedingGeocode = parsedBars.filter(
+              bar => !isValidUSCoordinate(bar.coordinates.lat, bar.coordinates.lng)
+            );
+
+            if (barsNeedingGeocode.length > 0) {
+              console.log(`Geocoding ${barsNeedingGeocode.length} bars with invalid coordinates...`);
+
+              // Geocode in batches to avoid rate limiting
+              const geocodePromises = barsNeedingGeocode.map(async (bar) => {
+                const geocoded = await geocodeAddress(bar.address);
+                if (geocoded) {
+                  bar.coordinates = geocoded;
+                  console.log(`Geocoded ${bar.name}: ${geocoded.lat}, ${geocoded.lng}`);
+                } else {
+                  console.warn(`Failed to geocode ${bar.name} at ${bar.address}`);
+                }
+              });
+
+              await Promise.all(geocodePromises);
+            }
 
             setBars(parsedBars);
             setLoading(false);
