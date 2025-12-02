@@ -8,4 +8,6 @@ export { default as CocktailSection } from './CocktailSection';
 export { default as CocktailModal } from './CocktailModal';
 export { default as OdeSection } from './OdeSection';
 export { default as SponsorsSection } from './SponsorsSection';
+export { default as ScrollProgress } from './ScrollProgress';
+export { default as StatsDashboard } from './StatsDashboard';
 export { default as Footer } from './Footer';

@@ -12,6 +12,8 @@ import {
   OdeSection,
   SponsorsSection,
   Footer,
+  ScrollProgress,
+  StatsDashboard,
 } from '@/components';
 import { useBars } from '@/hooks/useBars';
 import { cocktails } from '@/data/cocktails';
@@ -336,6 +338,7 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen flex flex-col ${darkMode ? 'dark-mode bg-gray-900' : 'bg-white'}`}>
+      <ScrollProgress />
       <Header />
 
       <main className="flex-1">
@@ -368,6 +371,10 @@ export default function Home() {
 
         {/* Intro Section */}
         <section className={`py-16 lg:py-24 ${darkMode ? 'bg-gray-900' : 'bg-white'}`} id="explore">
+          {/* Statistics Dashboard */}
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+            <StatsDashboard bars={bars} selectedState={selectedState} />
+          </div>
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className={`font-serif text-3xl md:text-4xl mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               Where Exceptional Whisky Meets True Hospitality
