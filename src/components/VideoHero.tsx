@@ -3,104 +3,76 @@
 import { useState, useEffect, useRef } from 'react';
 
 interface VideoHeroProps {
-  videos: string[];
-  interval?: number; // Time per video in ms (default 15000 = 15 seconds)
+  videoSrc?: string;
+  loopEndTime?: number; // Time in seconds to loop back (default 67 = 1:07)
   children?: React.ReactNode;
-  fallbackImage?: string;
 }
 
 export default function VideoHero({
-  videos = ['/videos/hero/hero-1.mp4', '/videos/hero/hero-2.mp4', '/videos/hero/hero-3.mp4'],
-  interval = 15000,
-  children,
-  fallbackImage = '/images/hero-fallback.jpg'
+  videoSrc = '/videos/hero/NLXDcpbG-31875404.mp4',
+  loopEndTime = 67, // Loop at 1:07
+  children
 }: VideoHeroProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const [videoError, setVideoError] = useState(false);
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-  const isSingleVideo = videos.length === 1;
-  const loopTime = 67; // 1:07 in seconds
+  const [isLoaded, setIsLoaded] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
+  // Handle video loading and playback
   useEffect(() => {
-    // Preload all videos
-    videoRefs.current.forEach((video, index) => {
-      if (video) {
-        video.load();
-        if (index === 0) {
-          video.play().catch(() => {});
-        }
-      }
-    });
-  }, [videos]);
+    const video = videoRef.current;
+    if (!video) return;
 
-  // Handle single video loop at 1:07
-  useEffect(() => {
-    if (!isSingleVideo) return;
-
-    const video = videoRefs.current[0];
-    if (!video) {
-      // Wait for video to be ready
-      const checkVideo = setInterval(() => {
-        const v = videoRefs.current[0];
-        if (v) {
-          clearInterval(checkVideo);
-          v.play().catch(() => {});
-        }
-      }, 100);
-      return () => clearInterval(checkVideo);
-    }
+    const handleCanPlay = () => {
+      setIsLoaded(true);
+      video.play().catch((err) => {
+        console.error('Video autoplay failed:', err);
+        // Try playing muted (some browsers require this)
+        video.muted = true;
+        video.play().catch(() => setVideoError(true));
+      });
+    };
 
     const handleTimeUpdate = () => {
-      if (video.currentTime >= loopTime) {
+      // Loop back to start when reaching the loop point
+      if (video.currentTime >= loopEndTime) {
         video.currentTime = 0;
         video.play().catch(() => {});
       }
     };
 
+    const handleError = () => {
+      console.error('Video failed to load:', videoSrc);
+      setVideoError(true);
+    };
+
+    const handleEnded = () => {
+      // Restart video if it ends before loop point
+      video.currentTime = 0;
+      video.play().catch(() => {});
+    };
+
+    video.addEventListener('canplay', handleCanPlay);
     video.addEventListener('timeupdate', handleTimeUpdate);
-    video.play().catch(() => {});
+    video.addEventListener('error', handleError);
+    video.addEventListener('ended', handleEnded);
+
+    // Start loading
+    video.load();
 
     return () => {
+      video.removeEventListener('canplay', handleCanPlay);
       video.removeEventListener('timeupdate', handleTimeUpdate);
+      video.removeEventListener('error', handleError);
+      video.removeEventListener('ended', handleEnded);
     };
-  }, [isSingleVideo, videos]);
-
-  // Handle multiple videos rotation
-  useEffect(() => {
-    if (isSingleVideo) return;
-
-    const timer = setInterval(() => {
-      setIsTransitioning(true);
-
-      setTimeout(() => {
-        setCurrentIndex((prev) => {
-          const nextIndex = (prev + 1) % videos.length;
-
-          // Pause current video, play next
-          if (videoRefs.current[prev]) {
-            videoRefs.current[prev]!.pause();
-            videoRefs.current[prev]!.currentTime = 0;
-          }
-          if (videoRefs.current[nextIndex]) {
-            videoRefs.current[nextIndex]!.play().catch(() => {});
-          }
-
-          return nextIndex;
-        });
-        setIsTransitioning(false);
-      }, 1000); // Crossfade duration
-    }, interval);
-
-    return () => clearInterval(timer);
-  }, [videos.length, interval, isSingleVideo]);
+  }, [videoSrc, loopEndTime]);
 
   return (
     <div className="video-hero relative w-full h-[95vh] min-h-[700px] max-h-[1000px] overflow-hidden bg-black">
-      {/* Fallback animated gradient background (shows if video fails) */}
+      {/* Fallback animated gradient background (shows if video fails or while loading) */}
       <div
         className={`absolute inset-0 transition-opacity duration-1000 ${
-          videoError ? 'opacity-100' : 'opacity-0'
+          videoError || !isLoaded ? 'opacity-100' : 'opacity-0'
         }`}
         style={{
           background: `
@@ -123,67 +95,35 @@ export default function VideoHero({
         }} />
       </div>
 
-      {/* Video layers */}
-      {!videoError && videos.map((src, index) => (
+      {/* Video element */}
+      {!videoError && (
         <video
-          key={src}
-          ref={(el) => { 
-            if (el) {
-              videoRefs.current[index] = el;
-            }
-          }}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 z-0 ${
-            index === currentIndex ? 'opacity-100' : 'opacity-0'
+          ref={videoRef}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+            isLoaded ? 'opacity-100' : 'opacity-0'
           }`}
-          src={src}
+          src={videoSrc}
           muted
-          autoPlay
           playsInline
-          loop={false} // Custom loop handled by JS for single video
           preload="auto"
-          onError={() => {
-            console.error('Video failed to load:', src);
-            setVideoError(true);
-          }}
         />
-      ))}
+      )}
 
-      {/* Overlay gradient with stronger filter */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
-      <div className="absolute inset-0 bg-[#e04720]/20 mix-blend-overlay" />
-      <div className="absolute inset-0 bg-black/30" />
+      {/* Overlay gradients */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
+      <div className="absolute inset-0 bg-[#1a0a00]/20 mix-blend-overlay" />
 
       {/* Content overlay */}
-      <div className="absolute inset-0 flex items-center justify-center">
+      <div className="absolute inset-0 flex items-center justify-center z-10">
         {children}
       </div>
 
-      {/* Video indicator dots - only show for multiple videos */}
-      {!isSingleVideo && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-          {videos.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                if (videoRefs.current[currentIndex]) {
-                  videoRefs.current[currentIndex]!.pause();
-                }
-                setCurrentIndex(index);
-                if (videoRefs.current[index]) {
-                  videoRefs.current[index]!.currentTime = 0;
-                  videoRefs.current[index]!.play().catch(() => {});
-                }
-              }}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentIndex
-                  ? 'bg-white w-8'
-                  : 'bg-white/50 hover:bg-white/75'
-              }`}
-              aria-label={`Go to video ${index + 1}`}
-            />
-          ))}
-        </div>
-      )}
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce">
+        <svg className="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+      </div>
     </div>
   );
 }
