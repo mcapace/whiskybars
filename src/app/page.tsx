@@ -342,7 +342,7 @@ export default function Home() {
       <main className="flex-1">
         {/* Video Hero Section */}
         <VideoHero
-          video="/videos/hero/NLXDcpbG-31875404.mp4"
+          videos={['/videos/hero/NLXDcpbG-31875404.mp4']}
         >
           <div className="text-center text-white px-4 max-w-4xl mx-auto">
             <div className="mb-6">

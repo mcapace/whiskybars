@@ -32,9 +32,6 @@ export default function CocktailSection({ cocktails }: CocktailSectionProps) {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
-          <div className="inline-block mb-4">
-            <span className="text-wa-red text-sm font-bold uppercase tracking-widest">Cocktails</span>
-          </div>
           <h2 className="font-serif text-4xl sm:text-5xl font-medium text-gray-900 mb-6">
             Elevating the Classics
           </h2>
@@ -148,11 +145,6 @@ function CocktailCard({ cocktail, imageUrl, index, onClick }: CocktailCardProps)
           <h3 className="font-serif text-2xl font-medium text-gray-900 group-hover:text-wa-red transition-colors duration-300 mb-2">
             {cocktail.name}
           </h3>
-          
-          {/* Subtitle */}
-          <p className="text-sm text-gray-500 uppercase tracking-widest font-semibold">
-            Classic Cocktail
-          </p>
 
           {/* Hover indicator */}
           <div className="mt-4 flex items-center text-wa-red opacity-0 group-hover:opacity-100 transition-opacity duration-300">
