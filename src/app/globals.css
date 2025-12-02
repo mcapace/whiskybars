@@ -579,6 +579,9 @@ body {
   color: white !important;
   line-height: 1;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  text-align: center;
 }
 
 .cluster-count {
@@ -586,6 +589,8 @@ body {
   font-weight: 900;
   color: white !important;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+  text-align: center;
+  display: block;
 }
 
 .cluster-label {
@@ -596,6 +601,8 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  text-align: center;
+  display: block;
 }
 
 /* ===== Search Highlighting ===== */

@@ -126,7 +126,7 @@ export default function Header() {
             <Link href="/" className="flex-shrink-0">
               <div className="relative h-10 w-32 lg:h-12 lg:w-40">
                 <Image
-                  src={isScrolled ? "/images/logos/wa-blue.png" : "/images/logos/wa-white.png"}
+                  src={isScrolled ? "/images/logos/wa-blue.png" : "/images/logos/wa-blue.png"}
                   alt="Whisky Advocate"
                   fill
                   className="object-contain"
@@ -145,7 +145,7 @@ export default function Header() {
                   <a
                     href={item.href}
                     className={`px-2 py-2 text-sm font-serif font-bold transition-colors whitespace-nowrap ${
-                      isScrolled ? 'text-gray-900 hover:text-wa-red' : 'text-white hover:text-wa-gold'
+                      isScrolled ? 'text-gray-900 hover:text-wa-red' : 'text-gray-900 hover:text-wa-red'
                     }`}
                   >
                     {item.label}
@@ -185,7 +185,9 @@ export default function Header() {
               <span className="text-wa-red mx-1.5 text-[8px] leading-none">◆</span>
               <Link
                 href="/"
-                className="px-2 py-2 text-sm font-serif font-bold text-gray-900 hover:text-wa-red transition-colors whitespace-nowrap"
+                className={`px-2 py-2 text-sm font-serif font-bold transition-colors whitespace-nowrap ${
+                  isScrolled ? 'text-gray-900 hover:text-wa-red' : 'text-gray-900 hover:text-wa-red'
+                }`}
               >
                 Top Whisky Bars
               </Link>
@@ -292,7 +294,7 @@ export default function Header() {
             <div className="p-4 border-b border-gray-100">
               <div className="relative h-10 w-32">
                 <Image
-                  src={isScrolled ? "/images/logos/wa-blue.png" : "/images/logos/wa-white.png"}
+                  src="/images/logos/wa-blue.png"
                   alt="Whisky Advocate"
                   fill
                   className="object-contain"
