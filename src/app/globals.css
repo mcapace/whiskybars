@@ -555,16 +555,13 @@ body {
 /* ===== Cluster Marker Styles ===== */
 
 .cluster-marker {
-  background: var(--whisky-red) !important;
-  border: 3px solid white !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: linear-gradient(135deg, #c41230 0%, #a30f28 100%);
-  border: 3px solid white;
-  box-shadow: 0 4px 16px rgba(196, 18, 48, 0.4);
+  background: linear-gradient(135deg, #e04720 0%, #c73d1a 100%) !important;
+  border: 4px solid white !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6) !important;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
