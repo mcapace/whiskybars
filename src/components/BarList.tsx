@@ -160,7 +160,7 @@ export default function BarList({
           const barId = parseInt(entry.target.getAttribute('data-bar-id') || '0');
           const bar = processedBars.find(b => b.id === barId);
           if (bar) {
-            const currentRatio = mostVisible?.ratio || 0;
+            const currentRatio = mostVisible ? mostVisible.ratio : 0;
             if (entry.intersectionRatio > currentRatio) {
               mostVisible = { bar, ratio: entry.intersectionRatio };
             }
@@ -169,7 +169,7 @@ export default function BarList({
       });
 
       // Update selected bar if we found a visible one and it's different
-      if (mostVisible && mostVisible.bar.id !== selectedBar?.id) {
+      if (mostVisible !== null && mostVisible.bar.id !== selectedBar?.id) {
         onBarSelect(mostVisible.bar);
       }
     };
