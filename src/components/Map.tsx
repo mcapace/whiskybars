@@ -90,7 +90,7 @@ export default function Map({
     } else {
       // Glencairn glass icon
       const img = document.createElement('img');
-      img.src = '/map-logos/glass1.png';
+      img.src = '/map-logos/glass2.png';
       img.alt = '';
       img.className = 'glass-icon';
       img.style.background = 'transparent';
@@ -553,7 +553,7 @@ export default function Map({
             // Clear and add glass icon
             markerDiv.innerHTML = '';
             const img = document.createElement('img');
-            img.src = '/map-logos/glass1.png';
+            img.src = '/map-logos/glass2.png';
             img.alt = '';
             img.className = 'glass-icon';
             img.style.background = 'transparent';
@@ -658,7 +658,7 @@ export default function Map({
           // Only add glass icon if it doesn't exist
           markerDiv.innerHTML = '';
           const img = document.createElement('img');
-          img.src = '/map-logos/glass1.png';
+          img.src = '/map-logos/glass2.png';
           img.alt = '';
           img.className = 'glass-icon';
           img.style.background = 'transparent';

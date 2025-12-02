@@ -66,7 +66,7 @@ export default function BarDetailModal({ bar, index, distance, onClose }: BarDet
           <div className="flex items-center gap-4">
             <div className="relative w-16 h-20">
               <Image
-                src="/map-logos/AdobeStock_271951404.png"
+                src="/map-logos/glass2.png"
                 alt=""
                 fill
                 className="object-contain"

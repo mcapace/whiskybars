@@ -99,7 +99,7 @@ export default function BarCard({
           {/* Glass image with number overlay and glow */}
           <div className={`glass-glow flex-shrink-0 w-16 h-20 relative transition-transform duration-300 ${isHovered || isSelected ? 'scale-110' : ''}`}>
             <Image
-              src="/map-logos/AdobeStock_271951404.png"
+              src="/map-logos/glass2.png"
               alt=""
               fill
               className="object-contain"
