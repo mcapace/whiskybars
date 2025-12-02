@@ -86,23 +86,19 @@ export default function BarList({
       filteredBars = filteredBars.filter(bar => bar.state === selectedState);
     }
 
-    // Sort
+    // Sort bars within each state
     if (sortBy === 'distance' && userLocation) {
       filteredBars.sort((a, b) => (a.distance ?? Infinity) - (b.distance ?? Infinity));
-    } else if (sortBy === 'alphabetical') {
+    } else {
+      // Default to alphabetical by name
       filteredBars.sort((a, b) => a.name.localeCompare(b.name));
     }
-    // 'state' sorting is handled by grouping below
 
     return filteredBars;
   }, [bars, searchQuery, selectedState, userLocation, sortBy]);
 
-  // Group by state if sorting by state
+  // Always group by state in alphabetical order
   const groupedBars = useMemo(() => {
-    if (sortBy !== 'state') {
-      return [['All', processedBars] as [string, typeof processedBars]];
-    }
-
     const grouped: Record<string, typeof processedBars> = {};
     processedBars.forEach(bar => {
       if (!grouped[bar.state]) {
@@ -111,8 +107,9 @@ export default function BarList({
       grouped[bar.state].push(bar);
     });
 
+    // Sort states alphabetically
     return Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b));
-  }, [processedBars, sortBy]);
+  }, [processedBars]);
 
   const totalCount = processedBars.length;
 
@@ -184,11 +181,9 @@ export default function BarList({
               
               return (
                 <div key={state}>
-                  {sortBy === 'state' && (
-                    <h3 className="text-sm uppercase tracking-widest text-wa-red font-bold mb-3 sticky top-14 bg-gray-50/95 backdrop-blur-sm py-2 z-[5]">
-                      {state} ({stateBars.length})
-                    </h3>
-                  )}
+                  <h3 className="text-sm uppercase tracking-widest text-wa-red font-bold mb-3 sticky top-14 bg-gray-50/95 backdrop-blur-sm py-2 z-[5]">
+                    {state} ({stateBars.length})
+                  </h3>
                   <div className="grid gap-3">
                     {stateBars.map((bar, localIndex) => {
                       const isInCrawl = barCrawlBars.some(b => b.id === bar.id);
