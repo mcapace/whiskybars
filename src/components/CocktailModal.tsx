@@ -62,16 +62,14 @@ export default function CocktailModal({ cocktail, imageUrl, onClose }: CocktailM
       }}
     >
       <div className="modal-content-premium bg-white w-full h-full sm:h-auto sm:max-w-6xl sm:max-h-[95vh] sm:rounded-2xl shadow-2xl border-0 sm:border border-gray-100 flex flex-col sm:flex-row overflow-hidden">
-        {/* Image section - larger on desktop, full width on mobile */}
+        {/* Image section - full bleed, larger on desktop */}
         <div className="relative w-full sm:w-[55%] h-[300px] sm:h-auto bg-gray-100 flex-shrink-0">
-          <div className="absolute inset-0">
-            <Image
-              src={imageUrl}
-              alt={cocktail.name}
-              fill
-              className="object-cover sm:object-contain"
-            />
-          </div>
+          <Image
+            src={imageUrl}
+            alt={cocktail.name}
+            fill
+            className="object-cover sm:object-cover"
+          />
           
           {/* Gradient overlay for mobile title */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent sm:hidden" />
@@ -143,21 +141,23 @@ export default function CocktailModal({ cocktail, imageUrl, onClose }: CocktailM
                 </button>
               </div>
 
-              {/* Content based on active tab */}
-              <div className="min-h-[150px] mb-6">
-                {activeTab === 'og' ? (
-                  <div className="bg-gray-50 p-5 sm:p-6 rounded-lg border border-gray-200">
-                    <p className="text-sm sm:text-base text-gray-700 whitespace-pre-line leading-relaxed">
-                      {cocktail.ogRecipe}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="bg-gray-50 p-5 sm:p-6 rounded-lg border border-gray-200">
-                    <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
-                      {cocktail.freshTake}
-                    </p>
-                  </div>
-                )}
+              {/* Content based on active tab - fixed height to prevent size changes */}
+              <div className="h-[200px] sm:h-[250px] mb-6">
+                <div className="h-full overflow-y-auto">
+                  {activeTab === 'og' ? (
+                    <div className="bg-gray-50 p-5 sm:p-6 rounded-lg border border-gray-200">
+                      <p className="text-sm sm:text-base text-gray-700 whitespace-pre-line leading-relaxed">
+                        {cocktail.ogRecipe}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="bg-gray-50 p-5 sm:p-6 rounded-lg border border-gray-200">
+                      <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                        {cocktail.freshTake}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Action buttons - compact */}
