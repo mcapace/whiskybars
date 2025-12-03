@@ -14,6 +14,7 @@ interface CocktailModalProps {
 export default function CocktailModal({ cocktail, imageUrl, onClose }: CocktailModalProps) {
   const [isSharing, setIsSharing] = useState(false);
   const [shareSuccess, setShareSuccess] = useState(false);
+  const [activeTab, setActiveTab] = useState<'og' | 'fresh'>('og');
 
   // Close on escape key
   useEffect(() => {
@@ -53,77 +54,107 @@ export default function CocktailModal({ cocktail, imageUrl, onClose }: CocktailM
 
   return (
     <div
-      className="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+      className="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm"
       onClick={e => {
         if (e.target === e.currentTarget) {
           onClose();
         }
       }}
     >
-      <div className="modal-content-premium bg-white max-w-5xl w-full max-h-[90vh] overflow-hidden rounded-2xl shadow-2xl border border-gray-100">
-        <div className="grid md:grid-cols-2 h-full max-h-[90vh] min-h-[600px]">
-          {/* Image */}
-          <div className="bg-gray-100 relative overflow-hidden">
-            <div className="absolute inset-0">
-              <Image
-                src={imageUrl}
-                alt={cocktail.name}
-                fill
-                className="object-contain"
-              />
-            </div>
+      <div className="modal-content-premium bg-white w-full h-full sm:h-auto sm:max-w-4xl sm:max-h-[95vh] sm:rounded-2xl shadow-2xl border-0 sm:border border-gray-100 flex flex-col overflow-hidden">
+        {/* Header with image and title - compact */}
+        <div className="relative h-[200px] sm:h-[280px] bg-gray-100 flex-shrink-0">
+          <div className="absolute inset-0">
+            <Image
+              src={imageUrl}
+              alt={cocktail.name}
+              fill
+              className="object-cover"
+            />
           </div>
+          
+          {/* Gradient overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+          
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center text-white hover:text-gray-200 hover:bg-black/30 rounded-full transition-all duration-200 z-10 backdrop-blur-sm"
+            aria-label="Close modal"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
 
-          {/* Content */}
-          <div className="p-8 sm:p-10 relative overflow-y-auto flex flex-col">
-            <button
-              onClick={onClose}
-              className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-all duration-200 z-10"
-              aria-label="Close modal"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            <div className="mb-2">
-              <span className="text-wa-red text-xs font-bold uppercase tracking-widest">Classic Cocktail</span>
+          {/* Title overlay */}
+          <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+            <div className="mb-1">
+              <span className="text-white/90 text-xs font-bold uppercase tracking-widest">Classic Cocktail</span>
             </div>
-            <h2 className="font-serif text-4xl sm:text-5xl font-medium text-gray-900 mb-8 pr-12">
+            <h2 className="font-serif text-3xl sm:text-4xl font-medium text-white drop-shadow-lg">
               {cocktail.name}
             </h2>
+          </div>
+        </div>
 
-            <div className="grid sm:grid-cols-2 gap-8 mb-10 flex-1 min-h-0">
-              <div className="relative">
-                <div className="absolute -top-1 -left-1 w-12 h-12 bg-wa-red/10 rounded-lg"></div>
-                <div className="relative bg-gray-50 p-6 rounded-lg border border-gray-200 h-full">
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-wa-red mb-4">
-                    The O.G.
-                  </h3>
-                  <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed break-words">
+        {/* Content area - scrollable if needed but optimized for no scroll */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-6 sm:p-8">
+            {/* Tab switcher for O.G. and Fresh Take */}
+            <div className="flex gap-2 mb-6 border-b border-gray-200">
+              <button
+                onClick={() => setActiveTab('og')}
+                className={`px-4 py-2 text-sm font-semibold uppercase tracking-wider transition-all relative ${
+                  activeTab === 'og'
+                    ? 'text-wa-red'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                The O.G.
+                {activeTab === 'og' && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-wa-red" />
+                )}
+              </button>
+              <button
+                onClick={() => setActiveTab('fresh')}
+                className={`px-4 py-2 text-sm font-semibold uppercase tracking-wider transition-all relative ${
+                  activeTab === 'fresh'
+                    ? 'text-wa-red'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                The Fresh Take
+                {activeTab === 'fresh' && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-wa-red" />
+                )}
+              </button>
+            </div>
+
+            {/* Content based on active tab */}
+            <div className="min-h-[200px]">
+              {activeTab === 'og' ? (
+                <div className="bg-gray-50 p-5 sm:p-6 rounded-lg border border-gray-200">
+                  <p className="text-sm sm:text-base text-gray-700 whitespace-pre-line leading-relaxed">
                     {cocktail.ogRecipe}
                   </p>
                 </div>
-              </div>
-              <div className="relative">
-                <div className="absolute -top-1 -left-1 w-12 h-12 bg-wa-gold/10 rounded-lg"></div>
-                <div className="relative bg-gray-50 p-6 rounded-lg border border-gray-200 h-full">
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-wa-red mb-4">
-                    The Fresh Take
-                  </h3>
-                  <p className="text-sm text-gray-700 leading-relaxed break-words">
+              ) : (
+                <div className="bg-gray-50 p-5 sm:p-6 rounded-lg border border-gray-200">
+                  <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
                     {cocktail.freshTake}
                   </p>
                 </div>
-              </div>
+              )}
             </div>
 
-            <div className="flex items-center gap-4">
+            {/* Action buttons - compact */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-6">
               <a
                 href={cocktail.shopUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex items-center gap-3 bg-wa-red text-white px-8 py-4 text-sm font-semibold uppercase tracking-wider hover:bg-wa-red-dark transition-all duration-300 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="group flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 bg-wa-red text-white px-6 py-3 sm:px-8 sm:py-4 text-sm font-semibold uppercase tracking-wider hover:bg-wa-red-dark transition-all duration-300 rounded-lg shadow-lg hover:shadow-xl"
               >
                 <span>Shop Now</span>
                 <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,7 +165,7 @@ export default function CocktailModal({ cocktail, imageUrl, onClose }: CocktailM
               <button
                 onClick={handleShare}
                 disabled={isSharing}
-                className={`group inline-flex items-center gap-2 px-6 py-4 text-sm font-semibold uppercase tracking-wider transition-all duration-300 rounded-lg border-2 ${
+                className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-3 sm:px-6 sm:py-4 text-sm font-semibold uppercase tracking-wider transition-all duration-300 rounded-lg border-2 ${
                   shareSuccess
                     ? 'border-green-500 bg-green-50 text-green-700'
                     : 'border-wa-red text-wa-red hover:bg-wa-red hover:text-white'
