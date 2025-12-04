@@ -255,27 +255,45 @@ export default function Header() {
         {isSearchOpen && (
           <div className="border-t border-gray-200 bg-wa-cream">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search whiskyadvocate.com..."
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wa-red focus:border-transparent bg-white"
-                  autoFocus
-                />
-                <svg
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              <form
+                action="https://whiskyadvocate.com/"
+                method="get"
+                onSubmit={(e) => {
+                  const form = e.currentTarget;
+                  const input = form.querySelector('input[type="text"]') as HTMLInputElement;
+                  if (input && input.value.trim()) {
+                    // Redirect to Whisky Advocate search
+                    window.location.href = `https://whiskyadvocate.com/?s=${encodeURIComponent(input.value.trim())}`;
+                    e.preventDefault();
+                    setIsSearchOpen(false);
+                  } else {
+                    e.preventDefault();
+                  }
+                }}
+              >
+                <div className="relative">
+                  <input
+                    type="text"
+                    name="s"
+                    placeholder="Search whiskyadvocate.com..."
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wa-red focus:border-transparent bg-white"
+                    autoFocus
                   />
-                </svg>
-              </div>
+                  <svg
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                </div>
+              </form>
             </div>
           </div>
         )}
