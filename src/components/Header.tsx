@@ -35,10 +35,10 @@ export default function Header() {
       label: 'Whisky Life',
       href: 'https://whiskyadvocate.com/whiskey-life',
       submenu: [
-        { label: 'Cocktails', href: 'https://whiskyadvocate.com/cocktails' },
-        { label: 'Gear', href: 'https://whiskyadvocate.com/gear' },
-        { label: 'Travel', href: 'https://whiskyadvocate.com/travel' },
-        { label: 'Food', href: 'https://whiskyadvocate.com/food' },
+        { label: 'Cocktails', href: 'https://whiskyadvocate.com/category/cocktails' },
+        { label: 'Gear', href: 'https://whiskyadvocate.com/category/gear' },
+        { label: 'Travel', href: 'https://whiskyadvocate.com/category/travel' },
+        { label: 'Food', href: 'https://whiskyadvocate.com/category/food' },
       ],
     },
     {
