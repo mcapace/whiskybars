@@ -106,17 +106,17 @@ export default function Footer() {
                   WhiskyFest Exhibitors
                 </a>
               </li>
+              <li>
+                <a href="https://whiskyadvocate.com/Privacy-Policy" className="font-serif font-bold hover:text-wa-red transition-colors">
+                  Privacy Policy
+                </a>
+              </li>
             </ul>
           </div>
 
           {/* Right Column */}
           <div>
             <ul className="space-y-3 text-sm text-gray-900">
-              <li>
-                <a href="https://whiskyadvocate.com/Privacy-Policy" className="font-serif font-bold hover:text-wa-red transition-colors">
-                  Privacy Policy
-                </a>
-              </li>
               <li>
                 <a href="https://whiskyadvocate.com/advertise" className="font-serif font-bold hover:text-wa-red transition-colors">
                   Advertise
