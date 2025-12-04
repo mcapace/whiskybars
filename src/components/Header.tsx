@@ -74,10 +74,6 @@ export default function Header() {
       label: 'Top 20',
       href: 'https://whiskyadvocate.com/top20',
     },
-    {
-      label: 'Top Whisky Bars',
-      href: 'https://whiskyadvocate.com/top-whisky-bars',
-    },
   ];
 
   return (
