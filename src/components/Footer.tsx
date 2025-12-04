@@ -24,18 +24,18 @@ export default function Footer() {
             {/* Social Links */}
             <div className="flex gap-4 mt-6">
               <a
-                href="https://www.facebook.com/WhiskyAdvocate"
+                href="https://twitter.com/WhiskyAdvocate"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
-                aria-label="Facebook"
+                aria-label="Twitter/X"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                 </svg>
               </a>
               <a
-                href="https://www.instagram.com/whiskyadvocate"
+                href="https://instagram.com/whiskyadvocate"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
@@ -46,113 +46,46 @@ export default function Footer() {
                 </svg>
               </a>
               <a
-                href="https://twitter.com/whiskyadvocate"
+                href="https://facebook.com/whiskyadvocate"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
-                aria-label="Twitter"
+                aria-label="Facebook"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-              </a>
-              <a
-                href="https://www.youtube.com/whiskyadvocate"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
-                aria-label="YouTube"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                 </svg>
               </a>
             </div>
           </div>
 
-          {/* Explore */}
+          {/* Primary Footer Links */}
           <div>
-            <h4 className="font-semibold mb-4 text-base uppercase tracking-wider">Explore</h4>
+            <h4 className="font-semibold mb-4 text-base uppercase tracking-wider">Resources</h4>
             <ul className="space-y-3 text-base text-gray-400">
               <li>
-                <a href="https://whiskyadvocate.com/ratings-reviews" className="hover:text-white transition-colors">
-                  Ratings & Reviews
+                <a href="https://whiskyadvocate.com/magazine" className="hover:text-white transition-colors">
+                  The Magazine
                 </a>
               </li>
               <li>
-                <a href="https://whiskyadvocate.com/top20" className="hover:text-white transition-colors">
-                  Top 20
+                <a href="https://mshanken.com" className="hover:text-white transition-colors">
+                  M. Shanken Communications
                 </a>
               </li>
               <li>
-                <a href="https://whiskyadvocate.com/buying-guide" className="hover:text-white transition-colors">
-                  Buying Guides
+                <a href="https://whiskyadvocate.com/retailer-club" className="hover:text-white transition-colors">
+                  Join the Whisky Advocate Retailer Club
                 </a>
               </li>
               <li>
-                <a href="https://whiskyadvocate.com/videos" className="hover:text-white transition-colors">
-                  Videos
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Learn */}
-          <div>
-            <h4 className="font-semibold mb-4 text-base uppercase tracking-wider">Learn</h4>
-            <ul className="space-y-3 text-base text-gray-400">
-              <li>
-                <a href="https://whiskyadvocate.com/whisky-101" className="hover:text-white transition-colors">
-                  Whisky 101
+                <a href="https://whiskyadvocate.com/Newsletter" className="hover:text-white transition-colors">
+                  Newsletters
                 </a>
               </li>
               <li>
-                <a href="https://whiskyadvocate.com/category/how-to" className="hover:text-white transition-colors">
-                  How To
-                </a>
-              </li>
-              <li>
-                <a href="https://whiskyadvocate.com/whisky-glossary" className="hover:text-white transition-colors">
-                  Glossary
-                </a>
-              </li>
-              <li>
-                <a href="https://whiskyadvocate.com/category/cocktails" className="hover:text-white transition-colors">
-                  Cocktails
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Subscribe */}
-          <div>
-            <h4 className="font-semibold mb-4 text-base uppercase tracking-wider">Subscribe</h4>
-            <ul className="space-y-3 text-base text-gray-400">
-              <li>
-                <a href="https://whiskyadvocate.com/subscribe" className="hover:text-white transition-colors">
-                  Print Magazine
-                </a>
-              </li>
-              <li>
-                <a href="https://whiskyadvocate.com/newsletter" className="hover:text-white transition-colors">
-                  Newsletter
-                </a>
-              </li>
-              <li>
-                <a href="https://store.whiskyadvocate.com" className="hover:text-white transition-colors">
-                  Whisky Store
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Company */}
-          <div>
-            <h4 className="font-semibold mb-4 text-base uppercase tracking-wider">Company</h4>
-            <ul className="space-y-3 text-base text-gray-400">
-              <li>
-                <a href="https://whiskyadvocate.com/about" className="hover:text-white transition-colors">
-                  About Us
+                <a href="https://whiskyadvocate.com/advertise" className="hover:text-white transition-colors">
+                  Advertise With Us
                 </a>
               </li>
               <li>
@@ -161,38 +94,18 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="https://whiskyadvocate.com/whisky-retailers" className="hover:text-white transition-colors">
-                  Whisky Retailers
+                <a href="https://whiskyadvocate.com/FAQs" className="hover:text-white transition-colors">
+                  FAQs
                 </a>
               </li>
               <li>
-                <a href="https://whiskyadvocate.com/subscription-help" className="hover:text-white transition-colors">
-                  Subscription Help
-                </a>
-              </li>
-              <li>
-                <a href="https://whiskyadvocate.com/whiskyfest-exhibitors" className="hover:text-white transition-colors">
-                  WhiskyFest Exhibitors
-                </a>
-              </li>
-              <li>
-                <a href="https://whiskyadvocate.com/privacy-policy" className="hover:text-white transition-colors">
+                <a href="https://whiskyadvocate.com/Privacy-Policy" className="hover:text-white transition-colors">
                   Privacy Policy
                 </a>
               </li>
               <li>
-                <a href="https://whiskyadvocate.com/advertise" className="hover:text-white transition-colors">
-                  Advertise
-                </a>
-              </li>
-              <li>
-                <a href="https://whiskyadvocate.com/submit-whiskies" className="hover:text-white transition-colors">
-                  Submit Whiskies
-                </a>
-              </li>
-              <li>
-                <a href="https://whiskyadvocate.com/retailer-club" className="hover:text-white transition-colors">
-                  Join the Retailer Club
+                <a href="https://mshanken.cloud.buysub.com/login" className="hover:text-white transition-colors">
+                  Customer Care
                 </a>
               </li>
             </ul>
