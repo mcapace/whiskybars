@@ -157,7 +157,27 @@ export default function Footer() {
               </li>
               <li>
                 <a href="https://whiskyadvocate.com/contact" className="hover:text-white transition-colors">
-                  Contact
+                  Contact Us
+                </a>
+              </li>
+              <li>
+                <a href="https://whiskyadvocate.com/whisky-retailers" className="hover:text-white transition-colors">
+                  Whisky Retailers
+                </a>
+              </li>
+              <li>
+                <a href="https://whiskyadvocate.com/subscription-help" className="hover:text-white transition-colors">
+                  Subscription Help
+                </a>
+              </li>
+              <li>
+                <a href="https://whiskyadvocate.com/whiskyfest-exhibitors" className="hover:text-white transition-colors">
+                  WhiskyFest Exhibitors
+                </a>
+              </li>
+              <li>
+                <a href="https://whiskyadvocate.com/privacy-policy" className="hover:text-white transition-colors">
+                  Privacy Policy
                 </a>
               </li>
               <li>
@@ -166,8 +186,13 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="https://whiskyadvocate.com/privacy-policy" className="hover:text-white transition-colors">
-                  Privacy Policy
+                <a href="https://whiskyadvocate.com/submit-whiskies" className="hover:text-white transition-colors">
+                  Submit Whiskies
+                </a>
+              </li>
+              <li>
+                <a href="https://whiskyadvocate.com/retailer-club" className="hover:text-white transition-colors">
+                  Join the Retailer Club
                 </a>
               </li>
             </ul>
