@@ -87,9 +87,6 @@ export default function CocktailModal({ cocktail, imageUrl, onClose }: CocktailM
 
           {/* Title overlay - mobile only */}
           <div className="absolute bottom-0 left-0 right-0 p-6 sm:hidden">
-            <div className="mb-1">
-              <span className="text-white/90 text-xs font-bold uppercase tracking-widest">Classic Cocktail</span>
-            </div>
             <h2 className="font-serif text-3xl font-medium text-white drop-shadow-lg">
               {cocktail.name}
             </h2>
@@ -100,9 +97,6 @@ export default function CocktailModal({ cocktail, imageUrl, onClose }: CocktailM
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Header for desktop */}
           <div className="hidden sm:block p-6 sm:p-8 pb-4 border-b border-gray-200">
-            <div className="mb-2">
-              <span className="text-wa-red text-xs font-bold uppercase tracking-widest">Classic Cocktail</span>
-            </div>
             <h2 className="font-serif text-3xl sm:text-4xl font-medium text-gray-900">
               {cocktail.name}
             </h2>
