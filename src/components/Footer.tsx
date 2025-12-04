@@ -1,18 +1,21 @@
 'use client';
 
+import Image from 'next/image';
+
 export default function Footer() {
   return (
     <footer className="bg-wa-cream text-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Logo - Top Center */}
         <div className="text-center mb-8">
-          <div className="inline-block">
-            <h1 className="font-serif text-5xl md:text-6xl font-normal text-gray-900 mb-1">
-              Whisky
-            </h1>
-            <p className="text-xs md:text-sm font-sans uppercase tracking-[0.2em] text-gray-900 font-medium">
-              ADVOCATE
-            </p>
+          <div className="relative inline-block h-16 w-48 md:h-20 md:w-56">
+            <Image
+              src="/images/logos/wa-blue.png"
+              alt="Whisky Advocate"
+              fill
+              className="object-contain"
+              priority
+            />
           </div>
         </div>
 
@@ -68,22 +71,22 @@ export default function Footer() {
         <div className="border-t border-gray-300 mb-8"></div>
 
         {/* Three Columns of Links */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           {/* Left Column */}
           <div>
-            <ul className="space-y-3 text-base text-gray-900">
+            <ul className="space-y-3 text-sm text-gray-900">
               <li>
-                <a href="https://whiskyadvocate.com/about-us" className="hover:text-wa-red transition-colors">
+                <a href="https://whiskyadvocate.com/about-us" className="font-serif font-bold hover:text-wa-red transition-colors">
                   About Us
                 </a>
               </li>
               <li>
-                <a href="https://whiskyadvocate.com/contact" className="hover:text-wa-red transition-colors">
+                <a href="https://whiskyadvocate.com/contact" className="font-serif font-bold hover:text-wa-red transition-colors">
                   Contact Us
                 </a>
               </li>
               <li>
-                <a href="https://whiskyadvocate.com/whisky-retailers" className="hover:text-wa-red transition-colors">
+                <a href="https://whiskyadvocate.com/whisky-retailers" className="font-serif font-bold hover:text-wa-red transition-colors">
                   Whisky Retailers
                 </a>
               </li>
@@ -92,14 +95,14 @@ export default function Footer() {
 
           {/* Middle Column */}
           <div>
-            <ul className="space-y-3 text-base text-gray-900">
+            <ul className="space-y-3 text-sm text-gray-900">
               <li>
-                <a href="https://mshanken.cloud.buysub.com/login" className="hover:text-wa-red transition-colors">
+                <a href="https://mshanken.cloud.buysub.com/login" className="font-serif font-bold hover:text-wa-red transition-colors">
                   Subscription Help
                 </a>
               </li>
               <li>
-                <a href="https://whiskyadvocate.com/whiskyfest-exhibitors" className="hover:text-wa-red transition-colors">
+                <a href="https://whiskyadvocate.com/whiskyfest-exhibitors" className="font-serif font-bold hover:text-wa-red transition-colors">
                   WhiskyFest Exhibitors
                 </a>
               </li>
@@ -108,24 +111,24 @@ export default function Footer() {
 
           {/* Right Column */}
           <div>
-            <ul className="space-y-3 text-base text-gray-900">
+            <ul className="space-y-3 text-sm text-gray-900">
               <li>
-                <a href="https://whiskyadvocate.com/Privacy-Policy" className="hover:text-wa-red transition-colors">
+                <a href="https://whiskyadvocate.com/Privacy-Policy" className="font-serif font-bold hover:text-wa-red transition-colors">
                   Privacy Policy
                 </a>
               </li>
               <li>
-                <a href="https://whiskyadvocate.com/advertise" className="hover:text-wa-red transition-colors">
+                <a href="https://whiskyadvocate.com/advertise" className="font-serif font-bold hover:text-wa-red transition-colors">
                   Advertise
                 </a>
               </li>
               <li>
-                <a href="https://whiskyadvocate.com/submit-whiskies" className="hover:text-wa-red transition-colors">
+                <a href="https://whiskyadvocate.com/submit-whiskies" className="font-serif font-bold hover:text-wa-red transition-colors">
                   Submit Whiskies
                 </a>
               </li>
               <li>
-                <a href="https://whiskyadvocate.com/retailer-club" className="hover:text-wa-red transition-colors">
+                <a href="https://whiskyadvocate.com/retailer-club" className="font-serif font-bold hover:text-wa-red transition-colors">
                   Join the Retailer Club
                 </a>
               </li>
