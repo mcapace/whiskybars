@@ -205,12 +205,6 @@ export default function Header() {
               >
                 Visit Store
               </a>
-              <a
-                href="https://whiskyadvocate.com/login"
-                className="px-4 py-2 text-xs font-serif font-bold uppercase tracking-wider text-gray-700 hover:text-wa-red transition-colors whitespace-nowrap"
-              >
-                Login
-              </a>
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
                 className="p-2 text-gray-700 hover:text-wa-red transition-colors ml-2 flex-shrink-0"
@@ -348,12 +342,6 @@ export default function Header() {
                 className="block w-full bg-gray-900 text-white text-center py-3 font-bold uppercase tracking-wider"
               >
                 Visit Store
-              </a>
-              <a
-                href="https://whiskyadvocate.com/login"
-                className="block w-full bg-gray-800 text-white text-center py-3 font-bold uppercase tracking-wider"
-              >
-                Login
               </a>
             </div>
           </div>
