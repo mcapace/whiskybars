@@ -47,7 +47,7 @@ export default function Header() {
     },
     {
       label: 'News',
-      href: 'https://whiskyadvocate.com/category/news',
+      href: 'https://whiskyadvocate.com/News',
       submenu: [
         { label: 'Latest News', href: 'https://whiskyadvocate.com/News' },
         { label: 'Whisky Weekend', href: 'https://whiskyadvocate.com/whisky-weekend' },
@@ -58,7 +58,7 @@ export default function Header() {
     },
     {
       label: 'Whisky 101',
-      href: 'https://whiskyadvocate.com/whisky-101',
+      href: 'https://whiskyadvocate.com/Whisky-101',
       submenu: [
         { label: 'Basics', href: 'https://whiskyadvocate.com/Whisky-101' },
         { label: 'How To', href: 'https://whiskyadvocate.com/how-to' },
