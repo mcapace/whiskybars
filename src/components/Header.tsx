@@ -28,8 +28,8 @@ export default function Header() {
 
   const navItems = [
     {
-      label: 'Ratings & Reviews',
-      href: 'https://whiskyadvocate.com/ratings-reviews',
+      label: 'Ratings',
+      href: 'https://whiskyadvocate.com/ratings',
     },
     {
       label: 'Whisky Life',
@@ -53,6 +53,7 @@ export default function Header() {
         { label: 'Whisky Weekend', href: 'https://whiskyadvocate.com/category/whisky-weekend' },
         { label: 'Dispatches', href: 'https://whiskyadvocate.com/category/dispatches' },
         { label: 'Insights', href: 'https://whiskyadvocate.com/category/insights' },
+        { label: 'Auctions', href: 'https://whiskyadvocate.com/category/auctions' },
       ],
     },
     {
@@ -72,6 +73,10 @@ export default function Header() {
     {
       label: 'Top 20',
       href: 'https://whiskyadvocate.com/top20',
+    },
+    {
+      label: 'Top Whisky Bars',
+      href: 'https://whiskyadvocate.com/top-whisky-bars',
     },
   ];
 
