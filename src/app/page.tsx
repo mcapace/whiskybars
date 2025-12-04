@@ -344,14 +344,14 @@ export default function Home() {
         <VideoHero>
           <div className="text-center text-white px-4 max-w-4xl mx-auto">
             <div className="mb-6">
-              <Image src="/images/logos/wa-white.png" alt="Whisky Advocate" width={200} height={60} className="mx-auto opacity-90" />
+              <Image src="/images/logos/wa-white.png" alt="Whisky Advocate" width={280} height={84} className="mx-auto opacity-90" />
             </div>
             <h1 className="text-hero-sm md:text-hero font-serif font-bold mb-6 drop-shadow-lg">
               America's Top Whisky Bars
             </h1>
             <p className="text-xl md:text-2xl font-light mb-2 drop-shadow-md">2025 Edition</p>
             <p className="text-lg md:text-xl opacity-90 max-w-2xl mx-auto drop-shadow-md">
-              Celebrating {bars.length || '250+'} remarkable venues setting the standard for whisky culture nationwide
+              Celebrating {bars.length || '250+'} remarkable venues setting the standard<br className="hidden sm:block" /> for whisky culture across the nation
             </p>
             <div className="mt-8">
               <a href="#explore" className="inline-flex items-center gap-2 bg-wa-red hover:bg-wa-red-dark text-white px-8 py-4 text-base font-bold uppercase tracking-wider transition-colors">
@@ -371,7 +371,7 @@ export default function Home() {
               Where Exceptional Whisky Meets True Hospitality
             </h2>
             <p className={`text-lg leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-              America's Top Whisky Bars honors the places where exceptional whisky, true hospitality, and atmosphere converge. Each featured bar reflects the artistry of its beverage program, the warmth of its service, and the authenticity of its setting.
+              America's Top Whisky Bars honors the places where exceptional whisky,<br className="hidden sm:block" /> true hospitality, and atmosphere converge. Each featured bar reflects the artistry<br className="hidden sm:block" /> of its beverage program, the warmth of its service, and the authenticity of its setting.
             </p>
           </div>
         </section>

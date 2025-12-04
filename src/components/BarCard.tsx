@@ -108,7 +108,7 @@ export default function BarCard({
             {/* Glass icon - fades out on hover */}
             <div className={`absolute inset-0 transition-opacity duration-300 ${showMapPreview ? 'opacity-0' : 'opacity-100'}`}>
               <Image
-                src="/map-logos/glass2.png"
+                src="/map-logos/Glencairn-Edit.png"
                 alt=""
                 fill
                 className="object-contain"
