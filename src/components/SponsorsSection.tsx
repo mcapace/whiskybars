@@ -4,10 +4,10 @@ import Image from 'next/image';
 
 export default function SponsorsSection() {
   return (
-    <section className="py-12 sm:py-16 bg-white border-t border-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <section className="py-6 sm:py-8 bg-white border-t border-gray-100">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="flex justify-center items-center">
-          <div className="relative w-full max-w-5xl h-auto">
+          <div className="relative w-full max-w-3xl h-auto opacity-80">
             <Image
               src="/logos /Logos Bars Page.png"
               alt="Whisky Advocate Partners"
