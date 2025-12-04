@@ -29,16 +29,16 @@ export default function Header() {
   const navItems = [
     {
       label: 'Ratings',
-      href: 'https://whiskyadvocate.com/ratings',
+      href: 'https://whiskyadvocate.com/ratings-reviews',
     },
     {
       label: 'Whisky Life',
-      href: 'https://whiskyadvocate.com/category/whisky-life',
+      href: 'https://whiskyadvocate.com/whiskey-life',
       submenu: [
-        { label: 'Cocktails', href: 'https://whiskyadvocate.com/category/cocktails' },
-        { label: 'Gear', href: 'https://whiskyadvocate.com/category/gear' },
-        { label: 'Travel', href: 'https://whiskyadvocate.com/category/travel' },
-        { label: 'Food', href: 'https://whiskyadvocate.com/category/food' },
+        { label: 'Cocktails', href: 'https://whiskyadvocate.com/cocktails' },
+        { label: 'Gear', href: 'https://whiskyadvocate.com/gear' },
+        { label: 'Travel', href: 'https://whiskyadvocate.com/travel' },
+        { label: 'Food', href: 'https://whiskyadvocate.com/food' },
       ],
     },
     {
@@ -49,21 +49,21 @@ export default function Header() {
       label: 'News',
       href: 'https://whiskyadvocate.com/category/news',
       submenu: [
-        { label: 'Latest News', href: 'https://whiskyadvocate.com/category/news' },
-        { label: 'Whisky Weekend', href: 'https://whiskyadvocate.com/category/whisky-weekend' },
-        { label: 'Dispatches', href: 'https://whiskyadvocate.com/category/dispatches' },
-        { label: 'Insights', href: 'https://whiskyadvocate.com/category/insights' },
-        { label: 'Auctions', href: 'https://whiskyadvocate.com/category/auctions' },
+        { label: 'Latest News', href: 'https://whiskyadvocate.com/News' },
+        { label: 'Whisky Weekend', href: 'https://whiskyadvocate.com/whisky-weekend' },
+        { label: 'Dispatches', href: 'https://whiskyadvocate.com/dispatches' },
+        { label: 'Insights', href: 'https://whiskyadvocate.com/insights' },
+        { label: 'Auctions', href: 'https://whiskyadvocate.com/auctions' },
       ],
     },
     {
       label: 'Whisky 101',
       href: 'https://whiskyadvocate.com/whisky-101',
       submenu: [
-        { label: 'Basics', href: 'https://whiskyadvocate.com/whisky-101' },
-        { label: 'How To', href: 'https://whiskyadvocate.com/category/how-to' },
-        { label: 'Instant Expert', href: 'https://whiskyadvocate.com/category/instant-expert' },
-        { label: 'Glossary', href: 'https://whiskyadvocate.com/whisky-glossary' },
+        { label: 'Basics', href: 'https://whiskyadvocate.com/Whisky-101' },
+        { label: 'How To', href: 'https://whiskyadvocate.com/how-to' },
+        { label: 'Instant Expert', href: 'https://whiskyadvocate.com/instant-expert' },
+        { label: 'Glossary', href: 'https://whiskyadvocate.com/glossary' },
       ],
     },
     {
@@ -184,14 +184,14 @@ export default function Header() {
                 </div>
               ))}
               <span className={`mx-1.5 text-[8px] leading-none ${isScrolled ? 'text-wa-red' : 'text-wa-red'}`}>◆</span>
-              <Link
-                href="/"
+              <a
+                href="https://whiskybars.whiskyadvocate.com/"
                 className={`px-2 py-2 text-sm font-serif font-bold transition-colors whitespace-nowrap ${
                   isScrolled ? 'text-gray-900 hover:text-wa-red' : 'text-gray-900 hover:text-wa-red'
                 }`}
               >
                 Top Whisky Bars
-              </Link>
+              </a>
             </nav>
 
             {/* Buttons and Search */}
@@ -203,10 +203,16 @@ export default function Header() {
                 Subscribe
               </a>
               <a
-                href="https://store.whiskyadvocate.com"
+                href="https://store.whiskyadvocate.com/"
                 className="bg-wa-red text-wa-cream px-4 py-2 text-xs font-serif font-bold uppercase tracking-wider hover:bg-wa-red-dark transition-colors whitespace-nowrap w-28 h-9 flex items-center justify-center"
               >
                 Visit Store
+              </a>
+              <a
+                href="https://whiskyadvocate.com/login"
+                className="px-4 py-2 text-xs font-serif font-bold uppercase tracking-wider text-gray-700 hover:text-wa-red transition-colors whitespace-nowrap"
+              >
+                Login
               </a>
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
@@ -326,12 +332,12 @@ export default function Header() {
                   )}
                 </div>
               ))}
-              <Link
-                href="/"
+              <a
+                href="https://whiskybars.whiskyadvocate.com/"
                 className="block py-3 text-wa-red font-bold border-b border-gray-100"
               >
                 Top Whisky Bars
-              </Link>
+              </a>
             </nav>
             <div className="p-4 space-y-3">
               <a
@@ -341,10 +347,16 @@ export default function Header() {
                 Subscribe
               </a>
               <a
-                href="https://store.whiskyadvocate.com"
+                href="https://store.whiskyadvocate.com/"
                 className="block w-full bg-gray-900 text-white text-center py-3 font-bold uppercase tracking-wider"
               >
                 Visit Store
+              </a>
+              <a
+                href="https://whiskyadvocate.com/login"
+                className="block w-full bg-gray-800 text-white text-center py-3 font-bold uppercase tracking-wider"
+              >
+                Login
               </a>
             </div>
           </div>
