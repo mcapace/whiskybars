@@ -64,11 +64,8 @@ export default function Header() {
         { label: 'How To', href: 'https://whiskyadvocate.com/how-to' },
         { label: 'Instant Expert', href: 'https://whiskyadvocate.com/instant-expert' },
         { label: 'Glossary', href: 'https://whiskyadvocate.com/glossary' },
+        { label: 'Videos', href: 'https://whiskyadvocate.com/videos' },
       ],
-    },
-    {
-      label: 'Videos',
-      href: 'https://whiskyadvocate.com/videos',
     },
     {
       label: 'Top 20',
