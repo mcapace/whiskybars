@@ -69,7 +69,7 @@ export default function Header() {
     },
     {
       label: 'Top 20',
-      href: 'https://whiskyadvocate.com/top20',
+      href: 'https://top20.whiskyadvocate.com/',
     },
   ];
 
