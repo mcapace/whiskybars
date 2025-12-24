@@ -18,16 +18,18 @@ export default function VideoHero({
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   useEffect(() => {
-    // Preload all videos
-    videoRefs.current.forEach((video, index) => {
-      if (video) {
-        video.load();
-        if (index === 0) {
-          video.play().catch(() => {});
-        }
+    // Preload all videos and play the first one
+    const playFirstVideo = () => {
+      if (videoRefs.current[0]) {
+        videoRefs.current[0].load();
+        videoRefs.current[0].play().catch(() => {});
       }
-    });
-  }, []);
+    };
+
+    // Small delay to ensure video elements are mounted
+    const timer = setTimeout(playFirstVideo, 100);
+    return () => clearTimeout(timer);
+  }, [videos]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -61,7 +63,14 @@ export default function VideoHero({
       {videos.map((src, index) => (
         <video
           key={src}
-          ref={(el) => { videoRefs.current[index] = el; }}
+          ref={(el) => {
+            videoRefs.current[index] = el;
+            // Auto-play first video when it mounts
+            if (el && index === 0) {
+              el.load();
+              el.play().catch(() => {});
+            }
+          }}
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
             index === currentIndex ? 'opacity-100' : 'opacity-0'
           }`}
