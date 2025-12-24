@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 interface VideoHeroProps {
   videos?: string[];
@@ -16,22 +16,17 @@ export default function VideoHero({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const hasPlayedRef = useRef(false);
 
-  useEffect(() => {
-    // Preload all videos and play the first one
-    // Use a small delay to ensure video elements are mounted
-    const timer = setTimeout(() => {
-      videoRefs.current.forEach((video, index) => {
-        if (video) {
-          video.load();
-          if (index === 0) {
-            video.play().catch(() => {});
-          }
-        }
+  // Handle video play when ready
+  const handleVideoReady = useCallback((index: number) => {
+    const video = videoRefs.current[index];
+    if (video && index === 0 && !hasPlayedRef.current) {
+      video.play().catch((error) => {
+        console.error('Error playing video:', error);
       });
-    }, 100);
-    
-    return () => clearTimeout(timer);
+      hasPlayedRef.current = true;
+    }
   }, []);
 
   useEffect(() => {
@@ -66,13 +61,40 @@ export default function VideoHero({
       {videos.map((src, index) => (
         <video
           key={src}
-          ref={(el) => { videoRefs.current[index] = el; }}
+          ref={(el) => { 
+            videoRefs.current[index] = el;
+            if (el && index === 0) {
+              // Try to play when element is ready
+              el.load();
+              const tryPlay = () => {
+                if (el.readyState >= 2) { // HAVE_CURRENT_DATA
+                  el.play().catch(() => {});
+                } else {
+                  el.addEventListener('canplay', () => {
+                    el.play().catch(() => {});
+                  }, { once: true });
+                }
+              };
+              tryPlay();
+            }
+          }}
+          onLoadedData={() => {
+            if (index === 0) {
+              handleVideoReady(index);
+            }
+          }}
+          onCanPlay={() => {
+            if (index === 0 && !hasPlayedRef.current) {
+              handleVideoReady(index);
+            }
+          }}
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
             index === currentIndex ? 'opacity-100' : 'opacity-0'
           }`}
           src={src}
           muted
           playsInline
+          autoPlay={index === 0}
           loop={false}
           preload="auto"
         />
