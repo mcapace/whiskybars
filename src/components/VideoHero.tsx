@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-// Get video URL from environment variable or use default
-const DEFAULT_VIDEO_URL = process.env.NEXT_PUBLIC_HERO_VIDEO_URL || '/videos/odevideo.mp4';
+// Get video URL from environment variable or use JW Player hosted video
+const DEFAULT_VIDEO_URL = process.env.NEXT_PUBLIC_HERO_VIDEO_URL || 'https://cdn.jwplayer.com/videos/vn5OBNyP-VLJR2Jsq.mp4';
 
 interface VideoHeroProps {
   videoSrc?: string;
