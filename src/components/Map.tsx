@@ -687,13 +687,14 @@ export default function Map({
   useEffect(() => {
     if (!map.current || !selectedBar || !mapLoaded) return;
 
+    const currentCenter = map.current.getCenter();
+    const currentZoom = map.current.getZoom();
+
     // Skip auto-fly on the very first selection after map load
     // This allows the map to default to showing the entire US instead of flying to #1
     if (!hasProcessedInitialSelectionRef.current) {
       hasProcessedInitialSelectionRef.current = true;
       // Only skip if map is still at default US view (not if user has already interacted)
-      const currentCenter = map.current.getCenter();
-      const currentZoom = map.current.getZoom();
       const isAtDefaultView = 
         Math.abs(currentCenter.lng - (-98.5795)) < 0.1 &&
         Math.abs(currentCenter.lat - 39.8283) < 0.1 &&
@@ -721,7 +722,6 @@ export default function Map({
     const duration = Math.min(baseDuration + distance * 100, maxDuration);
 
     // Dynamic zoom based on current zoom and distance
-    const currentZoom = map.current.getZoom();
     const targetZoom = 15;
 
     // For long distances, zoom out first then zoom in (creates dramatic fly effect)
