@@ -341,7 +341,7 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Video Hero Section */}
-        <VideoHero videos={['/videos/hero/hero-1.mp4', '/videos/hero/hero-2.mp4', '/videos/hero/hero-3.mp4']}>
+        <VideoHero>
           <div className="text-center text-white px-4 max-w-4xl mx-auto">
             <div className="mb-6">
               <Image src="/images/logos/wa-white.png" alt="Whisky Advocate" width={280} height={84} className="mx-auto opacity-90" />
