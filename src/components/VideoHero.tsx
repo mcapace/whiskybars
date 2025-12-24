@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 
+// Get video URL from environment variable or use JW Player hosted video (720p)
+const DEFAULT_VIDEO_URL = process.env.NEXT_PUBLIC_HERO_VIDEO_URL || 'https://cdn.jwplayer.com/videos/vn5OBNyP-WBFwZoOE.mp4';
+
 interface VideoHeroProps {
   videos?: string[];
   interval?: number; // Time per video in ms (default 15000 = 15 seconds)
