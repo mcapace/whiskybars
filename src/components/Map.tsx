@@ -48,6 +48,8 @@ export default function Map({
   const superclusterRef = useRef<Supercluster | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [currentZoom, setCurrentZoom] = useState(3.5);
+  const hasUserInteractedRef = useRef(false);
+  const hasProcessedInitialSelectionRef = useRef(false);
 
   // Filter bars by state
   const filteredBars = selectedState
@@ -260,6 +262,13 @@ export default function Map({
       setCurrentZoom(newMap.getZoom());
     });
 
+    // Track user interaction to know when they've moved away from default view
+    const handleUserInteraction = () => {
+      hasUserInteractedRef.current = true;
+    };
+    newMap.on('dragstart', handleUserInteraction);
+    newMap.on('zoomstart', handleUserInteraction);
+
     // Enable pitch on high zoom for 3D effect
     newMap.on('zoomend', () => {
       const zoom = newMap.getZoom();
@@ -273,6 +282,8 @@ export default function Map({
     map.current = newMap;
 
     return () => {
+      newMap.off('dragstart', handleUserInteraction);
+      newMap.off('zoomstart', handleUserInteraction);
       newMap.remove();
       map.current = null;
     };
@@ -676,7 +687,25 @@ export default function Map({
   useEffect(() => {
     if (!map.current || !selectedBar || !mapLoaded) return;
 
-    const currentCenter = map.current.getCenter();
+    // Skip auto-fly on the very first selection after map load
+    // This allows the map to default to showing the entire US instead of flying to #1
+    if (!hasProcessedInitialSelectionRef.current) {
+      hasProcessedInitialSelectionRef.current = true;
+      // Only skip if map is still at default US view (not if user has already interacted)
+      const currentCenter = map.current.getCenter();
+      const currentZoom = map.current.getZoom();
+      const isAtDefaultView = 
+        Math.abs(currentCenter.lng - (-98.5795)) < 0.1 &&
+        Math.abs(currentCenter.lat - 39.8283) < 0.1 &&
+        Math.abs(currentZoom - 3.5) < 0.1 &&
+        !hasUserInteractedRef.current;
+
+      if (isAtDefaultView) {
+        // Keep default US view, don't fly to the bar
+        return;
+      }
+    }
+
     const targetLng = selectedBar.coordinates.lng;
     const targetLat = selectedBar.coordinates.lat;
 
