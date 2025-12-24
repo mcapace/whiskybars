@@ -12,7 +12,7 @@ interface VideoHeroProps {
 }
 
 export default function VideoHero({
-  videos = ['/videos/hero/hero-1.mp4', '/videos/hero/hero-2.mp4', '/videos/hero/hero-3.mp4'],
+  videos = [DEFAULT_VIDEO_URL],
   interval = 15000,
   children
 }: VideoHeroProps) {
@@ -33,6 +33,9 @@ export default function VideoHero({
   }, []);
 
   useEffect(() => {
+    // Only set up rotation if there are multiple videos
+    if (videos.length <= 1) return;
+
     const timer = setInterval(() => {
       setIsTransitioning(true);
 
@@ -81,12 +84,22 @@ export default function VideoHero({
               tryPlay();
             }
           }}
+          onLoadedMetadata={() => {
+            if (index === 0) {
+              handleVideoReady(index);
+            }
+          }}
           onLoadedData={() => {
             if (index === 0) {
               handleVideoReady(index);
             }
           }}
           onCanPlay={() => {
+            if (index === 0 && !hasPlayedRef.current) {
+              handleVideoReady(index);
+            }
+          }}
+          onCanPlayThrough={() => {
             if (index === 0 && !hasPlayedRef.current) {
               handleVideoReady(index);
             }
@@ -98,8 +111,9 @@ export default function VideoHero({
           muted
           playsInline
           autoPlay={index === 0}
-          loop={false}
+          loop={videos.length === 1}
           preload="auto"
+          crossOrigin="anonymous"
         />
       ))}
 
@@ -113,30 +127,32 @@ export default function VideoHero({
         {children}
       </div>
 
-      {/* Video indicator dots */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-        {videos.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => {
-              if (videoRefs.current[currentIndex]) {
-                videoRefs.current[currentIndex]!.pause();
-              }
-              setCurrentIndex(index);
-              if (videoRefs.current[index]) {
-                videoRefs.current[index]!.currentTime = 0;
-                videoRefs.current[index]!.play().catch(() => {});
-              }
-            }}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              index === currentIndex
-                ? 'bg-white w-8'
-                : 'bg-white/50 hover:bg-white/75'
-            }`}
-            aria-label={`Go to video ${index + 1}`}
-          />
-        ))}
-      </div>
+      {/* Video indicator dots - only show if multiple videos */}
+      {videos.length > 1 && (
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+          {videos.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                if (videoRefs.current[currentIndex]) {
+                  videoRefs.current[currentIndex]!.pause();
+                }
+                setCurrentIndex(index);
+                if (videoRefs.current[index]) {
+                  videoRefs.current[index]!.currentTime = 0;
+                  videoRefs.current[index]!.play().catch(() => {});
+                }
+              }}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                index === currentIndex
+                  ? 'bg-white w-8'
+                  : 'bg-white/50 hover:bg-white/75'
+              }`}
+              aria-label={`Go to video ${index + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
