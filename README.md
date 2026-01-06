@@ -1,4 +1,4 @@
-# America's Top Whisky Bars 2025
+# America's Top Whisky Bars 2026
 
 An interactive microsite showcasing America's best whisky bars, built with Next.js, TypeScript, Tailwind CSS, and Mapbox GL.
 
@@ -144,4 +144,4 @@ Update `src/components/SponsorsSection.tsx` to add or modify sponsor logos.
 
 ## License
 
-Copyright 2025 Whisky Advocate. All rights reserved.
+Copyright 2026 Whisky Advocate. All rights reserved.

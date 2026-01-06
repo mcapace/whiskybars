@@ -349,7 +349,7 @@ export default function Home() {
             <h1 className="text-hero-sm md:text-hero font-serif font-bold mb-6 drop-shadow-lg">
               America's Top Whisky Bars
             </h1>
-            <p className="text-xl md:text-2xl font-light mb-2 drop-shadow-md">2025 Edition</p>
+            <p className="text-xl md:text-2xl font-light mb-2 drop-shadow-md">2026 Edition</p>
             <p className="text-lg md:text-xl opacity-90 max-w-2xl mx-auto drop-shadow-md">
               Celebrating {bars.length || '250+'} remarkable venues setting the standard<br className="hidden sm:block" /> for whisky culture across the nation
             </p>
