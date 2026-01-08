@@ -351,7 +351,7 @@ export default function Home() {
             </h1>
             <p className="text-xl md:text-2xl font-light mb-2 drop-shadow-md">2026 Edition</p>
             <p className="text-lg md:text-xl opacity-90 max-w-2xl mx-auto drop-shadow-md">
-              Celebrating {bars.length || '150+'} remarkable venues setting the standard<br className="hidden sm:block" /> for whisky culture across the nation
+              Celebrating {bars.length >= 150 ? '150+' : bars.length || '150+'} remarkable venues setting the standard<br className="hidden sm:block" /> for whisky culture across the nation
             </p>
             <div className="mt-8">
               <a href="#explore" className="inline-flex items-center gap-2 bg-wa-red hover:bg-wa-red-dark text-white px-8 py-4 text-base font-bold uppercase tracking-wider transition-colors">

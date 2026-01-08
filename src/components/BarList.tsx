@@ -142,6 +142,7 @@ export default function BarList({
   }, [processedBars]);
 
   const totalCount = processedBars.length;
+  const displayCount = totalCount >= 150 ? '150+' : totalCount;
 
   // Clear initial mount flag after a short delay
   useEffect(() => {
@@ -290,7 +291,7 @@ export default function BarList({
           <div className="flex items-baseline gap-3">
             <div className="flex items-baseline gap-2">
               <span className="text-4xl font-serif font-bold text-wa-red">
-                {totalCount}
+                {displayCount}
               </span>
               <span className="text-lg font-semibold text-gray-700 uppercase tracking-wider">
                 {totalCount === 1 ? 'Bar' : 'Bars'}

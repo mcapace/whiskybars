@@ -600,7 +600,7 @@ export default function Map({
         const popup = new mapboxgl.Popup({
           offset: 25,
           closeButton: true,
-          maxWidth: '350px',
+          maxWidth: '450px',
           className: 'bar-popup',
         }).setHTML(`
           <div class="bar-popup-content">
