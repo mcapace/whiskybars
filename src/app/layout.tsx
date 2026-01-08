@@ -16,7 +16,7 @@ const sourceSans = Source_Sans_3({
 
 export const metadata: Metadata = {
   title: "America's Top Whisky Bars 2026 | Whisky Advocate",
-  description: "America's Top Whisky Bars honors the places where exceptional whisky, true hospitality, and atmosphere converge. Discover 250+ remarkable venues setting the standard for whisky culture nationwide.",
+  description: "America's Top Whisky Bars honors the places where exceptional whisky, true hospitality, and atmosphere converge. Discover 150+ remarkable venues setting the standard for whisky culture nationwide.",
   keywords: 'whisky bars, bourbon bars, scotch bars, whiskey, cocktails, America, best bars',
   openGraph: {
     title: "America's Top Whisky Bars 2026",

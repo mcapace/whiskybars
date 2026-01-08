@@ -351,7 +351,7 @@ export default function Home() {
             </h1>
             <p className="text-xl md:text-2xl font-light mb-2 drop-shadow-md">2026 Edition</p>
             <p className="text-lg md:text-xl opacity-90 max-w-2xl mx-auto drop-shadow-md">
-              Celebrating {bars.length || '250+'} remarkable venues setting the standard<br className="hidden sm:block" /> for whisky culture across the nation
+              Celebrating {bars.length || '150+'} remarkable venues setting the standard<br className="hidden sm:block" /> for whisky culture across the nation
             </p>
             <div className="mt-8">
               <a href="#explore" className="inline-flex items-center gap-2 bg-wa-red hover:bg-wa-red-dark text-white px-8 py-4 text-base font-bold uppercase tracking-wider transition-colors">
@@ -382,9 +382,6 @@ export default function Home() {
             {/* Section Header */}
             <div className="text-center mb-10">
               <h2 className={`font-serif text-3xl mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Explore the Bars</h2>
-              <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                Browse {bars.length || '250+'} of America's finest whisky establishments
-              </p>
             </div>
 
             {/* Search */}
