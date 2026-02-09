@@ -111,7 +111,8 @@ export default function Map({
 
     el.appendChild(marker);
     el.setAttribute('data-bar-id', bar.id.toString());
-    // Store actual bar coordinates for click resolution (so we select the bar at this location)
+    // Map-only attribute so click resolution never picks up list's data-bar-id
+    el.setAttribute('data-map-marker-id', bar.id.toString());
     el.setAttribute('data-lat', bar.coordinates.lat.toString());
     el.setAttribute('data-lng', bar.coordinates.lng.toString());
 
@@ -607,6 +608,7 @@ export default function Map({
         // Update existing marker position (in case stack changed) and style
         existingMarker.setLngLat([displayLng, displayLat]);
         const el = existingMarker.getElement();
+        el.setAttribute('data-map-marker-id', bar.id.toString());
         el.setAttribute('data-lat', bar.coordinates.lat.toString());
         el.setAttribute('data-lng', bar.coordinates.lng.toString());
         const markerDiv = el.querySelector('.map-marker');
@@ -635,37 +637,12 @@ export default function Map({
           }
         }
       } else {
-        // Create new marker — resolve bar from data-bar-id on the clicked element's ancestor (the marker we actually clicked)
+        // Marker click handled by map container listener (position-based); hover here
         const el = createMarkerElement(bar, isSelected, isHovered, isInCrawl);
 
-        const getBarIdFromEvent = (e: MouseEvent): number | null => {
-          let node: Element | null = (e.target as Element);
-          while (node && node !== document.body) {
-            const id = node.getAttribute?.('data-bar-id');
-            if (id != null) {
-              const n = parseInt(id, 10);
-              if (!Number.isNaN(n)) return n;
-            }
-            node = node.parentElement;
-          }
-          return null;
-        };
-
-        el.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const barId = getBarIdFromEvent(e);
-          if (barId != null) {
-            const resolved = bars.find((b) => b.id === barId);
-            if (resolved) onBarSelect(resolved);
-          }
-        });
-
-        el.addEventListener('mouseenter', (e) => {
-          const barId = getBarIdFromEvent(e);
-          if (barId != null) {
-            const resolved = bars.find((b) => b.id === barId);
-            if (resolved) onBarHover(resolved);
-          }
+        el.addEventListener('mouseenter', () => {
+          const resolved = bars.find((b) => b.id === bar.id);
+          if (resolved) onBarHover(resolved);
         });
 
         el.addEventListener('mouseleave', () => {
@@ -757,6 +734,42 @@ export default function Map({
       }
     });
   }, [selectedBar, hoveredBar, barCrawlBars, filteredBars, mapLoaded]);
+
+  // Single map-container click: resolve bar by click position (nearest marker) so list and map stay in sync
+  useEffect(() => {
+    if (!map.current || !mapLoaded) return;
+    const container = map.current.getContainer();
+    const handleMapClick = (e: MouseEvent) => {
+      // Ignore clicks on cluster markers (they zoom)
+      let node: Element | null = (e.target as Element);
+      while (node && node !== document.body) {
+        if (node.classList?.contains('cluster-marker')) return;
+        node = node.parentElement;
+      }
+      const rect = container.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const clickLngLat = map.current!.unproject([x, y]);
+      let bestBarId: number | null = null;
+      let bestDist = 0.015; // ~1.5km in degrees; only select if click is near a marker
+      markersRef.current.forEach((marker, barId) => {
+        const pos = marker.getLngLat();
+        const d = Math.sqrt(
+          Math.pow(pos.lng - clickLngLat.lng, 2) + Math.pow(pos.lat - clickLngLat.lat, 2)
+        );
+        if (d < bestDist) {
+          bestDist = d;
+          bestBarId = barId;
+        }
+      });
+      if (bestBarId != null) {
+        const resolved = bars.find((b) => b.id === bestBarId);
+        if (resolved) onBarSelect(resolved);
+      }
+    };
+    container.addEventListener('click', handleMapClick);
+    return () => container.removeEventListener('click', handleMapClick);
+  }, [mapLoaded, bars, onBarSelect]);
 
   // Fly to selected bar with smooth animation
   useEffect(() => {
