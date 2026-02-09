@@ -635,34 +635,35 @@ export default function Map({
           }
         }
       } else {
-        // Create new marker - resolve bar by which marker element was clicked (no closure/DOM mix-up)
+        // Create new marker — resolve bar from data-bar-id on the clicked element's ancestor (the marker we actually clicked)
         const el = createMarkerElement(bar, isSelected, isHovered, isInCrawl);
+
+        const getBarIdFromEvent = (e: MouseEvent): number | null => {
+          let node: Element | null = (e.target as Element);
+          while (node && node !== document.body) {
+            const id = node.getAttribute?.('data-bar-id');
+            if (id != null) {
+              const n = parseInt(id, 10);
+              if (!Number.isNaN(n)) return n;
+            }
+            node = node.parentElement;
+          }
+          return null;
+        };
 
         el.addEventListener('click', (e) => {
           e.stopPropagation();
-          const target = e.target as Node;
-          let resolvedBarId: number | null = null;
-          markersRef.current.forEach((marker, barId) => {
-            if (marker.getElement().contains(target) || marker.getElement() === target) {
-              resolvedBarId = barId;
-            }
-          });
-          if (resolvedBarId != null) {
-            const resolved = bars.find((b) => b.id === resolvedBarId);
+          const barId = getBarIdFromEvent(e);
+          if (barId != null) {
+            const resolved = bars.find((b) => b.id === barId);
             if (resolved) onBarSelect(resolved);
           }
         });
 
         el.addEventListener('mouseenter', (e) => {
-          const target = e.target as Node;
-          let resolvedBarId: number | null = null;
-          markersRef.current.forEach((marker, barId) => {
-            if (marker.getElement().contains(target) || marker.getElement() === target) {
-              resolvedBarId = barId;
-            }
-          });
-          if (resolvedBarId != null) {
-            const resolved = bars.find((b) => b.id === resolvedBarId);
+          const barId = getBarIdFromEvent(e);
+          if (barId != null) {
+            const resolved = bars.find((b) => b.id === barId);
             if (resolved) onBarHover(resolved);
           }
         });
