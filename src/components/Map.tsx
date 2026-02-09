@@ -4,6 +4,7 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import Supercluster from 'supercluster';
 import { Bar } from '@/types';
+import { coordinatesInState } from '@/utils/stateBounds';
 
 interface MapProps {
   bars: Bar[];
@@ -513,15 +514,19 @@ export default function Map({
 
         clusterMarkersRef.current.push(marker);
       } else {
-        // It's an individual point
+        // It's an individual point — only show if bar's coords are in its state
         const barId = cluster.properties.barId;
         if (zoom >= MIN_ZOOM_FOR_BAR_MARKERS) {
-          visibleBarIds.add(barId);
+          const bar = filteredBars.find((b) => b.id === barId);
+          if (bar?.coordinates?.lat != null && bar?.coordinates?.lng != null &&
+              coordinatesInState(bar.coordinates.lat, bar.coordinates.lng, bar.state)) {
+            visibleBarIds.add(barId);
+          }
         }
       }
     });
 
-    // When zoomed in, show ALL bar markers in the viewport (stops markers disappearing in cities)
+    // When zoomed in, show bar markers in the viewport only if coords match the bar's state (hide wrong-place markers e.g. Phoenix bar in Detroit)
     if (zoom >= MIN_ZOOM_FOR_BAR_MARKERS) {
       const west = bounds.getWest();
       const south = bounds.getSouth();
@@ -530,6 +535,7 @@ export default function Map({
       filteredBars.forEach((bar) => {
         if (!bar.coordinates.lat || !bar.coordinates.lng) return;
         const { lat, lng } = bar.coordinates;
+        if (!coordinatesInState(lat, lng, bar.state)) return; // skip bars with wrong-state coords
         if (lng >= west && lng <= east && lat >= south && lat <= north) {
           visibleBarIds.add(bar.id);
         }
@@ -573,10 +579,11 @@ export default function Map({
       positionGroups.get(key)!.push(b);
     });
 
-    // Add or update individual markers
+    // Add or update individual markers (only if bar's coordinates are in its state — don't draw e.g. Phoenix bar in Detroit)
     filteredBars.forEach((bar) => {
       if (!bar.coordinates.lat || !bar.coordinates.lng) return;
       if (!visibleBarIds.has(bar.id)) return;
+      if (!coordinatesInState(bar.coordinates.lat, bar.coordinates.lng, bar.state)) return;
 
       const isSelected = selectedBar?.id === bar.id;
       const isHovered = hoveredBar?.id === bar.id;
