@@ -628,27 +628,19 @@ export default function Map({
           }
         }
       } else {
-        // Create new marker
+        // Create new marker - capture bar.id in closure so click always selects this bar (no DOM/ref mix-up)
         const el = createMarkerElement(bar, isSelected, isHovered, isInCrawl);
+        const clickedBarId = bar.id;
 
-        // Resolve bar by id only so the modal always shows the bar this marker was created for (matches list behavior)
         el.addEventListener('click', (e) => {
           e.stopPropagation();
-          const barIdAttr = el.getAttribute('data-bar-id');
-          const barId = barIdAttr ? parseInt(barIdAttr, 10) : NaN;
-          if (!Number.isNaN(barId)) {
-            const resolved = bars.find((b) => b.id === barId);
-            if (resolved) onBarSelect(resolved);
-          }
+          const resolved = bars.find((b) => b.id === clickedBarId);
+          if (resolved) onBarSelect(resolved);
         });
 
         el.addEventListener('mouseenter', () => {
-          const barIdAttr = el.getAttribute('data-bar-id');
-          const barId = barIdAttr ? parseInt(barIdAttr, 10) : NaN;
-          if (!Number.isNaN(barId)) {
-            const resolved = bars.find((b) => b.id === barId);
-            if (resolved) onBarHover(resolved);
-          }
+          const resolved = bars.find((b) => b.id === clickedBarId);
+          if (resolved) onBarHover(resolved);
         });
 
         el.addEventListener('mouseleave', () => {
