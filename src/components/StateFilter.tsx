@@ -35,10 +35,9 @@ const STATE_NAMES: Record<string, string> = {
 
 export default function StateFilter({ bars, selectedState, onStateSelect }: StateFilterProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Get states with bar counts
+  // Get states with bar counts (only states that have bars)
   const statesWithCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     bars.forEach(bar => {
@@ -47,7 +46,7 @@ export default function StateFilter({ bars, selectedState, onStateSelect }: Stat
     return counts;
   }, [bars]);
 
-  // Get top states by count
+  // Get top states by count (most bars first)
   const topStates = useMemo(() => {
     return Object.entries(statesWithCounts)
       .sort(([, a], [, b]) => b - a)
@@ -55,27 +54,18 @@ export default function StateFilter({ bars, selectedState, onStateSelect }: Stat
       .map(([state]) => state);
   }, [statesWithCounts]);
 
-  // Filter states by search
-  const filteredStates = useMemo(() => {
-    if (!searchQuery) return Object.keys(statesWithCounts).sort();
-    const query = searchQuery.toLowerCase();
-    return Object.keys(statesWithCounts).filter(state =>
-      state.toLowerCase().includes(query) ||
-      (STATE_NAMES[state] && STATE_NAMES[state].toLowerCase().includes(query))
-    ).sort();
-  }, [statesWithCounts, searchQuery]);
-
-  // Group filtered states by region
+  // All states that have bars, grouped by region (for More States dropdown)
   const statesByRegion = useMemo(() => {
+    const stateSet = new Set(Object.keys(statesWithCounts));
     const grouped: Record<string, string[]> = {};
     Object.entries(REGIONS).forEach(([region, states]) => {
-      const filtered = states.filter(s => filteredStates.includes(s));
-      if (filtered.length > 0) {
-        grouped[region] = filtered;
+      const inRegion = states.filter(s => stateSet.has(s)).sort((a, b) => (STATE_NAMES[a] || a).localeCompare(STATE_NAMES[b] || b));
+      if (inRegion.length > 0) {
+        grouped[region] = inRegion;
       }
     });
     return grouped;
-  }, [filteredStates]);
+  }, [statesWithCounts]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -143,58 +133,42 @@ export default function StateFilter({ bars, selectedState, onStateSelect }: Stat
         </button>
       </div>
 
-      {/* Dropdown Panel */}
+      {/* More States dropdown - regions with full state names */}
       {isOpen && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[90vw] max-w-2xl bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
-          {/* Search */}
-          <div className="p-4 border-b border-gray-100 sticky top-0 bg-white">
-            <div className="relative">
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <input
-                type="text"
-                placeholder="Search states..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-wa-red focus:border-transparent"
-                autoFocus
-              />
-            </div>
-          </div>
-
-          {/* States by Region */}
-          <div className="max-h-80 overflow-y-auto p-4">
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[90vw] max-w-md bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+          <div className="max-h-[70vh] overflow-y-auto py-2">
             {Object.entries(statesByRegion).map(([region, states]) => (
-              <div key={region} className="mb-4 last:mb-0">
-                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{region}</h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                  {states.map(state => (
-                    <button
-                      key={state}
-                      onClick={() => {
-                        onStateSelect(state === selectedState ? null : state);
-                        setIsOpen(false);
-                      }}
-                      className={`min-h-[44px] flex items-center justify-between px-3 py-2.5 text-sm rounded-xl transition-all touch-manifest ${
-                        selectedState === state
-                          ? 'bg-wa-red text-white'
-                          : 'bg-gray-50 text-gray-700 hover:bg-wa-red/10 hover:text-wa-red'
-                      }`}
-                    >
-                      <span className="font-medium">{state}</span>
-                      <span className={`text-xs ${selectedState === state ? 'text-white/80' : 'text-gray-400'}`}>
-                        {statesWithCounts[state]}
-                      </span>
-                    </button>
-                  ))}
+              <div key={region} className="mb-1">
+                <div className="sticky top-0 z-10 px-4 py-2 bg-gray-50 border-y border-gray-100">
+                  <h4 className="text-xs font-bold text-wa-red uppercase tracking-wider">{region}</h4>
                 </div>
+                <ul className="px-2 py-1">
+                  {states.map(state => (
+                    <li key={state}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onStateSelect(state === selectedState ? null : state);
+                          setIsOpen(false);
+                        }}
+                        className={`w-full min-h-[48px] flex items-center justify-between gap-3 px-3 py-2.5 text-left rounded-lg transition-all touch-manifest ${
+                          selectedState === state
+                            ? 'bg-wa-red text-white'
+                            : 'text-gray-700 hover:bg-wa-red/10 hover:text-wa-red'
+                        }`}
+                      >
+                        <span className="font-medium">
+                          {STATE_NAMES[state] || state}
+                        </span>
+                        <span className={`text-sm tabular-nums ${selectedState === state ? 'text-white/90' : 'text-gray-500'}`}>
+                          {statesWithCounts[state]} {statesWithCounts[state] === 1 ? 'bar' : 'bars'}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ))}
-
-            {Object.keys(statesByRegion).length === 0 && (
-              <p className="text-center text-gray-400 py-8">No states found matching "{searchQuery}"</p>
-            )}
           </div>
         </div>
       )}

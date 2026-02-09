@@ -3,7 +3,6 @@
 import { useMemo, useRef, useEffect } from 'react';
 import { Bar } from '@/types';
 import BarCard from './BarCard';
-import { barMatchesSearch } from '@/utils/stateSearch';
 
 interface BarListProps {
   bars: Bar[];
@@ -11,7 +10,6 @@ interface BarListProps {
   hoveredBar: Bar | null;
   onBarSelect: (bar: Bar) => void;
   onBarHover: (bar: Bar | null) => void;
-  searchQuery: string;
   selectedState: string | null;
   userLocation: { lat: number; lng: number } | null;
   sortBy: 'alphabetical' | 'distance' | 'state';
@@ -68,7 +66,6 @@ export default function BarList({
   hoveredBar,
   onBarSelect,
   onBarHover,
-  searchQuery,
   selectedState,
   userLocation,
   sortBy,
@@ -96,11 +93,6 @@ export default function BarList({
         : null,
     }));
 
-    // Filter by search query (matches name, address, description, state abbrev, or full state name e.g. "Washington state")
-    if (searchQuery) {
-      filteredBars = filteredBars.filter(bar => barMatchesSearch(bar, searchQuery));
-    }
-
     // Filter by state
     if (selectedState) {
       filteredBars = filteredBars.filter(bar => bar.state === selectedState);
@@ -115,7 +107,7 @@ export default function BarList({
     }
 
     return filteredBars;
-  }, [bars, searchQuery, selectedState, userLocation, sortBy]);
+  }, [bars, selectedState, userLocation, sortBy]);
 
   // Always group by state in alphabetical order
   const groupedBars = useMemo(() => {

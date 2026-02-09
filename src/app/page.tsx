@@ -16,7 +16,6 @@ import {
 import { useBars } from '@/hooks/useBars';
 import { cocktails } from '@/data/cocktails';
 import { Bar, ViewMode } from '@/types';
-import { barMatchesSearch } from '@/utils/stateSearch';
 
 // Dynamically import Map to avoid SSR issues with Mapbox
 const Map = dynamic(() => import('@/components/Map'), {
@@ -58,7 +57,6 @@ export default function Home() {
   const [selectedBar, setSelectedBar] = useState<Bar | null>(null);
   const [hoveredBar, setHoveredBar] = useState<Bar | null>(null);
   const [selectedState, setSelectedState] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('map');
   const [sortBy, setSortBy] = useState<SortOption>('alphabetical');
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
@@ -69,15 +67,9 @@ export default function Home() {
 
   // Filtered bars for keyboard navigation
   const filteredBars = useMemo(() => {
-    let result = bars;
-    if (selectedState) {
-      result = result.filter(bar => bar.state === selectedState);
-    }
-    if (searchQuery) {
-      result = result.filter(bar => barMatchesSearch(bar, searchQuery));
-    }
-    return result;
-  }, [bars, selectedState, searchQuery]);
+    if (!selectedState) return bars;
+    return bars.filter(bar => bar.state === selectedState);
+  }, [bars, selectedState]);
 
   // Load preferences from localStorage on mount
   useEffect(() => {
@@ -174,10 +166,6 @@ export default function Home() {
           setSelectedBar(null);
           setFocusedBarIndex(-1);
           break;
-        case '/':
-          e.preventDefault();
-          document.querySelector<HTMLInputElement>('input[type="text"]')?.focus();
-          break;
       }
     };
 
@@ -273,24 +261,6 @@ export default function Home() {
               <h2 className={`font-serif text-2xl sm:text-3xl mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Explore the Bars</h2>
             </div>
 
-            {/* Search - larger tap target on mobile */}
-            <div className="max-w-2xl mx-auto mb-6 lg:mb-8">
-              <div className="relative">
-                <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Search bars by name, city, or state..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  className={`w-full pl-12 pr-4 py-3.5 sm:py-4 min-h-[48px] sm:min-h-0 border rounded-xl text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-wa-red focus:border-transparent ${
-                    darkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                  }`}
-                />
-              </div>
-            </div>
-
             {/* State Filter */}
             <div className="mb-6 lg:mb-8">
               <StateFilter bars={bars} selectedState={selectedState} onStateSelect={setSelectedState} />
@@ -323,7 +293,7 @@ export default function Home() {
                 {loading ? (
                   <div className="p-6 space-y-4">{[...Array(5)].map((_, i) => <div key={i} className={`animate-pulse h-32 rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />)}</div>
                 ) : (
-                  <BarList bars={bars} selectedBar={selectedBar} hoveredBar={hoveredBar} onBarSelect={setSelectedBar} onBarHover={setHoveredBar} searchQuery={searchQuery} selectedState={selectedState} userLocation={userLocation} sortBy={sortBy} />
+                  <BarList bars={bars} selectedBar={selectedBar} hoveredBar={hoveredBar} onBarSelect={setSelectedBar} onBarHover={setHoveredBar} selectedState={selectedState} userLocation={userLocation} sortBy={sortBy} />
                 )}
               </div>
 
