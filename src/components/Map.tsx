@@ -110,6 +110,9 @@ export default function Map({
 
     el.appendChild(marker);
     el.setAttribute('data-bar-id', bar.id.toString());
+    // Store actual bar coordinates for click resolution (so we select the bar at this location)
+    el.setAttribute('data-lat', bar.coordinates.lat.toString());
+    el.setAttribute('data-lng', bar.coordinates.lng.toString());
 
     return el;
   }, [barCrawlBars]);
@@ -385,6 +388,9 @@ export default function Map({
     map.current.once('style.load', addLayers);
   }, [darkMode, mapLoaded, showHeatmap]);
 
+  // Zoom level below which we only show clusters (state/city level); above this, bar markers appear at actual locations
+  const MIN_ZOOM_FOR_BAR_MARKERS = 10;
+
   // Initialize supercluster
   useEffect(() => {
     superclusterRef.current = new Supercluster({
@@ -507,9 +513,11 @@ export default function Map({
 
         clusterMarkersRef.current.push(marker);
       } else {
-        // It's an individual point
-        const barId = cluster.properties.barId;
-        visibleBarIds.add(barId);
+        // It's an individual point - only show bar markers when zoomed in enough (state/city view = clusters only)
+        if (zoom >= MIN_ZOOM_FOR_BAR_MARKERS) {
+          const barId = cluster.properties.barId;
+          visibleBarIds.add(barId);
+        }
       }
     });
 
@@ -540,6 +548,26 @@ export default function Map({
       });
     }
 
+    // Group visible bars by position so we can offset stacked markers (same coords = wrong bar on click)
+    const positionKey = (b: Bar) => `${Number(b.coordinates.lat).toFixed(5)}_${Number(b.coordinates.lng).toFixed(5)}`;
+    const positionGroups = new globalThis.Map<string, Bar[]>();
+    filteredBars.forEach((b) => {
+      if (!b.coordinates.lat || !b.coordinates.lng || !visibleBarIds.has(b.id)) return;
+      const key = positionKey(b);
+      if (!positionGroups.has(key)) positionGroups.set(key, []);
+      positionGroups.get(key)!.push(b);
+    });
+
+    const COORD_EPSILON = 1e-6; // for matching bar by position
+    const findBarsAtPosition = (lat: number, lng: number) =>
+      bars.filter(
+        (b) =>
+          b.coordinates.lat != null &&
+          b.coordinates.lng != null &&
+          Math.abs(b.coordinates.lat - lat) < COORD_EPSILON &&
+          Math.abs(b.coordinates.lng - lng) < COORD_EPSILON
+      );
+
     // Add or update individual markers
     filteredBars.forEach((bar) => {
       if (!bar.coordinates.lat || !bar.coordinates.lng) return;
@@ -549,11 +577,26 @@ export default function Map({
       const isHovered = hoveredBar?.id === bar.id;
       const isInCrawl = barCrawlBars.some(b => b.id === bar.id);
 
+      // Offset stacked markers so each is clickable and shows the correct bar
+      const key = positionKey(bar);
+      const group = positionGroups.get(key) ?? [];
+      const stackIndex = group.findIndex((b: Bar) => b.id === bar.id);
+      const stackSize = group.length;
+      const offsetDeg = 0.00035; // ~35m so markers don't overlap
+      const angle = stackSize <= 1 ? 0 : (stackIndex / stackSize) * 2 * Math.PI;
+      const offsetLng = stackSize <= 1 ? 0 : offsetDeg * Math.cos(angle);
+      const offsetLat = stackSize <= 1 ? 0 : offsetDeg * Math.sin(angle);
+      const displayLng = bar.coordinates.lng + offsetLng;
+      const displayLat = bar.coordinates.lat + offsetLat;
+
       const existingMarker = markersRef.current.get(bar.id);
 
       if (existingMarker) {
-        // Update existing marker
+        // Update existing marker position (in case stack changed) and style
+        existingMarker.setLngLat([displayLng, displayLat]);
         const el = existingMarker.getElement();
+        el.setAttribute('data-lat', bar.coordinates.lat.toString());
+        el.setAttribute('data-lng', bar.coordinates.lng.toString());
         const markerDiv = el.querySelector('.map-marker');
         if (markerDiv) {
           markerDiv.className = `map-marker ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''} ${isInCrawl ? 'in-crawl' : ''}`;
@@ -574,7 +617,6 @@ export default function Map({
             img.style.display = 'block';
             img.onerror = () => {
               console.error('Failed to load glass icon:', img.src);
-              // Fallback to marker dot if image fails to load
               markerDiv.innerHTML = `<span class="marker-dot"></span>`;
             };
             markerDiv.appendChild(img);
@@ -583,17 +625,30 @@ export default function Map({
       } else {
         // Create new marker
         const el = createMarkerElement(bar, isSelected, isHovered, isInCrawl);
-        const barId = bar.id;
 
-        // Resolve bar from full list at click time to avoid wrong bar (e.g. stale closure)
+        // Resolve bar by stored position so we always get the bar at this location (fixes wrong bar when stacked or stale id)
         el.addEventListener('click', (e) => {
           e.stopPropagation();
-          const resolved = bars.find(b => b.id === barId);
+          const lat = parseFloat(el.getAttribute('data-lat') ?? '');
+          const lng = parseFloat(el.getAttribute('data-lng') ?? '');
+          const barIdAttr = el.getAttribute('data-bar-id');
+          const barId = barIdAttr ? parseInt(barIdAttr, 10) : NaN;
+          const atPosition = findBarsAtPosition(lat, lng);
+          const resolved = atPosition.length === 0
+            ? bars.find((b) => b.id === barId)
+            : atPosition.find((b) => b.id === barId) ?? atPosition[0];
           if (resolved) onBarSelect(resolved);
         });
 
         el.addEventListener('mouseenter', () => {
-          const resolved = bars.find(b => b.id === barId);
+          const lat = parseFloat(el.getAttribute('data-lat') ?? '');
+          const lng = parseFloat(el.getAttribute('data-lng') ?? '');
+          const barIdAttr = el.getAttribute('data-bar-id');
+          const barId = barIdAttr ? parseInt(barIdAttr, 10) : NaN;
+          const atPosition = findBarsAtPosition(lat, lng);
+          const resolved = atPosition.length === 0
+            ? bars.find((b) => b.id === barId)
+            : atPosition.find((b) => b.id === barId) ?? atPosition[0];
           if (resolved) onBarHover(resolved);
         });
 
@@ -623,7 +678,7 @@ export default function Map({
         `);
 
         const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
-          .setLngLat([bar.coordinates.lng, bar.coordinates.lat])
+          .setLngLat([displayLng, displayLat])
           .setPopup(popup)
           .addTo(map.current!);
 
@@ -840,11 +895,11 @@ export default function Map({
         </button>
       </div>
 
-      {/* Cluster legend */}
-      {currentZoom < 10 && filteredBars.length > 20 && (
+      {/* Cluster legend - at low zoom only clusters show; zoom in to see bars at their locations */}
+      {currentZoom < MIN_ZOOM_FOR_BAR_MARKERS && filteredBars.length > 5 && (
         <div className="absolute bottom-12 left-4 bg-white shadow-lg rounded-lg p-3 z-10">
-          <p className="text-xs font-semibold text-gray-700 mb-2">Clusters</p>
-          <p className="text-xs text-gray-500">Click to zoom in</p>
+          <p className="text-xs font-semibold text-gray-700 mb-2">By state / region</p>
+          <p className="text-xs text-gray-500">Zoom in to see bars at their locations; click a cluster to zoom</p>
         </div>
       )}
 

@@ -146,11 +146,13 @@ export default function BarList({
     return () => clearTimeout(timer);
   }, []);
 
-  // Scroll to selected bar (skip on initial mount)
+  // Scroll to selected bar when selection changes (e.g. from map marker click) so the list shows that bar's info
   useEffect(() => {
     if (isInitialMountRef.current) return; // Don't scroll on initial page load
-    if (selectedBar && selectedRef.current && listRef.current) {
-      selectedRef.current.scrollIntoView({
+    if (!selectedBar || !listRef.current) return;
+    const el = selectedRef.current ?? barRefs.current.get(selectedBar.id);
+    if (el) {
+      el.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
       });

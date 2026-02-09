@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Papa from 'papaparse';
 import { Bar } from '@/types';
+import { coordinatesInState } from '@/utils/stateBounds';
 
 const SHEETS_URL = process.env.NEXT_PUBLIC_SHEETS_URL;
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
@@ -162,16 +163,14 @@ export function useBars() {
               })
               .filter(bar => bar.name && bar.state); // Filter out invalid entries
 
-            // Geocode bars with invalid coordinates
-            const barsNeedingGeocode = parsedBars.filter(
+            // Geocode bars with invalid or missing coordinates
+            let barsNeedingGeocode = parsedBars.filter(
               bar => !isValidUSCoordinate(bar.coordinates.lat, bar.coordinates.lng)
             );
 
             if (barsNeedingGeocode.length > 0) {
               console.log(`Geocoding ${barsNeedingGeocode.length} bars with invalid coordinates...`);
-
-              // Geocode in batches to avoid rate limiting
-              const geocodePromises = barsNeedingGeocode.map(async (bar) => {
+              for (const bar of barsNeedingGeocode) {
                 const geocoded = await geocodeAddress(bar.address, bar.state);
                 if (geocoded) {
                   bar.coordinates = geocoded;
@@ -179,9 +178,24 @@ export function useBars() {
                 } else {
                   console.warn(`Failed to geocode ${bar.name} at ${bar.address}`);
                 }
-              });
+              }
+            }
 
-              await Promise.all(geocodePromises);
+            // Re-geocode bars whose coordinates are in the wrong state (fixes wrong location on click)
+            const barsInWrongState = parsedBars.filter(
+              bar => isValidUSCoordinate(bar.coordinates.lat, bar.coordinates.lng) &&
+                !coordinatesInState(bar.coordinates.lat, bar.coordinates.lng, bar.state)
+            );
+
+            if (barsInWrongState.length > 0) {
+              console.log(`Re-geocoding ${barsInWrongState.length} bars with coordinates outside ${barsInWrongState.map(b => b.state).join(', ')}...`);
+              for (const bar of barsInWrongState) {
+                const geocoded = await geocodeAddress(bar.address, bar.state);
+                if (geocoded && coordinatesInState(geocoded.lat, geocoded.lng, bar.state)) {
+                  bar.coordinates = geocoded;
+                  console.log(`Corrected ${bar.name} to ${geocoded.lat}, ${geocoded.lng}`);
+                }
+              }
             }
 
             setBars(parsedBars);

@@ -142,6 +142,12 @@ export default function Home() {
     if (savedDarkMode) setDarkMode(savedDarkMode === 'true');
   }, []);
 
+  // When a bar is selected (e.g. from map marker click), show list on mobile so the bar's info is visible
+  useEffect(() => {
+    if (typeof window === 'undefined' || !selectedBar) return;
+    if (window.matchMedia('(max-width: 1023px)').matches) setViewMode('list');
+  }, [selectedBar]);
+
   // Save preferences to localStorage
   useEffect(() => {
     if (typeof window === 'undefined') return;
