@@ -635,19 +635,36 @@ export default function Map({
           }
         }
       } else {
-        // Create new marker - capture bar.id in closure so click always selects this bar (no DOM/ref mix-up)
+        // Create new marker - resolve bar by which marker element was clicked (no closure/DOM mix-up)
         const el = createMarkerElement(bar, isSelected, isHovered, isInCrawl);
-        const clickedBarId = bar.id;
 
         el.addEventListener('click', (e) => {
           e.stopPropagation();
-          const resolved = bars.find((b) => b.id === clickedBarId);
-          if (resolved) onBarSelect(resolved);
+          const target = e.target as Node;
+          let resolvedBarId: number | null = null;
+          markersRef.current.forEach((marker, barId) => {
+            if (marker.getElement().contains(target) || marker.getElement() === target) {
+              resolvedBarId = barId;
+            }
+          });
+          if (resolvedBarId != null) {
+            const resolved = bars.find((b) => b.id === resolvedBarId);
+            if (resolved) onBarSelect(resolved);
+          }
         });
 
-        el.addEventListener('mouseenter', () => {
-          const resolved = bars.find((b) => b.id === clickedBarId);
-          if (resolved) onBarHover(resolved);
+        el.addEventListener('mouseenter', (e) => {
+          const target = e.target as Node;
+          let resolvedBarId: number | null = null;
+          markersRef.current.forEach((marker, barId) => {
+            if (marker.getElement().contains(target) || marker.getElement() === target) {
+              resolvedBarId = barId;
+            }
+          });
+          if (resolvedBarId != null) {
+            const resolved = bars.find((b) => b.id === resolvedBarId);
+            if (resolved) onBarHover(resolved);
+          }
         });
 
         el.addEventListener('mouseleave', () => {
@@ -772,6 +789,13 @@ export default function Map({
       Math.pow(currentCenter.lng - targetLng, 2) +
       Math.pow(currentCenter.lat - targetLat, 2)
     );
+
+    // If bar is already in view (e.g. user clicked its marker), don't fly — just open popup
+    if (distance < 0.08 && currentZoom >= 10) {
+      const marker = markersRef.current.get(selectedBar.id);
+      if (marker) marker.togglePopup();
+      return;
+    }
 
     // Dynamic duration based on distance (longer for farther destinations)
     const baseDuration = 1200;
