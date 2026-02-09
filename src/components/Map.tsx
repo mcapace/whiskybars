@@ -388,8 +388,8 @@ export default function Map({
     map.current.once('style.load', addLayers);
   }, [darkMode, mapLoaded, showHeatmap]);
 
-  // Zoom level below which we only show clusters (state/city level); above this, bar markers appear at actual locations
-  const MIN_ZOOM_FOR_BAR_MARKERS = 10;
+  // Zoom level below which we only show clusters; at this zoom and above, individual bar markers appear (so zooming into cities shows pins, not disappearing counts)
+  const MIN_ZOOM_FOR_BAR_MARKERS = 6;
 
   // Initialize supercluster - break clusters earlier (maxZoom 11) so bar markers appear when zooming into cities
   useEffect(() => {
