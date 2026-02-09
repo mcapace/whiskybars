@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Playfair_Display, Source_Sans_3 } from 'next/font/google'
 import './globals.css'
 
@@ -14,6 +14,14 @@ const sourceSans = Source_Sans_3({
   display: 'swap',
 })
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: 'cover',
+}
+
 export const metadata: Metadata = {
   title: "America's Top Whisky Bars 2026 | Whisky Advocate",
   description: "America's Top Whisky Bars honors the places where exceptional whisky, true hospitality, and atmosphere converge. Discover 150+ remarkable venues setting the standard for whisky culture nationwide.",
@@ -22,6 +30,11 @@ export const metadata: Metadata = {
     title: "America's Top Whisky Bars 2026",
     description: 'Discover the best whisky bars across America',
     type: 'website',
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
   },
 }
 
@@ -32,7 +45,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${playfair.variable} ${sourceSans.variable}`}>
-      <body className="font-sans antialiased">{children}</body>
+      <body className="font-sans antialiased min-h-screen min-h-[100dvh]">{children}</body>
     </html>
   )
 }

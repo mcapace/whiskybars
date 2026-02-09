@@ -12,11 +12,8 @@ interface BarCardProps {
   isSelected: boolean;
   isHovered: boolean;
   distance?: number | null;
-  isInCrawl: boolean;
-  crawlIndex?: number;
   onSelect: () => void;
   onHover: (hovered: boolean) => void;
-  onToggleCrawl: () => void;
 }
 
 export default function BarCard({
@@ -25,11 +22,8 @@ export default function BarCard({
   isSelected,
   isHovered,
   distance,
-  isInCrawl,
-  crawlIndex,
   onSelect,
   onHover,
-  onToggleCrawl,
 }: BarCardProps) {
   const [isSharing, setIsSharing] = useState(false);
   const [shareSuccess, setShareSuccess] = useState(false);
@@ -68,7 +62,7 @@ export default function BarCard({
   return (
     <>
     <div
-      className={`bar-card premium-card card-lift group relative bg-white rounded-xl transition-all duration-300 cursor-pointer overflow-hidden ${
+      className={`bar-card premium-card card-lift group relative bg-white rounded-xl transition-all duration-300 cursor-pointer overflow-hidden touch-manifest ${
         isSelected
           ? 'ring-2 ring-wa-red shadow-premium scale-[1.02]'
           : isHovered
@@ -91,13 +85,6 @@ export default function BarCard({
           isSelected ? 'opacity-100' : isHovered ? 'opacity-70' : 'opacity-0'
         }`}
       />
-
-      {/* Crawl indicator */}
-      {isInCrawl && (
-        <div className="absolute top-3 right-3 z-10 w-7 h-7 bg-wa-red text-white rounded-full flex items-center justify-center text-sm font-bold shadow-md">
-          {crawlIndex}
-        </div>
-      )}
 
       {/* Card Content */}
       <div className="p-4 pl-5">
@@ -148,30 +135,30 @@ export default function BarCard({
           </div>
         </div>
 
-        {/* Description */}
-        <div className="mb-3 ml-[76px]">
+        {/* Description - full width on small screens */}
+        <div className="mb-3 sm:ml-[76px]">
           <p className="text-base text-gray-600 whitespace-pre-line">
             {bar.description}
           </p>
         </div>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-3 ml-[76px]">
+        <div className="flex flex-wrap gap-1.5 mb-3 sm:ml-[76px]">
           <span className="text-sm px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full font-medium">
             {bar.state}
           </span>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-100 ml-[76px]">
-          <div className="flex items-center gap-3">
+        {/* Actions - comfortable touch targets on mobile */}
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-gray-100 ml-0 sm:ml-[76px]">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {bar.website && (
               <a
                 href={`https://${bar.website}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-sm font-medium text-gray-600 hover:text-wa-red transition-colors flex items-center gap-1"
+                className="min-h-[44px] inline-flex items-center gap-1 py-2 text-sm font-medium text-gray-600 hover:text-wa-red transition-colors touch-manifest"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -185,7 +172,7 @@ export default function BarCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-sm font-medium text-gray-600 hover:text-wa-red transition-colors flex items-center gap-1"
+                className="min-h-[44px] inline-flex items-center gap-1 py-2 text-sm font-medium text-gray-600 hover:text-wa-red transition-colors touch-manifest"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -196,7 +183,7 @@ export default function BarCard({
             <button
               onClick={handleShare}
               disabled={isSharing}
-              className="text-sm font-medium text-gray-600 hover:text-wa-red transition-colors flex items-center gap-1 disabled:opacity-50"
+              className="min-h-[44px] inline-flex items-center gap-1 py-2 text-sm font-medium text-gray-600 hover:text-wa-red transition-colors touch-manifest disabled:opacity-50"
               title="Share this bar"
             >
               {shareSuccess ? (
@@ -216,35 +203,6 @@ export default function BarCard({
               )}
             </button>
           </div>
-
-          {/* Add to crawl button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleCrawl();
-            }}
-            className={`flex items-center gap-1 text-sm font-medium px-2.5 py-1.5 rounded-lg transition-all ${
-              isInCrawl
-                ? 'bg-wa-red text-white hover:bg-wa-red-dark'
-                : 'bg-gray-100 text-gray-600 hover:bg-wa-red hover:text-white'
-            }`}
-          >
-            {isInCrawl ? (
-              <>
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                In Crawl
-              </>
-            ) : (
-              <>
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Add
-              </>
-            )}
-          </button>
         </div>
       </div>
     </div>

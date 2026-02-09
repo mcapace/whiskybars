@@ -14,8 +14,6 @@ interface BarListProps {
   searchQuery: string;
   selectedState: string | null;
   userLocation: { lat: number; lng: number } | null;
-  barCrawlBars: Bar[];
-  onToggleBarCrawl: (bar: Bar) => void;
   sortBy: 'alphabetical' | 'distance' | 'state';
 }
 
@@ -73,8 +71,6 @@ export default function BarList({
   searchQuery,
   selectedState,
   userLocation,
-  barCrawlBars,
-  onToggleBarCrawl,
   sortBy,
 }: BarListProps) {
   const listRef = useRef<HTMLDivElement>(null);
@@ -280,10 +276,10 @@ export default function BarList({
   }, []);
 
   return (
-    <div ref={listRef} className="h-full overflow-y-auto bg-gray-50">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-gradient-to-r from-wa-cream via-white to-wa-cream backdrop-blur-sm px-6 py-4 border-b-2 border-wa-red/20 shadow-sm">
-        <div className="flex items-center justify-between">
+    <div ref={listRef} className="h-full overflow-y-auto overflow-x-hidden bg-gray-50">
+      {/* Header - compact on small screens */}
+      <div className="sticky top-0 z-10 bg-gradient-to-r from-wa-cream via-white to-wa-cream backdrop-blur-sm px-4 sm:px-6 py-3 sm:py-4 border-b-2 border-wa-red/20 shadow-sm">
+        <div className="flex items-center justify-between gap-2">
           <div className="flex items-baseline gap-3">
             <div className="flex items-baseline gap-2">
               <span className="text-4xl font-serif font-bold text-wa-red">
@@ -307,8 +303,8 @@ export default function BarList({
         </div>
       </div>
 
-      {/* List */}
-      <div className="p-4">
+      {/* List - comfortable padding on mobile */}
+      <div className="p-4 sm:p-4">
         {totalCount === 0 ? (
           <div className="text-center py-16">
             <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -325,7 +321,7 @@ export default function BarList({
               
               return (
                 <div key={state}>
-                  <h3 className="text-sm uppercase tracking-widest text-wa-red font-bold mb-3 sticky top-14 bg-gray-50/95 backdrop-blur-sm py-2 z-[5] flex items-center gap-2">
+                  <h3 className="text-sm uppercase tracking-widest text-wa-red font-bold mb-3 sticky top-[4.25rem] sm:top-14 bg-gray-50/95 backdrop-blur-sm py-2 z-[5] flex items-center gap-2 min-h-[40px]">
                     <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-wa-red/10 text-wa-red font-bold text-xs border border-wa-red/20">
                       {getStateAbbreviation(state)}
                     </span>
@@ -333,11 +329,6 @@ export default function BarList({
                   </h3>
                   <div className="grid gap-3">
                     {stateBars.map((bar, localIndex) => {
-                      const isInCrawl = barCrawlBars.some(b => b.id === bar.id);
-                      const crawlIndex = isInCrawl
-                        ? barCrawlBars.findIndex(b => b.id === bar.id) + 1
-                        : undefined;
-                      // Calculate overall position in the list
                       const overallIndex = startIndex + localIndex;
                       const isFirstBar = localIndex === 0 && selectedState;
 
@@ -348,7 +339,6 @@ export default function BarList({
                           ref={(el) => {
                             if (el) {
                               barRefs.current.set(bar.id, el);
-                              // Also set refs for selected/first bar
                               if (selectedBar?.id === bar.id) {
                                 (selectedRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
                               }
@@ -366,14 +356,11 @@ export default function BarList({
                             isSelected={selectedBar?.id === bar.id}
                             isHovered={hoveredBar?.id === bar.id}
                             distance={bar.distance}
-                            isInCrawl={isInCrawl}
-                            crawlIndex={crawlIndex}
                             onSelect={() => {
-                              manualSelectRef.current = true; // Mark as manual selection
+                              manualSelectRef.current = true;
                               onBarSelect(bar);
                             }}
                             onHover={(hovered) => onBarHover(hovered ? bar : null)}
-                            onToggleCrawl={() => onToggleBarCrawl(bar)}
                           />
                         </div>
                       );

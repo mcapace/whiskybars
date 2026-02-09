@@ -92,11 +92,11 @@ export default function StateFilter({ bars, selectedState, onStateSelect }: Stat
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Quick Pills - Top States */}
-      <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
+      {/* Quick Pills - Top States (min 44px touch target on mobile) */}
+      <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2 mb-3">
         <button
           onClick={() => onStateSelect(null)}
-          className={`px-4 py-2 text-sm font-semibold rounded-full border-2 transition-all ${
+          className={`min-h-[44px] px-4 py-2.5 text-sm font-semibold rounded-full border-2 transition-all touch-manifest ${
             selectedState === null
               ? 'bg-wa-red text-white border-wa-red shadow-md'
               : 'bg-white text-gray-700 border-gray-200 hover:border-wa-red hover:text-wa-red'
@@ -109,7 +109,7 @@ export default function StateFilter({ bars, selectedState, onStateSelect }: Stat
           <button
             key={state}
             onClick={() => onStateSelect(state === selectedState ? null : state)}
-            className={`px-4 py-2 text-sm font-semibold rounded-full border-2 transition-all ${
+            className={`min-h-[44px] px-4 py-2.5 text-sm font-semibold rounded-full border-2 transition-all touch-manifest ${
               selectedState === state
                 ? 'bg-wa-red text-white border-wa-red shadow-md'
                 : 'bg-white text-gray-700 border-gray-200 hover:border-wa-red hover:text-wa-red'
@@ -122,7 +122,7 @@ export default function StateFilter({ bars, selectedState, onStateSelect }: Stat
         {/* More States Dropdown Trigger */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`px-4 py-2 text-sm font-semibold rounded-full border-2 transition-all flex items-center gap-1.5 ${
+          className={`min-h-[44px] px-4 py-2.5 text-sm font-semibold rounded-full border-2 transition-all flex items-center gap-1.5 touch-manifest ${
             isOpen || (selectedState && !topStates.includes(selectedState))
               ? 'bg-wa-red text-white border-wa-red shadow-md'
               : 'bg-white text-gray-700 border-gray-200 hover:border-wa-red hover:text-wa-red'
@@ -168,7 +168,7 @@ export default function StateFilter({ bars, selectedState, onStateSelect }: Stat
             {Object.entries(statesByRegion).map(([region, states]) => (
               <div key={region} className="mb-4 last:mb-0">
                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{region}</h4>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                   {states.map(state => (
                     <button
                       key={state}
@@ -176,7 +176,7 @@ export default function StateFilter({ bars, selectedState, onStateSelect }: Stat
                         onStateSelect(state === selectedState ? null : state);
                         setIsOpen(false);
                       }}
-                      className={`flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-all ${
+                      className={`min-h-[44px] flex items-center justify-between px-3 py-2.5 text-sm rounded-xl transition-all touch-manifest ${
                         selectedState === state
                           ? 'bg-wa-red text-white'
                           : 'bg-gray-50 text-gray-700 hover:bg-wa-red/10 hover:text-wa-red'

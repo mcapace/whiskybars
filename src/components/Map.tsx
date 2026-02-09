@@ -15,7 +15,6 @@ interface MapProps {
   selectedState: string | null;
   userLocation: { lat: number; lng: number } | null;
   showHeatmap?: boolean;
-  barCrawlBars?: Bar[];
   darkMode?: boolean;
   onMapClick?: (lng: number, lat: number) => void;
 }
@@ -37,7 +36,6 @@ export default function Map({
   selectedState,
   userLocation,
   showHeatmap = false,
-  barCrawlBars = [],
   darkMode = false,
   onMapClick,
 }: MapProps) {
@@ -72,7 +70,7 @@ export default function Map({
   }, [filteredBars]);
 
   // Create custom marker element with Glencairn glass icon
-  const createMarkerElement = useCallback((bar: Bar, isSelected: boolean, isHovered: boolean, isInCrawl: boolean) => {
+  const createMarkerElement = useCallback((bar: Bar, isSelected: boolean, isHovered: boolean) => {
     const el = document.createElement('div');
     el.className = 'map-marker-container';
     el.style.background = 'transparent';
@@ -81,43 +79,35 @@ export default function Map({
     el.style.margin = '0';
 
     const marker = document.createElement('div');
-    marker.className = `map-marker ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''} ${isInCrawl ? 'in-crawl' : ''}`;
+    marker.className = `map-marker ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`;
     marker.style.background = 'transparent';
     marker.style.border = 'none';
     marker.style.padding = '0';
     marker.style.margin = '0';
 
-    if (isInCrawl) {
-      const crawlIndex = barCrawlBars.findIndex(b => b.id === bar.id) + 1;
-      marker.innerHTML = `<span class="crawl-number">${crawlIndex}</span>`;
-    } else {
-      // Glencairn glass icon
-      const img = document.createElement('img');
-      img.src = '/map-logos/Glencairn-Edit.png';
-      img.alt = '';
-      img.className = 'glass-icon';
-      img.style.background = 'transparent';
-      img.style.border = 'none';
-      img.style.padding = '0';
-      img.style.margin = '0';
-      img.style.display = 'block';
-      img.onerror = () => {
-        console.error('Failed to load glass icon:', img.src);
-        // Fallback to marker dot if image fails to load
-        marker.innerHTML = `<span class="marker-dot"></span>`;
-      };
-      marker.appendChild(img);
-    }
+    const img = document.createElement('img');
+    img.src = '/map-logos/Glencairn-Edit.png';
+    img.alt = '';
+    img.className = 'glass-icon';
+    img.style.background = 'transparent';
+    img.style.border = 'none';
+    img.style.padding = '0';
+    img.style.margin = '0';
+    img.style.display = 'block';
+    img.onerror = () => {
+      console.error('Failed to load glass icon:', img.src);
+      marker.innerHTML = `<span class="marker-dot"></span>`;
+    };
+    marker.appendChild(img);
 
     el.appendChild(marker);
     el.setAttribute('data-bar-id', bar.id.toString());
-    // Map-only attribute so click resolution never picks up list's data-bar-id
     el.setAttribute('data-map-marker-id', bar.id.toString());
     el.setAttribute('data-lat', bar.coordinates.lat.toString());
     el.setAttribute('data-lng', bar.coordinates.lng.toString());
 
     return el;
-  }, [barCrawlBars]);
+  }, []);
 
   // Create cluster marker element
   const createClusterMarker = useCallback((count: number, coordinates: [number, number]) => {
@@ -240,26 +230,6 @@ export default function Map({
         },
       });
 
-      // Add bar crawl route source and layer
-      newMap.addSource('bar-crawl-route', {
-        type: 'geojson',
-        data: { type: 'FeatureCollection', features: [] },
-      });
-
-      newMap.addLayer({
-        id: 'bar-crawl-route',
-        type: 'line',
-        source: 'bar-crawl-route',
-        layout: {
-          'line-join': 'round',
-          'line-cap': 'round',
-        },
-        paint: {
-          'line-color': '#c41230',
-          'line-width': 4,
-          'line-dasharray': [2, 2],
-        },
-      });
     });
 
     // Track zoom level for clustering decisions
@@ -360,28 +330,6 @@ export default function Map({
         });
       }
 
-      // Add bar crawl route source and layer
-      if (!map.current!.getSource('bar-crawl-route')) {
-        map.current!.addSource('bar-crawl-route', {
-          type: 'geojson',
-          data: { type: 'FeatureCollection', features: [] },
-        });
-
-        map.current!.addLayer({
-          id: 'bar-crawl-route',
-          type: 'line',
-          source: 'bar-crawl-route',
-          layout: {
-            'line-join': 'round',
-            'line-cap': 'round',
-          },
-          paint: {
-            'line-color': '#c41230',
-            'line-width': 4,
-            'line-dasharray': [2, 2],
-          },
-        });
-      }
     };
 
     map.current.setStyle(darkMode ? MAP_STYLES.dark : MAP_STYLES.light);
@@ -423,40 +371,6 @@ export default function Map({
 
     map.current.setLayoutProperty('bars-heat', 'visibility', showHeatmap ? 'visible' : 'none');
   }, [filteredBars, mapLoaded, showHeatmap]);
-
-  // Update bar crawl route
-  useEffect(() => {
-    if (!map.current || !mapLoaded || barCrawlBars.length < 2) {
-      if (map.current && mapLoaded) {
-        const source = map.current.getSource('bar-crawl-route') as mapboxgl.GeoJSONSource;
-        if (source) {
-          source.setData({ type: 'FeatureCollection', features: [] });
-        }
-      }
-      return;
-    }
-
-    const coordinates = barCrawlBars
-      .filter(bar => bar.coordinates.lat && bar.coordinates.lng)
-      .map(bar => [bar.coordinates.lng, bar.coordinates.lat]);
-
-    if (coordinates.length >= 2) {
-      const source = map.current.getSource('bar-crawl-route') as mapboxgl.GeoJSONSource;
-      if (source) {
-        source.setData({
-          type: 'FeatureCollection',
-          features: [{
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'LineString',
-              coordinates,
-            },
-          }],
-        });
-      }
-    }
-  }, [barCrawlBars, mapLoaded]);
 
   // Update markers with clustering - only on viewport changes
   useEffect(() => {
@@ -588,7 +502,6 @@ export default function Map({
 
       const isSelected = selectedBar?.id === bar.id;
       const isHovered = hoveredBar?.id === bar.id;
-      const isInCrawl = barCrawlBars.some(b => b.id === bar.id);
 
       // Offset stacked markers so each is clickable and shows the correct bar
       const key = positionKey(bar);
@@ -613,12 +526,8 @@ export default function Map({
         el.setAttribute('data-lng', bar.coordinates.lng.toString());
         const markerDiv = el.querySelector('.map-marker');
         if (markerDiv) {
-          markerDiv.className = `map-marker ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''} ${isInCrawl ? 'in-crawl' : ''}`;
-          if (isInCrawl) {
-            const crawlIndex = barCrawlBars.findIndex(b => b.id === bar.id) + 1;
-            markerDiv.innerHTML = `<span class="crawl-number">${crawlIndex}</span>`;
-          } else {
-            // Clear and add glass icon
+          markerDiv.className = `map-marker ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`;
+          if (!markerDiv.querySelector('.glass-icon')) {
             markerDiv.innerHTML = '';
             const img = document.createElement('img');
             img.src = '/map-logos/Glencairn-Edit.png';
@@ -637,8 +546,7 @@ export default function Map({
           }
         }
       } else {
-        // Marker click handled by map container listener (position-based); hover here
-        const el = createMarkerElement(bar, isSelected, isHovered, isInCrawl);
+        const el = createMarkerElement(bar, isSelected, isHovered);
 
         el.addEventListener('mouseenter', () => {
           const resolved = bars.find((b) => b.id === bar.id);
@@ -708,17 +616,12 @@ export default function Map({
 
       const isSelected = selectedBar?.id === bar.id;
       const isHovered = hoveredBar?.id === bar.id;
-      const isInCrawl = barCrawlBars.some(b => b.id === bar.id);
 
       const el = marker.getElement();
       const markerDiv = el.querySelector('.map-marker');
       if (markerDiv) {
-        markerDiv.className = `map-marker ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''} ${isInCrawl ? 'in-crawl' : ''}`;
-        if (isInCrawl) {
-          const crawlIndex = barCrawlBars.findIndex(b => b.id === bar.id) + 1;
-          markerDiv.innerHTML = `<span class="crawl-number">${crawlIndex}</span>`;
-        } else if (!markerDiv.querySelector('.glass-icon')) {
-          // Only add glass icon if it doesn't exist
+        markerDiv.className = `map-marker ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`;
+        if (!markerDiv.querySelector('.glass-icon')) {
           markerDiv.innerHTML = '';
           const img = document.createElement('img');
           img.src = '/map-logos/Glencairn-Edit.png';
@@ -733,7 +636,7 @@ export default function Map({
         }
       }
     });
-  }, [selectedBar, hoveredBar, barCrawlBars, filteredBars, mapLoaded]);
+  }, [selectedBar, hoveredBar, filteredBars, mapLoaded]);
 
   // Single map-container click: resolve bar by click position (nearest marker) so list and map stay in sync
   useEffect(() => {
@@ -936,17 +839,6 @@ export default function Map({
         <div className="absolute bottom-12 left-4 bg-white shadow-lg rounded-lg p-3 z-10">
           <p className="text-xs font-semibold text-gray-700 mb-2">By state / region</p>
           <p className="text-xs text-gray-500">Zoom in to see bars at their locations; click a cluster to zoom</p>
-        </div>
-      )}
-
-      {/* Bar crawl legend */}
-      {barCrawlBars.length > 0 && (
-        <div className="absolute bottom-12 left-4 bg-white shadow-lg rounded-lg p-3 z-10">
-          <p className="text-xs font-semibold text-gray-700 mb-2">Bar Crawl Route</p>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-0.5 bg-wa-red" style={{ backgroundImage: 'repeating-linear-gradient(90deg, #c41230, #c41230 4px, transparent 4px, transparent 8px)' }} />
-            <span className="text-xs text-gray-600">{barCrawlBars.length} stops</span>
-          </div>
         </div>
       )}
 
