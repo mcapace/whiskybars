@@ -391,11 +391,11 @@ export default function Map({
   // Zoom level below which we only show clusters (state/city level); above this, bar markers appear at actual locations
   const MIN_ZOOM_FOR_BAR_MARKERS = 10;
 
-  // Initialize supercluster
+  // Initialize supercluster - break clusters earlier (maxZoom 11) so bar markers appear when zooming into cities
   useEffect(() => {
     superclusterRef.current = new Supercluster({
       radius: 60,
-      maxZoom: 14,
+      maxZoom: 11,
     });
   }, []);
 
@@ -506,20 +506,35 @@ export default function Map({
           const expansionZoom = superclusterRef.current.getClusterExpansionZoom(cluster.id as number);
           map.current.flyTo({
             center: [lng, lat],
-            zoom: Math.min(expansionZoom, 14),
+            zoom: Math.min(expansionZoom, 11),
             duration: 600,
           });
         });
 
         clusterMarkersRef.current.push(marker);
       } else {
-        // It's an individual point - only show bar markers when zoomed in enough (state/city view = clusters only)
+        // It's an individual point
+        const barId = cluster.properties.barId;
         if (zoom >= MIN_ZOOM_FOR_BAR_MARKERS) {
-          const barId = cluster.properties.barId;
           visibleBarIds.add(barId);
         }
       }
     });
+
+    // When zoomed in, show ALL bar markers in the viewport (stops markers disappearing in cities)
+    if (zoom >= MIN_ZOOM_FOR_BAR_MARKERS) {
+      const west = bounds.getWest();
+      const south = bounds.getSouth();
+      const east = bounds.getEast();
+      const north = bounds.getNorth();
+      filteredBars.forEach((bar) => {
+        if (!bar.coordinates.lat || !bar.coordinates.lng) return;
+        const { lat, lng } = bar.coordinates;
+        if (lng >= west && lng <= east && lat >= south && lat <= north) {
+          visibleBarIds.add(bar.id);
+        }
+      });
+    }
 
     // Remove markers that are now in clusters
     markersRef.current.forEach((marker, id) => {
@@ -557,16 +572,6 @@ export default function Map({
       if (!positionGroups.has(key)) positionGroups.set(key, []);
       positionGroups.get(key)!.push(b);
     });
-
-    const COORD_EPSILON = 1e-6; // for matching bar by position
-    const findBarsAtPosition = (lat: number, lng: number) =>
-      bars.filter(
-        (b) =>
-          b.coordinates.lat != null &&
-          b.coordinates.lng != null &&
-          Math.abs(b.coordinates.lat - lat) < COORD_EPSILON &&
-          Math.abs(b.coordinates.lng - lng) < COORD_EPSILON
-      );
 
     // Add or update individual markers
     filteredBars.forEach((bar) => {
@@ -626,30 +631,24 @@ export default function Map({
         // Create new marker
         const el = createMarkerElement(bar, isSelected, isHovered, isInCrawl);
 
-        // Resolve bar by stored position so we always get the bar at this location (fixes wrong bar when stacked or stale id)
+        // Resolve bar by id only so the modal always shows the bar this marker was created for (matches list behavior)
         el.addEventListener('click', (e) => {
           e.stopPropagation();
-          const lat = parseFloat(el.getAttribute('data-lat') ?? '');
-          const lng = parseFloat(el.getAttribute('data-lng') ?? '');
           const barIdAttr = el.getAttribute('data-bar-id');
           const barId = barIdAttr ? parseInt(barIdAttr, 10) : NaN;
-          const atPosition = findBarsAtPosition(lat, lng);
-          const resolved = atPosition.length === 0
-            ? bars.find((b) => b.id === barId)
-            : atPosition.find((b) => b.id === barId) ?? atPosition[0];
-          if (resolved) onBarSelect(resolved);
+          if (!Number.isNaN(barId)) {
+            const resolved = bars.find((b) => b.id === barId);
+            if (resolved) onBarSelect(resolved);
+          }
         });
 
         el.addEventListener('mouseenter', () => {
-          const lat = parseFloat(el.getAttribute('data-lat') ?? '');
-          const lng = parseFloat(el.getAttribute('data-lng') ?? '');
           const barIdAttr = el.getAttribute('data-bar-id');
           const barId = barIdAttr ? parseInt(barIdAttr, 10) : NaN;
-          const atPosition = findBarsAtPosition(lat, lng);
-          const resolved = atPosition.length === 0
-            ? bars.find((b) => b.id === barId)
-            : atPosition.find((b) => b.id === barId) ?? atPosition[0];
-          if (resolved) onBarHover(resolved);
+          if (!Number.isNaN(barId)) {
+            const resolved = bars.find((b) => b.id === barId);
+            if (resolved) onBarHover(resolved);
+          }
         });
 
         el.addEventListener('mouseleave', () => {
