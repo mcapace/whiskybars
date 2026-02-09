@@ -583,14 +583,18 @@ export default function Map({
       } else {
         // Create new marker
         const el = createMarkerElement(bar, isSelected, isHovered, isInCrawl);
+        const barId = bar.id;
 
+        // Resolve bar from full list at click time to avoid wrong bar (e.g. stale closure)
         el.addEventListener('click', (e) => {
           e.stopPropagation();
-          onBarSelect(bar);
+          const resolved = bars.find(b => b.id === barId);
+          if (resolved) onBarSelect(resolved);
         });
 
         el.addEventListener('mouseenter', () => {
-          onBarHover(bar);
+          const resolved = bars.find(b => b.id === barId);
+          if (resolved) onBarHover(resolved);
         });
 
         el.addEventListener('mouseleave', () => {
@@ -644,7 +648,7 @@ export default function Map({
         map.current.off('zoomend', handleMoveEnd);
       }
     };
-  }, [filteredBars, mapLoaded, showHeatmap, createMarkerElement, createClusterMarker, getGeoJSONPoints]);
+  }, [filteredBars, bars, mapLoaded, showHeatmap, createMarkerElement, createClusterMarker, getGeoJSONPoints]);
 
   // Update marker states (selected/hovered) without recreating markers
   useEffect(() => {

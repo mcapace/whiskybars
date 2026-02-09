@@ -53,12 +53,14 @@ function parseCoordinates(coordString: string): { lat: number; lng: number } {
   return { lat, lng };
 }
 
-// Geocode an address using Mapbox Geocoding API
-async function geocodeAddress(address: string): Promise<{ lat: number; lng: number } | null> {
+// Geocode an address using Mapbox Geocoding API.
+// Include state in the query so results are in the correct state (e.g. "Detroit" + "MI" -> Michigan, not Alabama).
+async function geocodeAddress(address: string, state?: string): Promise<{ lat: number; lng: number } | null> {
   if (!MAPBOX_TOKEN || !address) return null;
 
   try {
-    const encodedAddress = encodeURIComponent(address);
+    const query = state ? `${address}, ${state} USA` : `${address} USA`;
+    const encodedAddress = encodeURIComponent(query);
     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${MAPBOX_TOKEN}&country=us,pr&limit=1`;
 
     const response = await fetch(url);
@@ -170,7 +172,7 @@ export function useBars() {
 
               // Geocode in batches to avoid rate limiting
               const geocodePromises = barsNeedingGeocode.map(async (bar) => {
-                const geocoded = await geocodeAddress(bar.address);
+                const geocoded = await geocodeAddress(bar.address, bar.state);
                 if (geocoded) {
                   bar.coordinates = geocoded;
                   console.log(`Geocoded ${bar.name}: ${geocoded.lat}, ${geocoded.lng}`);

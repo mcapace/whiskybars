@@ -3,6 +3,7 @@
 import { useMemo, useRef, useEffect } from 'react';
 import { Bar } from '@/types';
 import BarCard from './BarCard';
+import { barMatchesSearch } from '@/utils/stateSearch';
 
 interface BarListProps {
   bars: Bar[];
@@ -99,16 +100,9 @@ export default function BarList({
         : null,
     }));
 
-    // Filter by search query
+    // Filter by search query (matches name, address, description, state abbrev, or full state name e.g. "Washington state")
     if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filteredBars = filteredBars.filter(
-        bar =>
-          bar.name.toLowerCase().includes(query) ||
-          bar.address.toLowerCase().includes(query) ||
-          bar.description.toLowerCase().includes(query) ||
-          bar.state.toLowerCase().includes(query)
-      );
+      filteredBars = filteredBars.filter(bar => barMatchesSearch(bar, searchQuery));
     }
 
     // Filter by state

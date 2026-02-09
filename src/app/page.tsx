@@ -16,6 +16,7 @@ import {
 import { useBars } from '@/hooks/useBars';
 import { cocktails } from '@/data/cocktails';
 import { Bar, ViewMode } from '@/types';
+import { barMatchesSearch } from '@/utils/stateSearch';
 
 // Dynamically import Map to avoid SSR issues with Mapbox
 const Map = dynamic(() => import('@/components/Map'), {
@@ -124,12 +125,7 @@ export default function Home() {
       result = result.filter(bar => bar.state === selectedState);
     }
     if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(bar =>
-        bar.name.toLowerCase().includes(query) ||
-        bar.address.toLowerCase().includes(query) ||
-        bar.state.toLowerCase().includes(query)
-      );
+      result = result.filter(bar => barMatchesSearch(bar, searchQuery));
     }
     return result;
   }, [bars, selectedState, searchQuery]);
