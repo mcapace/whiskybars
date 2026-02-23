@@ -66,7 +66,13 @@ body {
   background: #888;
 }
 
-/* Mapbox customizations */
+/* Mapbox customizations - popups must render above markers so Glencairn doesn't cover content */
+.mapboxgl-popup-container {
+  z-index: 1000 !important;
+}
+.mapboxgl-popup {
+  z-index: 1000 !important;
+}
 .mapboxgl-popup-content {
   padding: 16px 20px;
   border-radius: 8px;

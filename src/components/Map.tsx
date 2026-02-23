@@ -558,7 +558,7 @@ export default function Map({
         });
 
         const popup = new mapboxgl.Popup({
-          offset: 25,
+          offset: [0, -45],
           closeButton: true,
           maxWidth: '450px',
           className: 'bar-popup',
@@ -638,7 +638,7 @@ export default function Map({
     });
   }, [selectedBar, hoveredBar, filteredBars, mapLoaded]);
 
-  // Single map-container click: resolve bar by click position (nearest marker) so list and map stay in sync
+  // Single map-container click: resolve bar by pixel distance to nearest marker so correct bar is always selected
   useEffect(() => {
     if (!map.current || !mapLoaded) return;
     const container = map.current.getContainer();
@@ -650,18 +650,18 @@ export default function Map({
         node = node.parentElement;
       }
       const rect = container.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const clickLngLat = map.current!.unproject([x, y]);
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
       let bestBarId: number | null = null;
-      let bestDist = 0.015; // ~1.5km in degrees; only select if click is near a marker
+      let bestPixelDist = 80; // only select if click is within 80px of a marker (avoids wrong bar in dense areas)
       markersRef.current.forEach((marker, barId) => {
         const pos = marker.getLngLat();
-        const d = Math.sqrt(
-          Math.pow(pos.lng - clickLngLat.lng, 2) + Math.pow(pos.lat - clickLngLat.lat, 2)
-        );
-        if (d < bestDist) {
-          bestDist = d;
+        const point = map.current!.project([pos.lng, pos.lat]);
+        const px = point.x;
+        const py = point.y;
+        const d = Math.sqrt(Math.pow(clickX - px, 2) + Math.pow(clickY - py, 2));
+        if (d < bestPixelDist) {
+          bestPixelDist = d;
           bestBarId = barId;
         }
       });
