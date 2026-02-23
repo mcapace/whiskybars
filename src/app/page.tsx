@@ -89,6 +89,16 @@ export default function Home() {
     if (window.matchMedia('(max-width: 1023px)').matches) setViewMode('list');
   }, [selectedBar]);
 
+  // When user changes state filter (after initial load): clear selected bar so list shows state section and map shows only markers (no popups)
+  const isInitialStateMount = useRef(true);
+  useEffect(() => {
+    if (isInitialStateMount.current) {
+      isInitialStateMount.current = false;
+      return;
+    }
+    setSelectedBar(null);
+  }, [selectedState]);
+
   // Save preferences to localStorage
   useEffect(() => {
     if (typeof window === 'undefined') return;

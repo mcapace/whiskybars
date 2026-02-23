@@ -154,7 +154,7 @@ export default function BarCard({
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {bar.website && (
               <a
-                href={`https://${bar.website}`}
+                href={bar.website}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}

@@ -9,15 +9,6 @@ interface StateFilterProps {
   onStateSelect: (state: string | null) => void;
 }
 
-// US Regions with their states
-const REGIONS = {
-  'Northeast': ['CT', 'ME', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT'],
-  'Southeast': ['AL', 'AR', 'FL', 'GA', 'KY', 'LA', 'MD', 'MS', 'NC', 'SC', 'TN', 'VA', 'WV', 'DC'],
-  'Midwest': ['IL', 'IN', 'IA', 'KS', 'MI', 'MN', 'MO', 'NE', 'ND', 'OH', 'SD', 'WI'],
-  'Southwest': ['AZ', 'NM', 'OK', 'TX'],
-  'West': ['AK', 'CA', 'CO', 'HI', 'ID', 'MT', 'NV', 'OR', 'UT', 'WA', 'WY'],
-};
-
 // State name mapping
 const STATE_NAMES: Record<string, string> = {
   'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas', 'CA': 'California',
@@ -54,18 +45,13 @@ export default function StateFilter({ bars, selectedState, onStateSelect }: Stat
       .map(([state]) => state);
   }, [statesWithCounts]);
 
-  // All states that have bars, grouped by region (for More States dropdown)
-  const statesByRegion = useMemo(() => {
-    const stateSet = new Set(Object.keys(statesWithCounts));
-    const grouped: Record<string, string[]> = {};
-    Object.entries(REGIONS).forEach(([region, states]) => {
-      const inRegion = states.filter(s => stateSet.has(s)).sort((a, b) => (STATE_NAMES[a] || a).localeCompare(STATE_NAMES[b] || b));
-      if (inRegion.length > 0) {
-        grouped[region] = inRegion;
-      }
-    });
-    return grouped;
-  }, [statesWithCounts]);
+  // Other states (not in top 6) for the More States dropdown, sorted by full name with counts
+  const otherStates = useMemo(() => {
+    const topSet = new Set(topStates);
+    return Object.keys(statesWithCounts)
+      .filter(state => !topSet.has(state))
+      .sort((a, b) => (STATE_NAMES[a] || a).localeCompare(STATE_NAMES[b] || b));
+  }, [statesWithCounts, topStates]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -133,43 +119,39 @@ export default function StateFilter({ bars, selectedState, onStateSelect }: Stat
         </button>
       </div>
 
-      {/* More States dropdown - regions with full state names */}
+      {/* More States dropdown - other states (not in top 6) with counts */}
       {isOpen && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[90vw] max-w-md bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
-          <div className="max-h-[70vh] overflow-y-auto py-2">
-            {Object.entries(statesByRegion).map(([region, states]) => (
-              <div key={region} className="mb-1">
-                <div className="sticky top-0 z-10 px-4 py-2 bg-gray-50 border-y border-gray-100">
-                  <h4 className="text-xs font-bold text-wa-red uppercase tracking-wider">{region}</h4>
-                </div>
-                <ul className="px-2 py-1">
-                  {states.map(state => (
-                    <li key={state}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          onStateSelect(state === selectedState ? null : state);
-                          setIsOpen(false);
-                        }}
-                        className={`w-full min-h-[48px] flex items-center justify-between gap-3 px-3 py-2.5 text-left rounded-lg transition-all touch-manifest ${
-                          selectedState === state
-                            ? 'bg-wa-red text-white'
-                            : 'text-gray-700 hover:bg-wa-red/10 hover:text-wa-red'
-                        }`}
-                      >
-                        <span className="font-medium">
-                          {STATE_NAMES[state] || state}
-                        </span>
-                        <span className={`text-sm tabular-nums ${selectedState === state ? 'text-white/90' : 'text-gray-500'}`}>
-                          {statesWithCounts[state]} {statesWithCounts[state] === 1 ? 'bar' : 'bars'}
-                        </span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[90vw] max-w-sm bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+          <div className="px-3 py-2 border-b border-gray-100 bg-gray-50">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Other states</p>
           </div>
+          <ul className="max-h-[60vh] overflow-y-auto py-1">
+            {otherStates.length === 0 ? (
+              <li className="px-4 py-3 text-sm text-gray-500">No other states</li>
+            ) : (
+              otherStates.map(state => (
+                <li key={state}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onStateSelect(state === selectedState ? null : state);
+                      setIsOpen(false);
+                    }}
+                    className={`w-full min-h-[48px] flex items-center justify-between gap-3 px-4 py-2.5 text-left rounded-lg mx-1 transition-all touch-manifest ${
+                      selectedState === state
+                        ? 'bg-wa-red text-white'
+                        : 'text-gray-700 hover:bg-wa-red/10 hover:text-wa-red'
+                    }`}
+                  >
+                    <span className="font-medium">{STATE_NAMES[state] || state}</span>
+                    <span className={`text-sm font-semibold tabular-nums ${selectedState === state ? 'text-white/90' : 'text-gray-500'}`}>
+                      {statesWithCounts[state]} {statesWithCounts[state] === 1 ? 'bar' : 'bars'}
+                    </span>
+                  </button>
+                </li>
+              ))
+            )}
+          </ul>
         </div>
       )}
     </div>

@@ -120,7 +120,7 @@ export default function BarDetailModal({ bar, index, distance, onClose }: BarDet
           <div className="flex flex-wrap items-center gap-4 pt-6 border-t border-gray-200">
             {bar.website && (
               <a
-                href={`https://${bar.website}`}
+                href={bar.website}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-wa-red text-white rounded-lg font-semibold hover:bg-wa-red-dark transition-colors"

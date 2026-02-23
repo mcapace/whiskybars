@@ -119,6 +119,29 @@ function correctCoordinates(bar: { name: string; state: string; coordinates: { l
   return coordinates;
 }
 
+// Normalize website URL from sheet: exactly one https://, fix https// or double protocol
+function normalizeWebsiteUrl(raw: string): string {
+  let s = (raw || '').trim();
+  if (!s) return '';
+  // Strip any leading protocol (http://, https://, or malformed https// or http//)
+  s = s.replace(/^https?:\/\/?/i, '').replace(/^https?\/\/?/i, '');
+  if (!s) return '';
+  return `https://${s}`;
+}
+
+// Get column value by header name (case-insensitive) or fallback to index (for different sheet layouts)
+function getColumn(row: CSVRow, columns: string[], headerNames: string[], fallbackIndex: number): string {
+  const keys = Object.keys(row);
+  for (const name of headerNames) {
+    const key = keys.find(k => k.trim().toLowerCase() === name.trim().toLowerCase());
+    if (key) {
+      const val = row[key];
+      if (val !== undefined && val !== null && String(val).trim() !== '') return String(val).trim();
+    }
+  }
+  return columns[fallbackIndex] || '';
+}
+
 export function useBars() {
   const [bars, setBars] = useState<Bar[]>([]);
   const [loading, setLoading] = useState(true);
@@ -142,18 +165,16 @@ export function useBars() {
           complete: async (results) => {
             const parsedBars: Bar[] = results.data
               .map((row, index) => {
-                // Get column values (handle both header names and indices)
-                const columns = Object.values(row);
-
+                const columns = Object.values(row) as string[];
                 const bar = {
                   id: index + 1,
-                  name: columns[0] || '',
-                  address: columns[1] || '',
-                  coordinates: parseCoordinates(columns[2] || ''),
-                  state: columns[3] || '',
-                  website: columns[4] || '',
-                  description: columns[5] || '',
-                  whiskyList: columns[6] || undefined,
+                  name: getColumn(row, columns, ['Name', 'Bar', 'Bar Name', 'Venue'], 0) || columns[0] || '',
+                  address: getColumn(row, columns, ['Address', 'Street', 'Location'], 1) || columns[1] || '',
+                  coordinates: parseCoordinates(getColumn(row, columns, ['Coordinates', 'Lat Long', 'Lat', 'Lng'], 2) || columns[2] || ''),
+                  state: getColumn(row, columns, ['State', 'ST'], 3) || columns[3] || '',
+                  website: normalizeWebsiteUrl(getColumn(row, columns, ['Website', 'Web Site', 'URL', 'Web'], 4) || columns[4] || ''),
+                  description: getColumn(row, columns, ['Description', 'Blurb', 'Notes'], 5) || columns[5] || '',
+                  whiskyList: (getColumn(row, columns, ['Whisky List', 'Whiskey List', 'Menu', 'List'], 6) || columns[6] || '').trim() || undefined,
                 };
 
                 // Apply coordinate corrections for specific locations

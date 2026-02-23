@@ -568,7 +568,7 @@ export default function Map({
             <p class="bar-popup-address">${bar.address}</p>
             <p class="bar-popup-description">${bar.description}</p>
             <div class="bar-popup-actions">
-              ${bar.website ? `<a href="https://${bar.website}" target="_blank" rel="noopener" class="bar-popup-link">Website</a>` : ''}
+              ${bar.website ? `<a href="${bar.website.replace(/"/g, '&quot;')}" target="_blank" rel="noopener" class="bar-popup-link">Website</a>` : ''}
               ${bar.whiskyList ? `<a href="${bar.whiskyList}" target="_blank" rel="noopener" class="bar-popup-link">Whisky Menu</a>` : ''}
               <a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(bar.address)}" target="_blank" rel="noopener" class="bar-popup-link bar-popup-directions">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
@@ -764,9 +764,15 @@ export default function Map({
     }, duration * 0.8);
   }, [selectedBar, mapLoaded]);
 
-  // Zoom to selected state with smooth animation
+  // Zoom to selected state with smooth animation; close any open popup so only markers show
   useEffect(() => {
     if (!map.current || !mapLoaded || !selectedState) return;
+
+    // Close all popups when state filter changes so user sees only markers, not a wall of popups
+    markersRef.current.forEach((marker) => {
+      const popup = marker.getPopup();
+      if (popup) popup.remove();
+    });
 
     const stateBars = bars.filter(bar => bar.state === selectedState);
     if (stateBars.length === 0) return;
