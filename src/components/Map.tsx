@@ -638,7 +638,7 @@ export default function Map({
     });
   }, [selectedBar, hoveredBar, filteredBars, mapLoaded]);
 
-  // Single map-container click: resolve bar by pixel distance to nearest marker so correct bar is always selected
+  // Single map-container click: resolve bar from clicked marker element (data-map-marker-id) or nearest marker by position
   useEffect(() => {
     if (!map.current || !mapLoaded) return;
     const container = map.current.getContainer();
@@ -647,19 +647,31 @@ export default function Map({
       let node: Element | null = (e.target as Element);
       while (node && node !== document.body) {
         if (node.classList?.contains('cluster-marker')) return;
+        const barIdAttr = node.getAttribute?.('data-map-marker-id');
+        if (barIdAttr != null) {
+          const barId = parseInt(barIdAttr, 10);
+          if (!Number.isNaN(barId)) {
+            const resolved = bars.find((b) => b.id === barId);
+            if (resolved) onBarSelect(resolved);
+            return;
+          }
+        }
         node = node.parentElement;
       }
+      // Fallback: click was on map background — find nearest marker within range
       const rect = container.getBoundingClientRect();
       const clickX = e.clientX - rect.left;
       const clickY = e.clientY - rect.top;
+      const MARKER_VISUAL_CENTER_OFFSET_Y = 35;
+      const MAX_CLICK_DISTANCE_PX = 50;
       let bestBarId: number | null = null;
-      let bestPixelDist = 80; // only select if click is within 80px of a marker (avoids wrong bar in dense areas)
+      let bestPixelDist = MAX_CLICK_DISTANCE_PX;
       markersRef.current.forEach((marker, barId) => {
         const pos = marker.getLngLat();
         const point = map.current!.project([pos.lng, pos.lat]);
-        const px = point.x;
-        const py = point.y;
-        const d = Math.sqrt(Math.pow(clickX - px, 2) + Math.pow(clickY - py, 2));
+        const centerX = point.x;
+        const centerY = point.y - MARKER_VISUAL_CENTER_OFFSET_Y;
+        const d = Math.sqrt(Math.pow(clickX - centerX, 2) + Math.pow(clickY - centerY, 2));
         if (d < bestPixelDist) {
           bestPixelDist = d;
           bestBarId = barId;
