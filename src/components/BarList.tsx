@@ -147,6 +147,11 @@ export default function BarList({
     }
   }, [selectedBar]);
 
+  // Whenever selection changes (from map or list), protect it from intersection observer so we don't overwrite with "most visible" bar
+  useEffect(() => {
+    if (selectedBar) manualSelectRef.current = true;
+  }, [selectedBar]);
+
   // Scroll to first bar when state is selected (skip on initial mount)
   useEffect(() => {
     if (isInitialMountRef.current) return; // Don't scroll on initial page load

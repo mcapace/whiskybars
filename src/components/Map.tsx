@@ -80,6 +80,7 @@ export default function Map({
 
     const marker = document.createElement('div');
     marker.className = `map-marker ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`;
+    marker.setAttribute('data-map-marker-id', bar.id.toString());
     marker.style.background = 'transparent';
     marker.style.border = 'none';
     marker.style.padding = '0';
@@ -526,6 +527,7 @@ export default function Map({
         el.setAttribute('data-lng', bar.coordinates.lng.toString());
         const markerDiv = el.querySelector('.map-marker');
         if (markerDiv) {
+          markerDiv.setAttribute('data-map-marker-id', bar.id.toString());
           markerDiv.className = `map-marker ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`;
           if (!markerDiv.querySelector('.glass-icon')) {
             markerDiv.innerHTML = '';
@@ -620,6 +622,7 @@ export default function Map({
       const el = marker.getElement();
       const markerDiv = el.querySelector('.map-marker');
       if (markerDiv) {
+        markerDiv.setAttribute('data-map-marker-id', bar.id.toString());
         markerDiv.className = `map-marker ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`;
         if (!markerDiv.querySelector('.glass-icon')) {
           markerDiv.innerHTML = '';
