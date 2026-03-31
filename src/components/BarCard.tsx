@@ -62,12 +62,12 @@ export default function BarCard({
   return (
     <>
     <div
-      className={`bar-card premium-card card-lift group relative bg-white rounded-xl transition-all duration-300 cursor-pointer overflow-hidden touch-manifest ${
+      className={`bar-card group relative bg-white rounded-2xl transition-all duration-300 cursor-pointer overflow-hidden touch-manifest ${
         isSelected
-          ? 'ring-2 ring-wa-red shadow-premium scale-[1.02]'
+          ? 'ring-2 ring-wa-red shadow-lg shadow-wa-red/10 scale-[1.01]'
           : isHovered
-          ? 'shadow-lg scale-[1.01] ring-1 ring-wa-red/30'
-          : 'shadow-sm hover:shadow-md'
+          ? 'shadow-md scale-[1.005] border-wa-red/20'
+          : 'shadow-sm hover:shadow-md hover:border-black/10'
       }`}
       onClick={handleCardClick}
       onMouseEnter={() => {
@@ -115,7 +115,7 @@ export default function BarCard({
             </div>
 
             {/* Number badge */}
-            <div className="absolute -top-2 -right-2 w-8 h-8 bg-wa-red text-white rounded-full flex items-center justify-center text-base font-bold shadow-lg border-2 border-white z-10">
+            <div className="absolute -top-1.5 -right-1.5 w-7 h-7 bg-gradient-to-br from-wa-red to-wa-red-dark text-white rounded-full flex items-center justify-center text-xs font-bold shadow-md shadow-wa-red/20 border-2 border-white z-10">
               {index + 1}
             </div>
           </div>

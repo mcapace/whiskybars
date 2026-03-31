@@ -76,14 +76,12 @@ export default function Header() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled 
-            ? 'bg-white shadow-md' 
-            : 'bg-black/20 backdrop-blur-md'
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          isScrolled
+            ? 'glass-header-scrolled'
+            : 'glass-header'
         }`}
       >
-        {/* Top border - light brown - only show when scrolled */}
-        {isScrolled && <div className="hidden lg:block h-1 bg-wa-brown"></div>}
 
         {/* Main header */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -91,9 +89,7 @@ export default function Header() {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={`lg:hidden p-2 -ml-2 flex-shrink-0 transition-colors ${
-                isScrolled ? 'text-gray-700' : 'text-gray-900'
-              }`}
+              className="lg:hidden p-2 -ml-2 flex-shrink-0 transition-colors text-gray-700 hover:text-wa-red"
               aria-label="Toggle menu"
             >
               <svg
@@ -164,13 +160,13 @@ export default function Header() {
                     )}
                   </a>
                   {item.submenu && (
-                    <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                      <div className="bg-white shadow-lg rounded-md border border-gray-100 py-2 min-w-[180px]">
+                    <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 translate-y-1 group-hover:translate-y-0">
+                      <div className="bg-white/90 backdrop-blur-xl shadow-xl rounded-2xl border border-white/60 py-2 min-w-[200px]">
                         {item.submenu.map((subitem) => (
                           <a
                             key={subitem.label}
                             href={subitem.href}
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-wa-red"
+                            className="block px-5 py-2.5 text-sm text-gray-700 hover:bg-wa-red/5 hover:text-wa-red transition-colors rounded-lg mx-1"
                           >
                             {subitem.label}
                           </a>
@@ -195,13 +191,13 @@ export default function Header() {
             <div className="hidden lg:flex items-center flex-shrink-0 gap-0">
               <a
                 href="https://whiskyadvocate.com/subscribe"
-                className="bg-wa-cream border border-wa-red text-wa-red px-4 py-2 text-xs font-serif font-bold uppercase tracking-wider hover:bg-wa-cream/80 transition-colors whitespace-nowrap w-28 h-9 flex items-center justify-center"
+                className="bg-transparent border-1.5 border-wa-red/80 text-wa-red px-5 py-2 text-xs font-sans font-bold uppercase tracking-wider hover:bg-wa-red hover:text-white transition-all duration-300 whitespace-nowrap rounded-full"
               >
                 Subscribe
               </a>
               <a
                 href="https://store.whiskyadvocate.com/"
-                className="bg-wa-red text-wa-cream px-4 py-2 text-xs font-serif font-bold uppercase tracking-wider hover:bg-wa-red-dark transition-colors whitespace-nowrap w-28 h-9 flex items-center justify-center"
+                className="bg-gradient-to-r from-wa-red to-wa-red-dark text-white px-5 py-2 text-xs font-sans font-bold uppercase tracking-wider hover:shadow-lg hover:shadow-wa-red/20 transition-all duration-300 whitespace-nowrap rounded-full"
               >
                 Visit Store
               </a>
@@ -253,7 +249,7 @@ export default function Header() {
 
         {/* Search bar */}
         {isSearchOpen && (
-          <div className="border-t border-gray-200 bg-wa-cream">
+          <div className="border-t border-black/5 bg-white/80 backdrop-blur-xl">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
               <form
                 action="https://whiskyadvocate.com/"
@@ -262,7 +258,6 @@ export default function Header() {
                   const form = e.currentTarget;
                   const input = form.querySelector('input[type="text"]') as HTMLInputElement;
                   if (input && input.value.trim()) {
-                    // Redirect to Whisky Advocate search
                     window.location.href = `https://whiskyadvocate.com/?s=${encodeURIComponent(input.value.trim())}`;
                     e.preventDefault();
                     setIsSearchOpen(false);
@@ -276,7 +271,7 @@ export default function Header() {
                     type="text"
                     name="s"
                     placeholder="Search whiskyadvocate.com..."
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wa-red focus:border-transparent bg-white"
+                    className="w-full pl-10 pr-4 py-3.5 border border-black/8 rounded-2xl focus:outline-none focus:ring-2 focus:ring-wa-red/30 focus:border-wa-red/30 bg-white/60 backdrop-blur-sm transition-all"
                     autoFocus
                   />
                   <svg

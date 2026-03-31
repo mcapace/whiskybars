@@ -72,10 +72,10 @@ export default function StateFilter({ bars, selectedState, onStateSelect }: Stat
       <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2 mb-3">
         <button
           onClick={() => onStateSelect(null)}
-          className={`min-h-[44px] px-4 py-2.5 text-sm font-semibold rounded-full border-2 transition-all touch-manifest ${
+          className={`modern-pill min-h-[44px] touch-manifest ${
             selectedState === null
-              ? 'bg-wa-red text-white border-wa-red shadow-md'
-              : 'bg-white text-gray-700 border-gray-200 hover:border-wa-red hover:text-wa-red'
+              ? 'modern-pill-active'
+              : 'modern-pill-inactive'
           }`}
         >
           All ({totalBars})
@@ -85,10 +85,10 @@ export default function StateFilter({ bars, selectedState, onStateSelect }: Stat
           <button
             key={state}
             onClick={() => onStateSelect(state === selectedState ? null : state)}
-            className={`min-h-[44px] px-4 py-2.5 text-sm font-semibold rounded-full border-2 transition-all touch-manifest ${
+            className={`modern-pill min-h-[44px] touch-manifest ${
               selectedState === state
-                ? 'bg-wa-red text-white border-wa-red shadow-md'
-                : 'bg-white text-gray-700 border-gray-200 hover:border-wa-red hover:text-wa-red'
+                ? 'modern-pill-active'
+                : 'modern-pill-inactive'
             }`}
           >
             {state} ({statesWithCounts[state]})
@@ -98,10 +98,10 @@ export default function StateFilter({ bars, selectedState, onStateSelect }: Stat
         {/* More States Dropdown Trigger */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`min-h-[44px] px-4 py-2.5 text-sm font-semibold rounded-full border-2 transition-all flex items-center gap-1.5 touch-manifest ${
+          className={`modern-pill min-h-[44px] flex items-center gap-1.5 touch-manifest ${
             isOpen || (selectedState && !topStates.includes(selectedState))
-              ? 'bg-wa-red text-white border-wa-red shadow-md'
-              : 'bg-white text-gray-700 border-gray-200 hover:border-wa-red hover:text-wa-red'
+              ? 'modern-pill-active'
+              : 'modern-pill-inactive'
           }`}
         >
           {selectedState && !topStates.includes(selectedState) ? (
@@ -121,9 +121,9 @@ export default function StateFilter({ bars, selectedState, onStateSelect }: Stat
 
       {/* More States dropdown - other states (not in top 6) with counts */}
       {isOpen && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[90vw] max-w-sm bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
-          <div className="px-3 py-2 border-b border-gray-100 bg-gray-50">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Other states</p>
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[90vw] max-w-sm bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/60 z-50 overflow-hidden">
+          <div className="px-4 py-3 border-b border-black/5">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Other states</p>
           </div>
           <ul className="max-h-[60vh] overflow-y-auto py-1">
             {otherStates.length === 0 ? (

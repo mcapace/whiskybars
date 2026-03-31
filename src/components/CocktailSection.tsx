@@ -24,20 +24,21 @@ export default function CocktailSection({ cocktails }: CocktailSectionProps) {
   const [selectedCocktail, setSelectedCocktail] = useState<Cocktail | null>(null);
 
   return (
-    <section className="py-16 sm:py-24 bg-gradient-to-b from-whisky-cream via-white to-whisky-cream relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-wa-red rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-wa-gold rounded-full blur-3xl"></div>
+    <section className="py-20 sm:py-28 relative overflow-hidden gradient-mesh-warm">
+      {/* Decorative background blobs */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-96 h-96 bg-wa-red/4 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-wa-gold/4 rounded-full blur-[120px]"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
-          <h2 className="font-serif text-4xl sm:text-5xl font-medium text-gray-900 mb-6">
+          <h2 className="reveal font-serif text-4xl sm:text-5xl font-medium text-gray-900 mb-6">
             Elevating the Classics
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-            Six iconic cocktails, each paired with the original recipe and a bartender's fresh take.
+          <div className="reveal reveal-delay-1 section-divider w-16 mx-auto mb-6" />
+          <p className="reveal reveal-delay-2 text-gray-500 max-w-2xl mx-auto text-lg">
+            Six iconic cocktails, each paired with the original recipe and a bartender&apos;s fresh take.
           </p>
         </div>
 

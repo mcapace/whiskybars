@@ -20,15 +20,14 @@ export default function ScrollProgress() {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 right-0 h-1 bg-gray-200/30 z-[100]">
+    <div className="fixed top-0 left-0 right-0 h-[2px] z-[100]">
       <div
-        className="h-full bg-gradient-to-r from-wa-red via-wa-gold to-wa-red transition-all duration-150 ease-out"
-        style={{ width: `${scrollProgress}%` }}
+        className="h-full bg-gradient-to-r from-wa-red via-wa-gold to-wa-red transition-all duration-100 ease-out"
+        style={{
+          width: `${scrollProgress}%`,
+          boxShadow: scrollProgress > 0 ? '0 0 8px rgba(224, 71, 32, 0.4)' : 'none',
+        }}
       />
     </div>
   );
 }
-
-
-
-

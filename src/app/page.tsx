@@ -3,6 +3,28 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
+
+// Scroll reveal hook
+function useScrollReveal() {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
+    );
+
+    document.querySelectorAll('.reveal, .reveal-scale').forEach((el) => {
+      observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+}
 import {
   Header,
   VideoHero,
@@ -190,6 +212,9 @@ export default function Home() {
     }
   }, [focusedBarIndex, filteredBars]);
 
+  // Initialize scroll reveal animations
+  useScrollReveal();
+
   const barCount = useMemo(() => {
     return selectedState ? bars.filter(bar => bar.state === selectedState).length : bars.length;
   }, [bars, selectedState]);
@@ -222,7 +247,7 @@ export default function Home() {
   }, [bars, selectedState]);
 
   return (
-    <div className={`min-h-screen flex flex-col ${darkMode ? 'dark-mode bg-gray-900' : 'bg-white'}`}>
+    <div className={`noise-overlay min-h-screen flex flex-col ${darkMode ? 'dark-mode bg-gray-900' : 'bg-white'}`}>
       <ScrollProgress />
       <Header />
 
@@ -230,20 +255,21 @@ export default function Home() {
         {/* Video Hero Section */}
         <VideoHero>
           <div className="text-center text-white px-4 max-w-4xl mx-auto">
-            <div className="mb-6">
+            <div className="mb-8 hero-text-reveal">
               <Image src="/images/logos/wa-white.png" alt="Whisky Advocate" width={280} height={84} className="mx-auto opacity-90" />
             </div>
-            <h1 className="text-hero-sm md:text-hero font-serif font-bold mb-6 drop-shadow-lg">
-              America's Top Whisky Bars
+            <div className="hero-line-reveal h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent mx-auto mb-8" />
+            <h1 className="text-hero-sm md:text-hero font-serif font-bold mb-6 drop-shadow-lg hero-text-reveal-delay-1 tracking-tight">
+              America&apos;s Top Whisky Bars
             </h1>
-            <p className="text-xl md:text-2xl font-light mb-2 drop-shadow-md">2026 Edition</p>
-            <p className="text-lg md:text-xl opacity-90 max-w-2xl mx-auto drop-shadow-md">
+            <p className="text-xl md:text-2xl font-light mb-2 drop-shadow-md hero-text-reveal-delay-2 tracking-wide uppercase text-white/80">2026 Edition</p>
+            <p className="text-lg md:text-xl opacity-80 max-w-2xl mx-auto drop-shadow-md hero-text-reveal-delay-3">
               Celebrating {bars.length >= 150 ? '150+' : bars.length || '150+'} remarkable venues setting the standard<br className="hidden sm:block" /> for whisky culture across the nation
             </p>
-            <div className="mt-8">
-              <a href="#explore" className="inline-flex items-center justify-center gap-2 min-h-[48px] bg-wa-red hover:bg-wa-red-dark text-white px-8 py-4 text-base font-bold uppercase tracking-wider transition-colors touch-manifest rounded-lg">
+            <div className="mt-10 hero-text-reveal-delay-4">
+              <a href="#explore" className="group inline-flex items-center justify-center gap-2.5 min-h-[48px] bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-10 py-4 text-sm font-bold uppercase tracking-[0.15em] transition-all duration-300 touch-manifest rounded-full border border-white/20 hover:border-white/40 hover:shadow-lg hover:shadow-white/10">
                 Explore the List
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                 </svg>
               </a>
@@ -252,23 +278,28 @@ export default function Home() {
         </VideoHero>
 
         {/* Intro Section */}
-        <section className={`py-16 lg:py-24 ${darkMode ? 'bg-gray-900' : 'bg-white'}`} id="explore">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className={`font-serif text-3xl md:text-4xl mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+        <section className={`py-20 lg:py-32 gradient-mesh-warm ${darkMode ? 'bg-gray-900' : 'bg-white'}`} id="explore">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className={`reveal font-serif text-3xl md:text-5xl mb-8 leading-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               Where Exceptional Whisky Meets True Hospitality
             </h2>
-            <p className={`text-lg leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-              America's Top Whisky Bars honors the places where exceptional whisky,<br className="hidden sm:block" /> true hospitality, and atmosphere converge. Each featured bar reflects the artistry<br className="hidden sm:block" /> of its beverage program, the warmth of its service, and the authenticity of its setting.
+            <div className="reveal reveal-delay-1 section-divider w-20 mx-auto mb-8" />
+            <p className={`reveal reveal-delay-2 text-lg md:text-xl leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-500'}`}>
+              America&apos;s Top Whisky Bars honors the places where exceptional whisky,
+              true hospitality, and atmosphere converge. Each featured bar reflects the artistry
+              of its beverage program, the warmth of its service, and the authenticity of its setting.
             </p>
           </div>
         </section>
 
         {/* Interactive Map & List Section - mobile-optimized */}
-        <section className={`border-t ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'} safe-x`} id="explore-bars">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <section className={`${darkMode ? 'bg-gray-800' : 'gradient-mesh-section bg-gray-50/50'} safe-x`} id="explore-bars">
+          <div className="section-divider" />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
             {/* Section Header */}
-            <div className="text-center mb-6 lg:mb-10">
-              <h2 className={`font-serif text-2xl sm:text-3xl mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Explore the Bars</h2>
+            <div className="text-center mb-8 lg:mb-12">
+              <h2 className={`reveal font-serif text-2xl sm:text-4xl mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Explore the Bars</h2>
+              <p className="reveal reveal-delay-1 text-gray-500 text-base">Discover your next favorite spot</p>
             </div>
 
             {/* State Filter */}
@@ -276,18 +307,18 @@ export default function Home() {
               <StateFilter bars={bars} selectedState={selectedState} onStateSelect={setSelectedState} />
             </div>
 
-            {/* Mobile: sticky Map/List toggle - always visible when scrolling this section */}
-            <div className={`lg:hidden sticky top-16 z-20 -mx-4 px-4 py-3 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0 ${darkMode ? 'bg-gray-800 border-b border-gray-700' : 'bg-gray-50 border-b border-gray-200'} mb-4 lg:border-0 lg:static lg:mb-6`}>
-              <div className="flex gap-2 max-w-md mx-auto">
+            {/* Mobile: modern toggle */}
+            <div className={`lg:hidden sticky top-16 z-20 -mx-4 px-4 py-3 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0 ${darkMode ? 'bg-gray-800/80' : 'bg-white/70'} backdrop-blur-xl mb-4 lg:border-0 lg:static lg:mb-6`}>
+              <div className="modern-toggle flex gap-1 max-w-xs mx-auto">
                 <button
                   onClick={() => setViewMode('map')}
-                  className={`flex-1 min-h-[48px] py-3 px-4 text-base font-semibold rounded-xl border-2 transition-all touch-manifest ${viewMode === 'map' ? 'bg-wa-red text-white border-wa-red' : darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-white text-gray-700 border-gray-300'}`}
+                  className={`flex-1 min-h-[44px] py-2.5 px-4 text-sm font-semibold transition-all touch-manifest modern-toggle-btn ${viewMode === 'map' ? 'modern-toggle-btn-active' : 'text-gray-500'}`}
                 >
                   Map
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`flex-1 min-h-[48px] py-3 px-4 text-base font-semibold rounded-xl border-2 transition-all touch-manifest ${viewMode === 'list' ? 'bg-wa-red text-white border-wa-red' : darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-white text-gray-700 border-gray-300'}`}
+                  className={`flex-1 min-h-[44px] py-2.5 px-4 text-sm font-semibold transition-all touch-manifest modern-toggle-btn ${viewMode === 'list' ? 'modern-toggle-btn-active' : 'text-gray-500'}`}
                 >
                   List
                 </button>
@@ -308,11 +339,11 @@ export default function Home() {
               </div>
 
               {/* Map (desktop) - 2/3 width */}
-              <div className="lg:col-span-2 hidden lg:block h-[700px] sticky top-[104px]">
+              <div className="lg:col-span-2 hidden lg:block h-[700px] sticky top-[104px] modern-map-container">
                 {loading ? (
-                  <div className={`w-full h-full animate-pulse flex items-center justify-center ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}><p className={darkMode ? 'text-gray-400' : 'text-gray-500'}>Loading map...</p></div>
+                  <div className={`w-full h-full animate-pulse flex items-center justify-center rounded-2xl ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}><p className={darkMode ? 'text-gray-400' : 'text-gray-500'}>Loading map...</p></div>
                 ) : error ? (
-                  <div className={`w-full h-full flex items-center justify-center ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}><p className="text-red-500">{error}</p></div>
+                  <div className={`w-full h-full flex items-center justify-center rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}><p className="text-red-500">{error}</p></div>
                 ) : (
                   <Map bars={bars} selectedBar={selectedBar} hoveredBar={hoveredBar} onBarSelect={setSelectedBar} onBarHover={setHoveredBar} selectedState={selectedState} userLocation={userLocation} showHeatmap={showHeatmap} darkMode={darkMode} />
                 )}

@@ -21,9 +21,9 @@ interface MapProps {
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
-// Map styles - using streets for more color
+// Map styles - modern clean styles
 const MAP_STYLES = {
-  light: 'mapbox://styles/mapbox/streets-v12',
+  light: 'mapbox://styles/mapbox/light-v11',
   dark: 'mapbox://styles/mapbox/dark-v11',
 };
 
@@ -188,7 +188,7 @@ export default function Map({
           type: 'fill-extrusion',
           minzoom: 14,
           paint: {
-            'fill-extrusion-color': darkMode ? '#1a1a2e' : '#aaa',
+            'fill-extrusion-color': darkMode ? '#1a1a2e' : '#d4d0c8',
             'fill-extrusion-height': ['get', 'height'],
             'fill-extrusion-base': ['get', 'min_height'],
             'fill-extrusion-opacity': 0.6,
@@ -286,7 +286,7 @@ export default function Map({
             type: 'fill-extrusion',
             minzoom: 14,
             paint: {
-              'fill-extrusion-color': darkMode ? '#1a1a2e' : '#aaa',
+              'fill-extrusion-color': darkMode ? '#1a1a2e' : '#d4d0c8',
               'fill-extrusion-height': ['get', 'height'],
               'fill-extrusion-base': ['get', 'min_height'],
               'fill-extrusion-opacity': 0.6,
@@ -849,7 +849,7 @@ export default function Map({
               });
             }
           }}
-          className="bg-white shadow-lg rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          className="bg-white/85 backdrop-blur-xl shadow-lg rounded-xl px-4 py-2.5 text-xs font-semibold text-gray-600 hover:bg-white hover:text-wa-red transition-all border border-white/60 uppercase tracking-wider"
         >
           Reset View
         </button>
@@ -857,14 +857,14 @@ export default function Map({
 
       {/* Cluster legend - at low zoom only clusters show; zoom in to see bars at their locations */}
       {currentZoom < MIN_ZOOM_FOR_BAR_MARKERS && filteredBars.length > 5 && (
-        <div className="absolute bottom-12 left-4 bg-white shadow-lg rounded-lg p-3 z-10">
-          <p className="text-xs font-semibold text-gray-700 mb-2">By state / region</p>
-          <p className="text-xs text-gray-500">Zoom in to see bars at their locations; click a cluster to zoom</p>
+        <div className="absolute bottom-12 left-4 bg-white/85 backdrop-blur-xl shadow-lg rounded-2xl p-4 z-10 border border-white/60">
+          <p className="text-xs font-semibold text-gray-700 mb-1.5">By state / region</p>
+          <p className="text-xs text-gray-400">Zoom in to see bars at their locations</p>
         </div>
       )}
 
       {/* Zoom indicator */}
-      <div className="absolute top-4 right-16 bg-white/90 backdrop-blur-sm shadow rounded px-2 py-1 text-xs text-gray-600 z-10">
+      <div className="absolute top-4 right-16 bg-white/80 backdrop-blur-xl shadow-sm rounded-xl px-3 py-1.5 text-[11px] font-medium text-gray-500 z-10 border border-white/60 tabular-nums">
         {currentZoom.toFixed(1)}x
       </div>
     </div>
