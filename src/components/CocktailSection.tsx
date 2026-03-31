@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { Cocktail } from '@/types';
 import CocktailModal from './CocktailModal';
+import JwPlayerEmbed from './JwPlayerEmbed';
 
 interface CocktailSectionProps {
   cocktails: Cocktail[];
@@ -51,6 +52,8 @@ export default function CocktailSection({ cocktails }: CocktailSectionProps) {
             />
           ))}
         </div>
+
+        <JwPlayerEmbed />
       </div>
 
       {selectedCocktail && (
