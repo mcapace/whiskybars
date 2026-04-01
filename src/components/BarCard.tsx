@@ -62,12 +62,12 @@ export default function BarCard({
   return (
     <>
     <div
-      className={`bar-card group relative bg-white rounded-2xl transition-all duration-300 cursor-pointer overflow-hidden touch-manifest ${
+      className={`bar-card group relative rounded-2xl transition-all duration-300 cursor-pointer overflow-hidden touch-manifest ${
         isSelected
-          ? 'ring-2 ring-wa-red shadow-lg shadow-wa-red/10 scale-[1.01]'
+          ? 'ring-2 ring-teal-400/50 shadow-lg shadow-teal-500/10 scale-[1.01]'
           : isHovered
-          ? 'shadow-md scale-[1.005] border-wa-red/20'
-          : 'shadow-sm hover:shadow-md hover:border-black/10'
+          ? 'shadow-md scale-[1.005] border-teal-400/25'
+          : 'shadow-sm hover:shadow-md'
       }`}
       onClick={handleCardClick}
       onMouseEnter={() => {
@@ -122,35 +122,35 @@ export default function BarCard({
 
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
-              <h3 className="font-serif text-xl font-semibold text-gray-900 group-hover:text-wa-red transition-colors leading-tight">
+              <h3 className="font-serif text-xl font-semibold text-[var(--apex-ink)] group-hover:text-wa-red transition-colors leading-tight">
                 {bar.name}
               </h3>
               {distance !== null && distance !== undefined && (
-                <span className="flex-shrink-0 text-sm font-medium text-wa-red bg-wa-red/10 px-2 py-1 rounded-full whitespace-nowrap">
+                <span className="flex-shrink-0 text-xs font-mono tracking-wide text-[var(--apex-ink)] bg-teal-500/10 px-2 py-1 rounded-md whitespace-nowrap border border-teal-500/25">
                   {distance < 1 ? `${(distance * 5280).toFixed(0)} ft` : `${distance.toFixed(1)} mi`}
                 </span>
               )}
             </div>
-            <p className="text-base text-gray-500 mt-0.5">{bar.address}</p>
+            <p className="text-base text-[var(--apex-muted)] mt-0.5">{bar.address}</p>
           </div>
         </div>
 
         {/* Description - full width on small screens */}
         <div className="mb-3 sm:ml-[76px]">
-          <p className="text-base text-gray-600 whitespace-pre-line">
+          <p className="text-base text-[var(--apex-muted)] whitespace-pre-line leading-relaxed">
             {bar.description}
           </p>
         </div>
 
         {/* Tags */}
         <div className="flex flex-wrap gap-1.5 mb-3 sm:ml-[76px]">
-          <span className="text-sm px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full font-medium">
+          <span className="text-xs font-mono px-2 py-0.5 bg-[var(--apex-line)] text-[var(--apex-ink)] rounded-md font-medium border border-[var(--apex-line)]">
             {bar.state}
           </span>
         </div>
 
         {/* Actions - comfortable touch targets on mobile */}
-        <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-gray-100 ml-0 sm:ml-[76px]">
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[var(--apex-line)] ml-0 sm:ml-[76px]">
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {bar.website && (
               <a
@@ -158,7 +158,7 @@ export default function BarCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="min-h-[44px] inline-flex items-center gap-1 py-2 text-sm font-medium text-gray-600 hover:text-wa-red transition-colors touch-manifest"
+                className="min-h-[44px] inline-flex items-center gap-1 py-2 text-sm font-medium text-[var(--apex-muted)] hover:text-apex-cyan transition-colors touch-manifest"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -172,7 +172,7 @@ export default function BarCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="min-h-[44px] inline-flex items-center gap-1 py-2 text-sm font-medium text-gray-600 hover:text-wa-red transition-colors touch-manifest"
+                className="min-h-[44px] inline-flex items-center gap-1 py-2 text-sm font-medium text-[var(--apex-muted)] hover:text-apex-cyan transition-colors touch-manifest"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -183,7 +183,7 @@ export default function BarCard({
             <button
               onClick={handleShare}
               disabled={isSharing}
-              className="min-h-[44px] inline-flex items-center gap-1 py-2 text-sm font-medium text-gray-600 hover:text-wa-red transition-colors touch-manifest disabled:opacity-50"
+              className="min-h-[44px] inline-flex items-center gap-1 py-2 text-sm font-medium text-[var(--apex-muted)] hover:text-wa-red transition-colors touch-manifest disabled:opacity-50"
               title="Share this bar"
             >
               {shareSuccess ? (

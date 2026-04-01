@@ -13,6 +13,7 @@ interface BarListProps {
   selectedState: string | null;
   userLocation: { lat: number; lng: number } | null;
   sortBy: 'alphabetical' | 'distance' | 'state';
+  darkMode?: boolean;
 }
 
 // Calculate distance between two points in miles
@@ -69,6 +70,7 @@ export default function BarList({
   selectedState,
   userLocation,
   sortBy,
+  darkMode = false,
 }: BarListProps) {
   const listRef = useRef<HTMLDivElement>(null);
   const selectedRef = useRef<HTMLDivElement>(null);
@@ -273,28 +275,28 @@ export default function BarList({
   }, []);
 
   return (
-    <div ref={listRef} className="h-full overflow-y-auto overflow-x-hidden bg-gray-50">
+    <div ref={listRef} className={`h-full overflow-y-auto overflow-x-hidden ${darkMode ? 'bg-[var(--apex-bg)]' : 'bg-[var(--apex-elevated)]'}`}>
       {/* Header - compact on small screens */}
-      <div className="sticky top-0 z-10 bg-gradient-to-r from-wa-cream via-white to-wa-cream backdrop-blur-sm px-4 sm:px-6 py-3 sm:py-4 border-b-2 border-wa-red/20 shadow-sm">
+      <div className="sticky top-0 z-10 bg-[var(--apex-surface)]/92 backdrop-blur-md px-4 sm:px-6 py-3 sm:py-4 border-b border-[var(--apex-line)] shadow-[0_8px_30px_rgba(10,15,26,0.04)]">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-baseline gap-3">
             <div className="flex items-baseline gap-2">
-              <span className="text-4xl font-serif font-bold text-wa-red">
+              <span className="text-4xl font-serif font-semibold text-wa-red tabular-nums">
                 {displayCount}
               </span>
-              <span className="text-lg font-semibold text-gray-700 uppercase tracking-wider">
+              <span className="text-lg font-medium text-[var(--apex-ink)] uppercase tracking-[0.12em] font-mono text-sm">
                 {totalCount === 1 ? 'Bar' : 'Bars'}
               </span>
             </div>
             {selectedState && (
-              <span className="text-base text-gray-600 font-medium px-3 py-1 bg-white/80 rounded-full border border-wa-red/20">
+              <span className="text-base text-[var(--apex-muted)] font-medium px-3 py-1 rounded-full border border-[var(--apex-line)] bg-[var(--apex-bg)]/80">
                 in {selectedState}
               </span>
             )}
           </div>
           {userLocation && sortBy === 'distance' && (
-            <span className="text-sm text-wa-red font-semibold bg-wa-red/10 px-3 py-1.5 rounded-full">
-              Sorted by distance
+            <span className="text-xs font-mono tracking-wide text-apex-cyan border border-teal-400/30 px-3 py-1.5 rounded-full">
+              Nearest first
             </span>
           )}
         </div>
@@ -304,11 +306,11 @@ export default function BarList({
       <div className="p-4 sm:p-4">
         {totalCount === 0 ? (
           <div className="text-center py-16">
-            <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-16 h-16 mx-auto text-[var(--apex-line)] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <p className="text-gray-500 font-medium">No bars found</p>
-            <p className="text-gray-400 text-base mt-1">Try adjusting your search or filters</p>
+            <p className="text-[var(--apex-muted)] font-medium font-mono text-sm tracking-wide">No bars found</p>
+            <p className="text-[var(--apex-muted)]/80 text-base mt-1">Try adjusting your search or filters</p>
           </div>
         ) : (
           <div className="space-y-6">
@@ -318,8 +320,8 @@ export default function BarList({
               
               return (
                 <div key={state}>
-                  <h3 className="text-sm uppercase tracking-widest text-wa-red font-bold mb-3 sticky top-[4.25rem] sm:top-14 bg-gray-50/95 backdrop-blur-sm py-2 z-[5] flex items-center gap-2 min-h-[40px]">
-                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-wa-red/10 text-wa-red font-bold text-xs border border-wa-red/20">
+                  <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-[var(--apex-ink)] mb-3 sticky top-[4.25rem] sm:top-14 bg-[var(--apex-surface)]/95 backdrop-blur-sm py-2 z-[5] flex items-center gap-2 min-h-[40px] border-b border-[var(--apex-line)]">
+                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-gradient-to-br from-wa-red/15 to-teal-500/10 text-wa-red font-bold text-xs border border-[var(--apex-line)]">
                       {getStateAbbreviation(state)}
                     </span>
                     <span>{state} ({stateBars.length})</span>

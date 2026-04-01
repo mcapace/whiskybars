@@ -117,10 +117,17 @@ export default function VideoHero({
         />
       ))}
 
-      {/* Modern cinematic overlays */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/80" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
-      <div className="absolute inset-0 bg-[#e04720]/10 mix-blend-overlay" />
+      {/* Cool cinematic veil + subtle scanline */}
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-900/45 to-[#05070d]/95" />
+      <div className="absolute inset-0 bg-gradient-to-r from-indigo-950/50 via-transparent to-teal-950/40" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_100%,rgba(224,71,32,0.18),transparent_65%)]" />
+      <div
+        className="absolute inset-0 opacity-[0.04] pointer-events-none"
+        style={{
+          backgroundImage:
+            'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.05) 2px, rgba(255,255,255,0.05) 3px)',
+        }}
+      />
 
       {/* Content overlay */}
       <div className="absolute inset-0 flex items-center justify-center">

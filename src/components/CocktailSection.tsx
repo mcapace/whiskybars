@@ -8,6 +8,7 @@ import JwPlayerEmbed from './JwPlayerEmbed';
 
 interface CocktailSectionProps {
   cocktails: Cocktail[];
+  darkMode?: boolean;
 }
 
 // Cocktail images from local directory
@@ -20,24 +21,27 @@ const cocktailImages: Record<string, string> = {
   goldrush: '/images/cocktails/TheGoldRush.jpg',
 };
 
-export default function CocktailSection({ cocktails }: CocktailSectionProps) {
+export default function CocktailSection({ cocktails, darkMode = false }: CocktailSectionProps) {
   const [selectedCocktail, setSelectedCocktail] = useState<Cocktail | null>(null);
 
   return (
-    <section className="py-20 sm:py-28 relative overflow-hidden gradient-mesh-warm">
+    <section className={`py-20 sm:py-28 relative overflow-hidden gradient-mesh-warm ${darkMode ? 'border-y border-[var(--apex-line)]' : ''}`}>
       {/* Decorative background blobs */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-wa-red/4 rounded-full blur-[100px]"></div>
-        <div className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-wa-gold/4 rounded-full blur-[120px]"></div>
+        <div className="absolute top-20 left-10 w-96 h-96 bg-teal-500/8 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-apex-violet/10 rounded-full blur-[120px]"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
-          <h2 className="reveal font-serif text-4xl sm:text-5xl font-medium text-gray-900 mb-6">
+          <p className="reveal font-mono text-[10px] md:text-xs tracking-[0.28em] uppercase text-apex-cyan/90 mb-5">
+            Recipe lab
+          </p>
+          <h2 className="reveal font-serif text-4xl sm:text-5xl md:font-medium text-[var(--apex-ink)] mb-6">
             Elevating the Classics
           </h2>
-          <div className="reveal reveal-delay-1 section-divider w-16 mx-auto mb-6" />
-          <p className="reveal reveal-delay-2 text-gray-500 max-w-2xl mx-auto text-lg">
+          <div className="reveal reveal-delay-1 section-divider w-20 mx-auto mb-6" />
+          <p className="reveal reveal-delay-2 text-[var(--apex-muted)] max-w-2xl mx-auto text-lg">
             Six iconic cocktails, each paired with the original recipe and a bartender&apos;s fresh take.
           </p>
         </div>
@@ -117,9 +121,9 @@ function CocktailCard({ cocktail, imageUrl, index, onClick }: CocktailCardProps)
       <div className="cocktail-card-glow"></div>
 
       {/* Main card */}
-      <div className="cocktail-card-inner relative h-full bg-white rounded-2xl overflow-hidden shadow-lg">
+      <div className="cocktail-card-inner relative h-full rounded-2xl overflow-hidden shadow-lg border bg-[var(--apex-surface)] border-[var(--apex-line)]">
         {/* Image container with overlay */}
-        <div className="aspect-square bg-gray-100 relative overflow-hidden">
+        <div className="aspect-square bg-[var(--apex-line)] relative overflow-hidden">
           <Image
             src={imageUrl}
             alt={cocktail.name}
@@ -146,13 +150,13 @@ function CocktailCard({ cocktail, imageUrl, index, onClick }: CocktailCardProps)
           {/* Accent line */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-wa-red via-wa-gold to-wa-red transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
 
-          <h3 className="font-serif text-2xl font-medium text-gray-900 group-hover:text-wa-red transition-colors duration-300 mb-2">
+          <h3 className="font-serif text-2xl font-medium text-[var(--apex-ink)] group-hover:text-wa-red transition-colors duration-300 mb-2">
             {cocktail.name}
           </h3>
 
           {/* Hover indicator */}
-          <div className="mt-4 flex items-center text-wa-red opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <span className="text-sm font-semibold mr-2">Explore Recipe</span>
+          <div className="mt-4 flex items-center text-apex-cyan opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-mono text-xs tracking-wide">
+            <span className="font-semibold mr-2 uppercase">Explore recipe</span>
             <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>

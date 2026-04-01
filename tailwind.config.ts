@@ -22,11 +22,20 @@ const config: Config = {
         'whisky-cream': '#fdf9f1',
         'whisky-brown': '#9e380d',
         'whisky-gold': '#f9bd13',
+        apex: {
+          paper: '#e8e5de',
+          night: '#05070d',
+          ink: '#0a0f1a',
+          mist: '#5c6578',
+          frost: '#a8c4e8',
+          cyan: '#2ec4b6',
+          violet: '#7c6cf0',
+        },
       },
       fontFamily: {
-        // Match Whisky Advocate typography - using Next.js font variables
-        serif: ['var(--font-playfair)', 'Georgia', 'Cambria', 'Times New Roman', 'serif'],
-        sans: ['var(--font-source-sans)', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        serif: ['var(--font-cormorant)', 'Georgia', 'Cambria', 'serif'],
+        sans: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
       },
       fontSize: {
         'hero': ['4rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],

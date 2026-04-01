@@ -11,11 +11,29 @@
   --whisky-cream: #fdf9f1;
   --whisky-brown: #9e380d;
   --whisky-gold: #f9bd13;
+  --apex-bg: #e4e1d9;
+  --apex-elevated: #eeebe4;
+  --apex-ink: #0a0f1a;
+  --apex-muted: #5c6578;
+  --apex-line: rgba(10, 15, 26, 0.08);
+  --apex-surface: #f7f5f0;
+  --apex-glow: rgba(46, 196, 182, 0.12);
+}
+
+.dark-mode {
+  --apex-bg: #05070d;
+  --apex-elevated: #0a1020;
+  --apex-ink: #e8edf7;
+  --apex-muted: #8b9bb8;
+  --apex-line: rgba(255, 255, 255, 0.07);
+  --apex-surface: #0e1528;
+  --apex-glow: rgba(46, 196, 182, 0.08);
 }
 
 body {
-  font-family: var(--font-source-sans), 'Helvetica Neue', Arial, sans-serif;
-  color: #1a1a1a;
+  font-family: var(--font-outfit), system-ui, sans-serif;
+  color: var(--apex-ink);
+  background-color: var(--apex-bg);
   line-height: 1.6;
   font-size: 18px;
 }
@@ -44,7 +62,7 @@ body {
 }
 
 .font-serif {
-  font-family: var(--font-playfair), Georgia, serif;
+  font-family: var(--font-cormorant), Georgia, serif;
 }
 
 /* Modern thin scrollbar */
@@ -66,10 +84,22 @@ body {
   background: rgba(0, 0, 0, 0.25);
 }
 
+.dark-mode ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
 /* Firefox thin scrollbar */
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+.dark-mode * {
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
 /* Mapbox customizations - popups must render above markers so Glencairn doesn't cover content */
@@ -519,7 +549,7 @@ body {
 }
 
 .bar-popup-title {
-  font-family: var(--font-playfair), Georgia, serif;
+  font-family: var(--font-cormorant), Georgia, serif;
   font-size: 18px;
   font-weight: 600;
   color: #1a1a1a;
@@ -1019,14 +1049,16 @@ body {
   left: 0;
   top: 0;
   bottom: 0;
-  width: 4px;
+  width: 3px;
   background: linear-gradient(
     180deg,
-    #f9bd13 0%,
-    #e04720 50%,
-    #c73d1a 100%
+    #2ec4b6 0%,
+    #f9bd13 38%,
+    #e04720 72%,
+    #7c6cf0 100%
   );
   border-radius: 2px;
+  box-shadow: 0 0 12px rgba(46, 196, 182, 0.45);
 }
 
 /* Premium Text Gradient */
@@ -1310,7 +1342,34 @@ html {
   transform: scale(1);
 }
 
-/* --- Noise/Grain Texture Overlay --- */
+/* --- Editorial shell: precision grid + film grain --- */
+.site-apex {
+  background-color: var(--apex-bg);
+  color: var(--apex-ink);
+  background-image:
+    linear-gradient(var(--apex-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--apex-line) 1px, transparent 1px),
+    radial-gradient(ellipse 120% 80% at 50% -30%, var(--apex-glow), transparent),
+    radial-gradient(at 85% 20%, rgba(124, 108, 240, 0.06) 0%, transparent 45%),
+    radial-gradient(at 10% 80%, rgba(224, 71, 32, 0.05) 0%, transparent 40%);
+  background-size: 56px 56px, 56px 56px, 100% 100%, 100% 100%, 100% 100%;
+}
+
+.dark-mode.site-apex {
+  background-image:
+    linear-gradient(var(--apex-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--apex-line) 1px, transparent 1px),
+    radial-gradient(ellipse 100% 60% at 50% 0%, rgba(46, 196, 182, 0.07), transparent 55%),
+    radial-gradient(at 90% 10%, rgba(124, 108, 240, 0.12) 0%, transparent 42%),
+    radial-gradient(at 5% 90%, rgba(224, 71, 32, 0.08) 0%, transparent 45%);
+  background-size: 56px 56px, 56px 56px, 100% 100%, 100% 100%, 100% 100%;
+}
+
+/* --- Noise: under content only (do not use high z-index + mix-blend on whole viewport) --- */
+.noise-overlay {
+  isolation: isolate;
+}
+
 .noise-overlay::before {
   content: '';
   position: fixed;
@@ -1319,43 +1378,63 @@ html {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 9999;
-  opacity: 0.025;
+  z-index: -1;
+  opacity: 0.035;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 256px 256px;
-  mix-blend-mode: multiply;
 }
 
-/* --- Animated Gradient Mesh Backgrounds --- */
+.dark-mode.noise-overlay::before {
+  opacity: 0.045;
+}
+
+/* --- Mesh sections (tokens) --- */
 .gradient-mesh-warm {
-  background:
-    radial-gradient(at 20% 80%, rgba(224, 71, 32, 0.06) 0%, transparent 50%),
-    radial-gradient(at 80% 20%, rgba(249, 189, 19, 0.05) 0%, transparent 50%),
-    radial-gradient(at 50% 50%, rgba(158, 56, 13, 0.03) 0%, transparent 60%);
+  background-color: var(--apex-bg);
+  background-image:
+    radial-gradient(at 15% 85%, rgba(46, 196, 182, 0.08) 0%, transparent               50%),
+    radial-gradient(at 90% 15%, rgba(224, 71, 32, 0.07) 0%, transparent 48%),
+    radial-gradient(at 50% 40%, rgba(124, 108, 240, 0.05) 0%, transparent 55%);
 }
 
 .gradient-mesh-section {
-  background:
-    radial-gradient(ellipse at 0% 0%, rgba(224, 71, 32, 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 100%, rgba(249, 189, 19, 0.04) 0%, transparent 50%);
+  background-color: var(--apex-elevated);
+  background-image:
+    radial-gradient(ellipse at 0% 0%, rgba(46, 196, 182, 0.06) 0%, transparent 52%),
+    radial-gradient(ellipse at 100% 100%, rgba(224, 71, 32, 0.05) 0%, transparent 50%);
 }
 
-/* --- Floating Glass Header --- */
+/* --- Header: frosted instrument panel --- */
 .glass-header {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 32px rgba(0, 0, 0, 0.04);
+  background: rgba(247, 245, 240, 0.78);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border-bottom: 1px solid var(--apex-line);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.45) inset,
+    0 8px 32px rgba(10, 15, 26, 0.05);
 }
 
 .glass-header-scrolled {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(24px) saturate(1.6);
-  -webkit-backdrop-filter: blur(24px) saturate(1.6);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 4px 24px rgba(0, 0, 0, 0.06);
+  background: rgba(247, 245, 240, 0.92);
+  backdrop-filter: blur(22px) saturate(1.25);
+  -webkit-backdrop-filter: blur(22px) saturate(1.25);
+  border-bottom: 1px solid var(--apex-line);
+  box-shadow: 0 4px 28px rgba(10, 15, 26, 0.07);
+}
+
+.dark-mode .glass-header {
+  background: rgba(8, 12, 22, 0.82);
+  border-bottom-color: var(--apex-line);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.dark-mode .glass-header-scrolled {
+  background: rgba(8, 12, 22, 0.94);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
 /* --- Hero Text Reveal Animation --- */
@@ -1414,6 +1493,27 @@ html {
   opacity: 0;
 }
 
+/* Hero CTA — illuminated command key */
+.apex-hero-cta {
+  position: relative;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(12, 18, 32, 0.75), rgba(8, 14, 28, 0.65));
+  border: 1px solid rgba(46, 196, 182, 0.4);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 0 32px rgba(46, 196, 182, 0.12);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  letter-spacing: 0.14em;
+  font-weight: 500;
+}
+
+.apex-hero-cta:hover {
+  border-color: rgba(249, 189, 19, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+    0 0 40px rgba(224, 71, 32, 0.2);
+}
+
 /* --- Modern Glass Cards --- */
 .glass-card {
   background: rgba(255, 255, 255, 0.7);
@@ -1457,48 +1557,80 @@ html {
 }
 
 .modern-pill-active {
-  background: linear-gradient(135deg, #e04720, #c73d1a);
-  color: white;
-  box-shadow: 0 4px 16px rgba(224, 71, 32, 0.3), 0 1px 3px rgba(224, 71, 32, 0.2);
-  border-color: transparent;
+  background: linear-gradient(135deg, #0a0f1a 0%, #1a2744 40%, #e04720 140%);
+  color: #fff;
+  box-shadow:
+    0 0 0 1px rgba(46, 196, 182, 0.35),
+    0 4px 20px rgba(224, 71, 32, 0.25);
+  border-color: rgba(46, 196, 182, 0.4);
 }
 
 .modern-pill-inactive {
-  background: rgba(255, 255, 255, 0.7);
-  color: #4b5563;
-  border-color: rgba(0, 0, 0, 0.08);
-  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--apex-muted);
+  border-color: var(--apex-line);
+  backdrop-filter: blur(10px);
 }
 
 .modern-pill-inactive:hover {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: rgba(224, 71, 32, 0.3);
-  color: #e04720;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(46, 196, 182, 0.35);
+  color: var(--apex-ink);
+  box-shadow: 0 0 20px var(--apex-glow);
+}
+
+.dark-mode .modern-pill-inactive {
+  background: rgba(14, 21, 40, 0.65);
+  color: var(--apex-muted);
+  border-color: var(--apex-line);
+}
+
+.dark-mode .modern-pill-inactive:hover {
+  background: rgba(20, 32, 58, 0.85);
+  border-color: rgba(46, 196, 182, 0.3);
+  color: var(--apex-ink);
 }
 
 /* --- Modern Map Container --- */
 .modern-map-container {
-  border-radius: 20px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 0 0 1px var(--apex-line),
+    0 20px 50px rgba(10, 15, 26, 0.12),
+    0 0 60px rgba(46, 196, 182, 0.06);
+}
+
+.dark-mode .modern-map-container {
+  box-shadow:
+    0 0 0 1px var(--apex-line),
+    0 24px 60px rgba(0, 0, 0, 0.5),
+    0 0 80px rgba(46, 196, 182, 0.05);
 }
 
 /* --- Section Divider --- */
 .section-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(224, 71, 32, 0.15), rgba(249, 189, 19, 0.15), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(46, 196, 182, 0.35),
+    rgba(224, 71, 32, 0.35),
+    rgba(124, 108, 240, 0.25),
+    transparent
+  );
 }
 
 /* --- Modern Footer --- */
 .modern-footer {
-  background: #0f0f13;
-  color: rgba(255, 255, 255, 0.7);
+  background: linear-gradient(180deg, #04060c 0%, #070b14 48%, #05070d 100%);
+  color: rgba(232, 237, 247, 0.72);
+  border-top: 1px solid rgba(46, 196, 182, 0.12);
+  box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.35);
 }
 
 .modern-footer a:hover {
-  color: #f9bd13;
+  color: #5eead4;
 }
 
 /* --- Smooth page transitions --- */
@@ -1515,33 +1647,60 @@ body {
   animation: pageIn 0.4s ease-out;
 }
 
-/* --- Bar card modern border --- */
+/* --- Bar card: glass telemetry panel --- */
 .bar-card {
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 16px;
+  border: 1px solid var(--apex-line);
+  border-radius: 14px;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(247, 245, 240, 0.98) 100%
+  );
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset;
 }
 
 .bar-card:hover {
-  border-color: rgba(224, 71, 32, 0.15);
+  border-color: rgba(46, 196, 182, 0.35);
+  box-shadow:
+    0 0 0 1px rgba(46, 196, 182, 0.12),
+    0 12px 40px rgba(10, 15, 26, 0.06);
+}
+
+.dark-mode .bar-card {
+  background: linear-gradient(145deg, rgba(14, 21, 40, 0.95) 0%, rgba(8, 14, 28, 0.98) 100%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset;
+}
+
+.dark-mode .bar-card:hover {
+  border-color: rgba(46, 196, 182, 0.25);
 }
 
 /* --- Modern view toggle --- */
 .modern-toggle {
-  background: rgba(0, 0, 0, 0.04);
-  border-radius: 14px;
+  background: var(--apex-line);
+  border-radius: 12px;
   padding: 4px;
+  border: 1px solid var(--apex-line);
 }
 
 .modern-toggle-btn {
-  border-radius: 10px;
+  border-radius: 9px;
   font-weight: 600;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 13px;
+  letter-spacing: 0.04em;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modern-toggle-btn-active {
-  background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  background: var(--apex-surface);
+  box-shadow: 0 2px 12px rgba(10, 15, 26, 0.08);
   color: #e04720;
+}
+
+.dark-mode .modern-toggle-btn-active {
+  background: rgba(20, 32, 58, 0.95);
+  color: #5eead4;
 }
 
 /* --- Improved map marker entrance --- */

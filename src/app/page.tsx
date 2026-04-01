@@ -43,13 +43,13 @@ import { Bar, ViewMode } from '@/types';
 const Map = dynamic(() => import('@/components/Map'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full min-h-[400px] bg-gray-100 animate-pulse rounded-lg flex items-center justify-center">
-      <div className="text-gray-400 flex flex-col items-center gap-2">
-        <svg className="w-10 h-10 animate-spin" fill="none" viewBox="0 0 24 24">
+    <div className="w-full h-full min-h-[400px] bg-slate-200/90 animate-pulse rounded-2xl flex items-center justify-center border border-slate-300/60">
+      <div className="text-[var(--apex-muted)] flex flex-col items-center gap-2 font-mono text-sm">
+        <svg className="w-10 h-10 animate-spin text-apex-cyan" fill="none" viewBox="0 0 24 24">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
         </svg>
-        <span className="text-base">Loading map...</span>
+        <span>Loading map…</span>
       </div>
     </div>
   ),
@@ -247,7 +247,7 @@ export default function Home() {
   }, [bars, selectedState]);
 
   return (
-    <div className={`noise-overlay min-h-screen flex flex-col ${darkMode ? 'dark-mode bg-gray-900' : 'bg-white'}`}>
+    <div className={`noise-overlay site-apex min-h-screen flex flex-col ${darkMode ? 'dark-mode' : ''}`}>
       <ScrollProgress />
       <Header />
 
@@ -256,20 +256,25 @@ export default function Home() {
         <VideoHero>
           <div className="text-center text-white px-4 max-w-4xl mx-auto">
             <div className="mb-8 hero-text-reveal">
-              <Image src="/images/logos/wa-white.png" alt="Whisky Advocate" width={280} height={84} className="mx-auto opacity-90" />
+              <Image src="/images/logos/wa-white.png" alt="Whisky Advocate" width={280} height={84} className="mx-auto opacity-95 drop-shadow-[0_0_40px_rgba(46,196,182,0.25)]" />
             </div>
-            <div className="hero-line-reveal h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent mx-auto mb-8" />
-            <h1 className="text-hero-sm md:text-hero font-serif font-bold mb-6 drop-shadow-lg hero-text-reveal-delay-1 tracking-tight">
+            <p className="hero-text-reveal font-mono text-[11px] md:text-xs tracking-[0.35em] text-teal-200/90 uppercase mb-4">
+              Field guide · nationwide index
+            </p>
+            <div className="hero-line-reveal h-px bg-gradient-to-r from-transparent via-teal-300/50 to-transparent mx-auto mb-8" />
+            <h1 className="text-hero-sm md:text-hero font-serif font-semibold mb-6 drop-shadow-[0_4px_32px_rgba(0,0,0,0.6)] hero-text-reveal-delay-1 tracking-tight">
               America&apos;s Top Whisky Bars
             </h1>
-            <p className="text-xl md:text-2xl font-light mb-2 drop-shadow-md hero-text-reveal-delay-2 tracking-wide uppercase text-white/80">2026 Edition</p>
-            <p className="text-lg md:text-xl opacity-80 max-w-2xl mx-auto drop-shadow-md hero-text-reveal-delay-3">
+            <p className="text-xl md:text-2xl font-light mb-2 drop-shadow-md hero-text-reveal-delay-2 tracking-[0.2em] uppercase text-white/75 font-mono text-base md:text-lg">
+              2026 · Edition
+            </p>
+            <p className="text-lg md:text-xl text-slate-300/90 max-w-2xl mx-auto drop-shadow-md hero-text-reveal-delay-3 leading-relaxed">
               Celebrating {bars.length >= 150 ? '150+' : bars.length || '150+'} remarkable venues setting the standard<br className="hidden sm:block" /> for whisky culture across the nation
             </p>
             <div className="mt-10 hero-text-reveal-delay-4">
-              <a href="#explore" className="group inline-flex items-center justify-center gap-2.5 min-h-[48px] bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-10 py-4 text-sm font-bold uppercase tracking-[0.15em] transition-all duration-300 touch-manifest rounded-full border border-white/20 hover:border-white/40 hover:shadow-lg hover:shadow-white/10">
-                Explore the List
-                <svg className="w-4 h-4 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <a href="#explore" className="apex-hero-cta group inline-flex items-center justify-center gap-2.5 min-h-[48px] text-white px-10 py-4 text-xs transition-all duration-300 touch-manifest">
+                Explore the index
+                <svg className="w-4 h-4 transition-transform group-hover:translate-y-0.5 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                 </svg>
               </a>
@@ -278,13 +283,16 @@ export default function Home() {
         </VideoHero>
 
         {/* Intro Section */}
-        <section className={`py-20 lg:py-32 gradient-mesh-warm ${darkMode ? 'bg-gray-900' : 'bg-white'}`} id="explore">
+        <section className="py-20 lg:py-32 gradient-mesh-warm relative" id="explore">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className={`reveal font-serif text-3xl md:text-5xl mb-8 leading-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            <p className="reveal font-mono text-[10px] md:text-xs tracking-[0.28em] uppercase text-apex-cyan/90 mb-6">
+              Editorial
+            </p>
+            <h2 className="reveal font-serif text-3xl md:text-5xl md:font-medium mb-8 leading-tight text-[var(--apex-ink)]">
               Where Exceptional Whisky Meets True Hospitality
             </h2>
-            <div className="reveal reveal-delay-1 section-divider w-20 mx-auto mb-8" />
-            <p className={`reveal reveal-delay-2 text-lg md:text-xl leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-500'}`}>
+            <div className="reveal reveal-delay-1 section-divider w-24 mx-auto mb-8" />
+            <p className="reveal reveal-delay-2 text-lg md:text-xl leading-relaxed text-[var(--apex-muted)]">
               America&apos;s Top Whisky Bars honors the places where exceptional whisky,
               true hospitality, and atmosphere converge. Each featured bar reflects the artistry
               of its beverage program, the warmth of its service, and the authenticity of its setting.
@@ -293,13 +301,16 @@ export default function Home() {
         </section>
 
         {/* Interactive Map & List Section - mobile-optimized */}
-        <section className={`${darkMode ? 'bg-gray-800' : 'gradient-mesh-section bg-gray-50/50'} safe-x`} id="explore-bars">
-          <div className="section-divider" />
+        <section className="gradient-mesh-section safe-x relative border-y border-[var(--apex-line)]" id="explore-bars">
+          <div className="section-divider opacity-60" />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
             {/* Section Header */}
             <div className="text-center mb-8 lg:mb-12">
-              <h2 className={`reveal font-serif text-2xl sm:text-4xl mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Explore the Bars</h2>
-              <p className="reveal reveal-delay-1 text-gray-500 text-base">Discover your next favorite spot</p>
+              <p className="reveal font-mono text-[10px] tracking-[0.25em] uppercase text-apex-cyan/80 mb-3">
+                Interactive atlas
+              </p>
+              <h2 className="reveal font-serif text-2xl sm:text-4xl md:font-medium mb-3 text-[var(--apex-ink)]">Explore the Bars</h2>
+              <p className="reveal reveal-delay-1 text-[var(--apex-muted)] text-base">Discover your next favorite spot</p>
             </div>
 
             {/* State Filter */}
@@ -308,17 +319,17 @@ export default function Home() {
             </div>
 
             {/* Mobile: modern toggle */}
-            <div className={`lg:hidden sticky top-16 z-20 -mx-4 px-4 py-3 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0 ${darkMode ? 'bg-gray-800/80' : 'bg-white/70'} backdrop-blur-xl mb-4 lg:border-0 lg:static lg:mb-6`}>
+            <div className="lg:hidden sticky top-16 z-20 -mx-4 px-4 py-3 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0 bg-[var(--apex-surface)]/85 backdrop-blur-xl border-b border-[var(--apex-line)] mb-4 lg:border-0 lg:static lg:mb-6">
               <div className="modern-toggle flex gap-1 max-w-xs mx-auto">
                 <button
                   onClick={() => setViewMode('map')}
-                  className={`flex-1 min-h-[44px] py-2.5 px-4 text-sm font-semibold transition-all touch-manifest modern-toggle-btn ${viewMode === 'map' ? 'modern-toggle-btn-active' : 'text-gray-500'}`}
+                  className={`flex-1 min-h-[44px] py-2.5 px-4 transition-all touch-manifest modern-toggle-btn ${viewMode === 'map' ? 'modern-toggle-btn-active' : 'text-[var(--apex-muted)]'}`}
                 >
                   Map
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`flex-1 min-h-[44px] py-2.5 px-4 text-sm font-semibold transition-all touch-manifest modern-toggle-btn ${viewMode === 'list' ? 'modern-toggle-btn-active' : 'text-gray-500'}`}
+                  className={`flex-1 min-h-[44px] py-2.5 px-4 transition-all touch-manifest modern-toggle-btn ${viewMode === 'list' ? 'modern-toggle-btn-active' : 'text-[var(--apex-muted)]'}`}
                 >
                   List
                 </button>
@@ -332,18 +343,18 @@ export default function Home() {
               {/* Bar List - 1/3 width; on mobile full height when list view */}
               <div className={`lg:col-span-1 lg:block ${viewMode === 'list' ? 'block' : 'hidden lg:block'} min-h-[60dvh] lg:min-h-0 h-[70dvh] lg:h-[700px] overflow-hidden`}>
                 {loading ? (
-                  <div className="p-6 space-y-4">{[...Array(5)].map((_, i) => <div key={i} className={`animate-pulse h-32 rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />)}</div>
+                  <div className="p-6 space-y-4">{[...Array(5)].map((_, i) => <div key={i} className={`animate-pulse h-32 rounded-xl ${darkMode ? 'bg-slate-800' : 'bg-[var(--apex-line)]'}`} />)}</div>
                 ) : (
-                  <BarList bars={bars} selectedBar={selectedBar} hoveredBar={hoveredBar} onBarSelect={setSelectedBar} onBarHover={setHoveredBar} selectedState={selectedState} userLocation={userLocation} sortBy={sortBy} />
+                  <BarList bars={bars} selectedBar={selectedBar} hoveredBar={hoveredBar} onBarSelect={setSelectedBar} onBarHover={setHoveredBar} selectedState={selectedState} userLocation={userLocation} sortBy={sortBy} darkMode={darkMode} />
                 )}
               </div>
 
               {/* Map (desktop) - 2/3 width */}
               <div className="lg:col-span-2 hidden lg:block h-[700px] sticky top-[104px] modern-map-container">
                 {loading ? (
-                  <div className={`w-full h-full animate-pulse flex items-center justify-center rounded-2xl ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}><p className={darkMode ? 'text-gray-400' : 'text-gray-500'}>Loading map...</p></div>
+                  <div className={`w-full h-full animate-pulse flex items-center justify-center rounded-2xl ${darkMode ? 'bg-slate-800' : 'bg-[var(--apex-line)]'}`}><p className="font-mono text-sm text-[var(--apex-muted)]">Loading map…</p></div>
                 ) : error ? (
-                  <div className={`w-full h-full flex items-center justify-center rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}><p className="text-red-500">{error}</p></div>
+                  <div className={`w-full h-full flex items-center justify-center rounded-2xl ${darkMode ? 'bg-slate-900' : 'bg-[var(--apex-line)]'}`}><p className="text-red-500">{error}</p></div>
                 ) : (
                   <Map bars={bars} selectedBar={selectedBar} hoveredBar={hoveredBar} onBarSelect={setSelectedBar} onBarHover={setHoveredBar} selectedState={selectedState} userLocation={userLocation} showHeatmap={showHeatmap} darkMode={darkMode} />
                 )}
@@ -357,8 +368,8 @@ export default function Home() {
           </div>
         </section>
 
-        <CocktailSection cocktails={cocktails} />
-        <SponsorsSection />
+        <CocktailSection cocktails={cocktails} darkMode={darkMode} />
+        <SponsorsSection darkMode={darkMode} />
       </main>
 
       <Footer />

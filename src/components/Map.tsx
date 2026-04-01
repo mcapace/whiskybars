@@ -21,11 +21,62 @@ interface MapProps {
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
-// Map styles - modern clean styles
+// Map styles - v11 works with globe, fog, terrain, and extrusions
 const MAP_STYLES = {
   light: 'mapbox://styles/mapbox/light-v11',
   dark: 'mapbox://styles/mapbox/dark-v11',
 };
+
+const TERRAIN_SOURCE_ID = 'mapbox-terrain-dem';
+
+/** Globe + fog + terrain; falls back to plain Mercator if anything throws (WebGL / style / token limits). */
+function applyGlobeAndAtmosphere(m: mapboxgl.Map, isDark: boolean) {
+  try {
+    m.setProjection({ name: 'globe' });
+
+    if (!m.getSource(TERRAIN_SOURCE_ID)) {
+      m.addSource(TERRAIN_SOURCE_ID, {
+        type: 'raster-dem',
+        url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+        tileSize: 512,
+        maxzoom: 14,
+      });
+    }
+    m.setTerrain({ source: TERRAIN_SOURCE_ID, exaggeration: 1.08 });
+
+    if (isDark) {
+      m.setFog({
+        range: [4, 7.5],
+        color: '#121420',
+        'high-color': '#1e2236',
+        'space-color': '#06060c',
+        'horizon-blend': 0.06,
+        'star-intensity': 0.18,
+      });
+    } else {
+      m.setFog({
+        range: [2.5, 6],
+        color: '#b8cce8',
+        'high-color': '#eef2fb',
+        'space-color': '#dce6f5',
+        'horizon-blend': 0.1,
+        'star-intensity': 0,
+      });
+    }
+  } catch (err) {
+    console.warn('[Map] Globe/terrain/fog unavailable, using standard map.', err);
+    try {
+      m.setTerrain(null);
+    } catch {
+      /* ignore */
+    }
+    try {
+      m.setProjection({ name: 'mercator' });
+    } catch {
+      /* ignore */
+    }
+  }
+}
 
 export default function Map({
   bars,
@@ -130,214 +181,188 @@ export default function Map({
     return el;
   }, []);
 
-  // Initialize map
+  // Initialize map (deferred 2 frames so parent layout isn’t display:none / 0×0 during first paint)
   useEffect(() => {
     if (!mapContainer.current || !MAPBOX_TOKEN || map.current) return;
 
-    mapboxgl.accessToken = MAPBOX_TOKEN;
+    let cancelled = false;
+    let raf0 = 0;
+    let raf1 = 0;
 
-    const newMap = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: darkMode ? MAP_STYLES.dark : MAP_STYLES.light,
-      center: [-98.5795, 39.8283],
-      zoom: 3.5,
-      minZoom: 2,
-      maxZoom: 18,
-      pitch: 0,
-      attributionControl: false,
-      renderWorldCopies: true,
-      antialias: true,
-      preserveDrawingBuffer: false,
-    });
+    raf0 = requestAnimationFrame(() => {
+      raf1 = requestAnimationFrame(() => {
+        if (cancelled || !mapContainer.current || map.current) return;
 
-    // Disable pitch/tilt interaction
-    newMap.dragRotate.disable();
-    newMap.touchZoomRotate.disableRotation();
+        mapboxgl.accessToken = MAPBOX_TOKEN;
 
-    // Add controls (without compass to avoid tilt controls)
-    newMap.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
-    newMap.addControl(new mapboxgl.GeolocateControl({
-      positionOptions: { enableHighAccuracy: true },
-      trackUserLocation: true,
-      showUserHeading: true,
-    }), 'top-right');
-    newMap.addControl(new mapboxgl.FullscreenControl(), 'top-right');
-    // Add scale control with imperial units (miles)
-    const scaleControl = new mapboxgl.ScaleControl({ 
-      maxWidth: 100,
-      unit: 'imperial' // This will show miles instead of kilometers
-    });
-    newMap.addControl(scaleControl, 'bottom-left');
-    // Attribution control removed - Mapbox branding hidden via CSS
+        const newMap = new mapboxgl.Map({
+          container: mapContainer.current,
+          style: darkMode ? MAP_STYLES.dark : MAP_STYLES.light,
+          center: [-98.5795, 39.8283],
+          zoom: 3.5,
+          minZoom: 2,
+          maxZoom: 18,
+          pitch: 0,
+          attributionControl: false,
+          renderWorldCopies: true,
+          antialias: true,
+          preserveDrawingBuffer: false,
+          projection: { name: 'globe' },
+        });
 
-    newMap.on('load', () => {
-      setMapLoaded(true);
+        // Disable pitch/tilt interaction
+        newMap.dragRotate.disable();
+        newMap.touchZoomRotate.disableRotation();
 
-      // Add 3D buildings layer
-      const layers = newMap.getStyle().layers;
-      const labelLayerId = layers?.find(
-        layer => layer.type === 'symbol' && layer.layout?.['text-field']
-      )?.id;
+        newMap.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+        newMap.addControl(
+          new mapboxgl.GeolocateControl({
+            positionOptions: { enableHighAccuracy: true },
+            trackUserLocation: true,
+            showUserHeading: true,
+          }),
+          'top-right'
+        );
+        newMap.addControl(new mapboxgl.FullscreenControl(), 'top-right');
+        const scaleControl = new mapboxgl.ScaleControl({
+          maxWidth: 100,
+          unit: 'imperial',
+        });
+        newMap.addControl(scaleControl, 'bottom-left');
 
-      newMap.addLayer(
-        {
-          id: '3d-buildings',
-          source: 'composite',
-          'source-layer': 'building',
-          filter: ['==', 'extrude', 'true'],
-          type: 'fill-extrusion',
-          minzoom: 14,
-          paint: {
-            'fill-extrusion-color': darkMode ? '#1a1a2e' : '#d4d0c8',
-            'fill-extrusion-height': ['get', 'height'],
-            'fill-extrusion-base': ['get', 'min_height'],
-            'fill-extrusion-opacity': 0.6,
-          },
-        },
-        labelLayerId
-      );
+        const handleUserInteraction = () => {
+          hasUserInteractedRef.current = true;
+        };
 
-      // Add heatmap source
-      newMap.addSource('bars-heat', {
-        type: 'geojson',
-        data: { type: 'FeatureCollection', features: [] },
+        newMap.on('load', () => {
+          setMapLoaded(true);
+
+          applyGlobeAndAtmosphere(newMap, darkMode);
+
+          try {
+            const layers = newMap.getStyle().layers;
+            const labelLayerId = layers?.find(
+              (layer) => layer.type === 'symbol' && layer.layout?.['text-field']
+            )?.id;
+
+            newMap.addLayer(
+              {
+                id: '3d-buildings',
+                source: 'composite',
+                'source-layer': 'building',
+                filter: ['==', 'extrude', 'true'],
+                type: 'fill-extrusion',
+                minzoom: 14,
+                paint: {
+                  'fill-extrusion-color': darkMode ? '#1b2540' : '#c5c0b8',
+                  'fill-extrusion-height': ['get', 'height'],
+                  'fill-extrusion-base': ['get', 'min_height'],
+                  'fill-extrusion-opacity': darkMode ? 0.72 : 0.55,
+                },
+              },
+              labelLayerId
+            );
+          } catch (e) {
+            console.warn('[Map] 3D buildings layer skipped', e);
+          }
+
+          newMap.addSource('bars-heat', {
+            type: 'geojson',
+            data: { type: 'FeatureCollection', features: [] },
+          });
+
+          newMap.addLayer({
+            id: 'bars-heat',
+            type: 'heatmap',
+            source: 'bars-heat',
+            maxzoom: 12,
+            paint: {
+              'heatmap-weight': 1,
+              'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 3],
+              'heatmap-color': [
+                'interpolate',
+                ['linear'],
+                ['heatmap-density'],
+                0,
+                'rgba(0,0,0,0)',
+                0.2,
+                'rgba(45,212,191,0.35)',
+                0.45,
+                'rgba(124,108,240,0.45)',
+                0.65,
+                'rgba(224,71,32,0.55)',
+                0.85,
+                'rgba(199,61,26,0.72)',
+                1,
+                'rgba(165,15,21,0.85)',
+              ],
+              'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 12, 20],
+              'heatmap-opacity': 0.62,
+            },
+            layout: {
+              visibility: 'none',
+            },
+          });
+
+          requestAnimationFrame(() => {
+            newMap.resize();
+          });
+        });
+
+        newMap.on('error', (e) => {
+          console.error('[Map]', e);
+        });
+
+        newMap.on('zoom', () => {
+          setCurrentZoom(newMap.getZoom());
+        });
+
+        newMap.on('dragstart', handleUserInteraction);
+        newMap.on('zoomstart', handleUserInteraction);
+
+        newMap.on('zoomend', () => {
+          const zoom = newMap.getZoom();
+          if (zoom >= 15) {
+            newMap.easeTo({ pitch: 45, duration: 300 });
+          } else if (zoom < 14) {
+            newMap.easeTo({ pitch: 0, duration: 300 });
+          }
+        });
+
+        map.current = newMap;
       });
-
-      // Add heatmap layer
-      newMap.addLayer({
-        id: 'bars-heat',
-        type: 'heatmap',
-        source: 'bars-heat',
-        maxzoom: 12,
-        paint: {
-          'heatmap-weight': 1,
-          'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 3],
-          'heatmap-color': [
-            'interpolate',
-            ['linear'],
-            ['heatmap-density'],
-            0, 'rgba(0,0,0,0)',
-            0.2, 'rgba(254,229,217,0.5)',
-            0.4, 'rgba(252,174,145,0.6)',
-            0.6, 'rgba(251,106,74,0.7)',
-            0.8, 'rgba(222,45,38,0.8)',
-            1, 'rgba(165,15,21,0.9)',
-          ],
-          'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 12, 20],
-          'heatmap-opacity': 0.6,
-        },
-        layout: {
-          visibility: 'none',
-        },
-      });
-
     });
-
-    // Track zoom level for clustering decisions
-    newMap.on('zoom', () => {
-      setCurrentZoom(newMap.getZoom());
-    });
-
-    // Track user interaction to know when they've moved away from default view
-    const handleUserInteraction = () => {
-      hasUserInteractedRef.current = true;
-    };
-    newMap.on('dragstart', handleUserInteraction);
-    newMap.on('zoomstart', handleUserInteraction);
-
-    // Enable pitch on high zoom for 3D effect
-    newMap.on('zoomend', () => {
-      const zoom = newMap.getZoom();
-      if (zoom >= 15) {
-        newMap.easeTo({ pitch: 45, duration: 300 });
-      } else if (zoom < 14) {
-        newMap.easeTo({ pitch: 0, duration: 300 });
-      }
-    });
-
-    map.current = newMap;
 
     return () => {
-      newMap.off('dragstart', handleUserInteraction);
-      newMap.off('zoomstart', handleUserInteraction);
-      newMap.remove();
-      map.current = null;
+      cancelled = true;
+      cancelAnimationFrame(raf0);
+      cancelAnimationFrame(raf1);
+      setMapLoaded(false);
+      const m = map.current;
+      if (m) {
+        m.remove();
+        map.current = null;
+      }
     };
   }, [darkMode]);
 
-  // Update map style when dark mode changes - need to re-add layers after style change
+  // Map canvas is often 0×0 if the container was hidden (e.g. lg:block) — resize when layout changes
   useEffect(() => {
-    if (!map.current || !mapLoaded) return;
-
-    const addLayers = () => {
-      // Add 3D buildings layer
-      const layers = map.current!.getStyle().layers;
-      const labelLayerId = layers?.find(
-        layer => layer.type === 'symbol' && layer.layout?.['text-field']
-      )?.id;
-
-      if (!map.current!.getLayer('3d-buildings')) {
-        map.current!.addLayer(
-          {
-            id: '3d-buildings',
-            source: 'composite',
-            'source-layer': 'building',
-            filter: ['==', 'extrude', 'true'],
-            type: 'fill-extrusion',
-            minzoom: 14,
-            paint: {
-              'fill-extrusion-color': darkMode ? '#1a1a2e' : '#d4d0c8',
-              'fill-extrusion-height': ['get', 'height'],
-              'fill-extrusion-base': ['get', 'min_height'],
-              'fill-extrusion-opacity': 0.6,
-            },
-          },
-          labelLayerId
-        );
-      }
-
-      // Add heatmap source and layer
-      if (!map.current!.getSource('bars-heat')) {
-        map.current!.addSource('bars-heat', {
-          type: 'geojson',
-          data: { type: 'FeatureCollection', features: [] },
-        });
-
-        map.current!.addLayer({
-          id: 'bars-heat',
-          type: 'heatmap',
-          source: 'bars-heat',
-          maxzoom: 12,
-          paint: {
-            'heatmap-weight': 1,
-            'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 1, 12, 3],
-            'heatmap-color': [
-              'interpolate',
-              ['linear'],
-              ['heatmap-density'],
-              0, 'rgba(0,0,0,0)',
-              0.2, 'rgba(254,229,217,0.5)',
-              0.4, 'rgba(252,174,145,0.6)',
-              0.6, 'rgba(251,106,74,0.7)',
-              0.8, 'rgba(222,45,38,0.8)',
-              1, 'rgba(165,15,21,0.9)',
-            ],
-            'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 12, 20],
-            'heatmap-opacity': 0.6,
-          },
-          layout: {
-            visibility: showHeatmap ? 'visible' : 'none',
-          },
-        });
-      }
-
+    if (!mapLoaded || !map.current || !mapContainer.current) return;
+    const m = map.current;
+    const el = mapContainer.current;
+    const ro = new ResizeObserver(() => {
+      m.resize();
+    });
+    ro.observe(el);
+    const onWin = () => m.resize();
+    window.addEventListener('resize', onWin);
+    requestAnimationFrame(() => m.resize());
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', onWin);
     };
-
-    map.current.setStyle(darkMode ? MAP_STYLES.dark : MAP_STYLES.light);
-
-    // Re-add layers once the new style loads
-    map.current.once('style.load', addLayers);
-  }, [darkMode, mapLoaded, showHeatmap]);
+  }, [mapLoaded]);
 
   // Zoom level below which we only show clusters; at this zoom and above, individual bar markers appear (so zooming into cities shows pins, not disappearing counts)
   const MIN_ZOOM_FOR_BAR_MARKERS = 6;
@@ -832,9 +857,23 @@ export default function Map({
     }
   }, [userLocation, mapLoaded]);
 
+  if (!MAPBOX_TOKEN) {
+    return (
+      <div className="relative w-full h-full min-h-[400px] flex items-center justify-center rounded-2xl border border-dashed border-[var(--apex-line)] bg-[var(--apex-elevated)] px-6 text-center">
+        <div>
+          <p className="font-semibold text-[var(--apex-ink)]">Map needs a Mapbox token</p>
+          <p className="text-sm text-[var(--apex-muted)] mt-2 max-w-md">
+            Add <code className="font-mono text-xs bg-[var(--apex-line)] px-1.5 py-0.5 rounded">NEXT_PUBLIC_MAPBOX_TOKEN</code> to{' '}
+            <code className="font-mono text-xs">.env.local</code>, restart <code className="font-mono text-xs">npm run dev</code>.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="relative w-full h-full">
-      <div ref={mapContainer} className="w-full h-full" />
+    <div className="relative w-full h-full min-h-[200px]">
+      <div ref={mapContainer} className="w-full h-full min-h-[200px]" />
 
       {/* Map controls overlay */}
       <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
@@ -857,15 +896,16 @@ export default function Map({
 
       {/* Cluster legend - at low zoom only clusters show; zoom in to see bars at their locations */}
       {currentZoom < MIN_ZOOM_FOR_BAR_MARKERS && filteredBars.length > 5 && (
-        <div className="absolute bottom-12 left-4 bg-white/85 backdrop-blur-xl shadow-lg rounded-2xl p-4 z-10 border border-white/60">
-          <p className="text-xs font-semibold text-gray-700 mb-1.5">By state / region</p>
-          <p className="text-xs text-gray-400">Zoom in to see bars at their locations</p>
+        <div className="absolute bottom-12 left-4 bg-[var(--apex-surface)]/92 backdrop-blur-xl shadow-lg rounded-xl p-3.5 z-10 border border-[var(--apex-line)] max-w-[200px]">
+          <p className="text-[10px] font-mono uppercase tracking-wider text-teal-600/90 mb-1">3D globe · terrain</p>
+          <p className="text-xs font-medium text-[var(--apex-ink)] mb-0.5">Clusters by region</p>
+          <p className="text-[11px] text-[var(--apex-muted)]">Zoom in for exact locations</p>
         </div>
       )}
 
       {/* Zoom indicator */}
-      <div className="absolute top-4 right-16 bg-white/80 backdrop-blur-xl shadow-sm rounded-xl px-3 py-1.5 text-[11px] font-medium text-gray-500 z-10 border border-white/60 tabular-nums">
-        {currentZoom.toFixed(1)}x
+      <div className="absolute top-4 right-16 bg-[var(--apex-surface)]/90 backdrop-blur-md shadow-sm rounded-lg px-2.5 py-1 text-[10px] font-mono font-medium text-[var(--apex-muted)] z-10 border border-[var(--apex-line)] tabular-nums">
+        z {currentZoom.toFixed(1)}
       </div>
     </div>
   );
