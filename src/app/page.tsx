@@ -258,7 +258,16 @@ export default function Home() {
               Where Exceptional Whisky Meets True Hospitality
             </h2>
             <p className={`text-lg leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-              America's Top Whisky Bars honors the places where exceptional whisky,<br className="hidden sm:block" /> true hospitality, and atmosphere converge. Each featured bar reflects the artistry<br className="hidden sm:block" /> of its beverage program, the warmth of its service, and the authenticity of its setting.
+              America&apos;s Top Whisky Bars honors the places where exceptional whisky,<br className="hidden sm:block" /> true hospitality, and atmosphere converge. Each featured bar reflects the artistry<br className="hidden sm:block" /> of its beverage program, the warmth of its service, and the authenticity of its setting.{' '}
+              Think your favorite bar would be included next?{' '}
+              <a
+                href="https://whiskyadvocate.com/bars"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-wa-red underline underline-offset-2 hover:text-wa-red-dark"
+              >
+                Let us know here!
+              </a>
             </p>
           </div>
         </section>
