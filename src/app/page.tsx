@@ -296,6 +296,16 @@ export default function Home() {
               America&apos;s Top Whisky Bars honors the places where exceptional whisky,
               true hospitality, and atmosphere converge. Each featured bar reflects the artistry
               of its beverage program, the warmth of its service, and the authenticity of its setting.
+              {' '}
+              Think your favorite bar would be included next?{' '}
+              <a
+                href="https://whiskyadvocate.com/bars"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-wa-red underline decoration-wa-red/30 underline-offset-2 hover:text-wa-red-dark hover:decoration-wa-red/60 transition-colors"
+              >
+                Let us know here!
+              </a>
             </p>
           </div>
         </section>
