@@ -11,15 +11,14 @@ export default function OdeSection() {
           A visual tribute to the culture, character and charm of America's top whisky bars.
         </p>
         <div className="relative rounded-lg overflow-hidden shadow-xl" style={{ paddingBottom: '56.25%' }}>
-          <iframe
-            src="https://cdn.jwplayer.com/players/NyYwjSUW-w6TeWEoR.html"
-            width="100%"
-            height="100%"
-            frameBorder="0"
-            scrolling="auto"
+          <video
+            src="https://cdn.jwplayer.com/videos/NyYwjSUW.mp4"
+            poster="https://cdn.jwplayer.com/v2/media/NyYwjSUW/poster.jpg?width=1280"
             title="An Ode to the Whisky Bar"
-            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-            allowFullScreen
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: '#000', objectFit: 'contain' }}
+            controls
+            playsInline
+            preload="none"
             className="rounded-lg"
           />
         </div>
