@@ -1,35 +1,15 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-
-const PLAYER_SRC = 'https://cdn.jwplayer.com/players/W29EVIFm-w6TeWEoR.js';
-/** Must match JW embed — pre-created so the loader skips document.write */
-const CONTAINER_ID = 'botr_W29EVIFm_w6TeWEoR_div';
+/*
+ * Plain HTML5 video from JW Player's CDN. The JW Player script sent analytics
+ * pings to JW Player on page load, before any consent and even with GPC on;
+ * the CDN file and poster carry no tracking.
+ */
+const JW_MEDIA_ID = 'W29EVIFm';
+const VIDEO_SRC = `https://cdn.jwplayer.com/videos/${JW_MEDIA_ID}.mp4`;
+const POSTER_SRC = `https://cdn.jwplayer.com/v2/media/${JW_MEDIA_ID}/poster.jpg?width=1280`;
 
 export default function JwPlayerEmbed() {
-  const scriptEl = useRef<HTMLScriptElement | null>(null);
-
-  useEffect(() => {
-    if (document.querySelector(`script[src="${PLAYER_SRC}"]`)) return;
-
-    const script = document.createElement('script');
-    script.src = PLAYER_SRC;
-    script.async = true;
-    scriptEl.current = script;
-    document.body.appendChild(script);
-
-    return () => {
-      try {
-        const w = window as typeof window & { jwplayer?: (id: string) => { remove?: () => void } };
-        w.jwplayer?.(CONTAINER_ID)?.remove?.();
-      } catch {
-        /* noop */
-      }
-      scriptEl.current?.remove();
-      scriptEl.current = null;
-    };
-  }, []);
-
   return (
     <div className="max-w-4xl mx-auto mt-16 sm:mt-20 pt-16 sm:pt-20 border-t border-gray-200/80">
       <div className="text-center mb-8 sm:mb-10">
@@ -41,7 +21,15 @@ export default function JwPlayerEmbed() {
         className="relative w-full overflow-hidden rounded-2xl border border-gray-200 shadow-lg bg-black"
         style={{ aspectRatio: '16 / 9' }}
       >
-        <div id={CONTAINER_ID} className="absolute inset-0 w-full h-full [&_.jwplayer]:!h-full" />
+        <video
+          src={VIDEO_SRC}
+          poster={POSTER_SRC}
+          title="An Ode to the Whisky Bars"
+          className="absolute inset-0 w-full h-full object-contain"
+          controls
+          playsInline
+          preload="none"
+        />
       </div>
     </div>
   );
